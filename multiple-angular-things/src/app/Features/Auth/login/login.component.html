@@ -1,0 +1,55 @@
+<section class="page-shell">
+  <div class="panel">
+    <div class="hero-panel">
+      <p class="eyebrow">Northstar Workspace</p>
+      <h1>Welcome back</h1>
+      <p class="hero-copy">
+        Access your team insights, approvals, and customer moments in one beautifully organized place.
+      </p>
+
+      <ul class="feature-list">
+        <li>Real-time analytics</li>
+        <li>Secure collaboration</li>
+        <li>Fast approvals</li>
+      </ul>
+    </div>
+
+    <form class="login-card" (ngSubmit)="onSubmit()">
+      <div class="brand-row">
+        <span class="brand-dot"></span>
+        <span>Pulseboard</span>
+      </div>
+
+      <h2>Sign in</h2>
+      <p class="card-copy">Use your workspace credentials to continue.</p>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" [ngModel]="email()" (ngModelChange)="email.set($event)" placeholder="you@example.com" required />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" [ngModel]="password()" (ngModelChange)="password.set($event)" placeholder="Enter password" required />
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" name="rememberMe" [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)" />
+        <span>Keep me signed in</span>
+      </label>
+
+      @if (loginError()) {
+        <p class="error-text">{{ loginError() }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
+      </button>
+
+      <div class="footer-row">
+        <span>Need access?</span>
+        <a routerLink="/dashboard">Request invite</a>
+      </div>
+    </form>
+  </div>
+</section>

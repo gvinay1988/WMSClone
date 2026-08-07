@@ -1,0 +1,164 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menu-btn,
+.icon-btn,
+.user-btn {
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem;
+  border-radius: 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.menu-btn:hover,
+.icon-btn:hover,
+.user-btn:hover {
+  background: #f1f5f9;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.85rem;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.brand-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.user-btn {
+  gap: 0.75rem;
+  min-width: 10rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.pi-angle-down {
+  font-size: 0.85rem;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.avatar,
+.user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 1.1rem;
+}
+
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.brand-subtitle {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon-btn,
+.user-btn {
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.icon-btn:hover,
+.user-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.user-btn {
+  min-width: 10rem;
+  justify-content: center;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.pi.pi-angle-down {
+  font-size: 0.85rem;
+}

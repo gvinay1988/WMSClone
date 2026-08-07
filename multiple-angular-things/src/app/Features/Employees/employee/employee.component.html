@@ -1,0 +1,99 @@
+<section class="employee-shell">
+  <aside class="sidebar">
+    <div class="brand-block">
+      <div class="brand-icon"></div>
+      <div>
+        <h3>Pulseboard</h3>
+        <p>Employee operations</p>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/dashboard">Overview</a>
+      <a class="active" routerLink="/employees">Employees</a>
+      <a routerLink="/login">Sign out</a>
+    </nav>
+  </aside>
+
+  <main class="content-area">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Secure workspace</p>
+        <h1>Employee directory</h1>
+      </div>
+      <button class="ghost-btn" type="button" (click)="resetForm()">+ Add employee</button>
+    </header>
+
+    <div class="grid">
+      <form class="form-card" (ngSubmit)="submit()">
+        <h2>{{ editingId() ? 'Update employee' : 'Create employee' }}</h2>
+        <label class="field">
+          <span>First name</span>
+          <input name="firstName" [(ngModel)]="form().firstName" required />
+        </label>
+        <label class="field">
+          <span>Last name</span>
+          <input name="lastName" [(ngModel)]="form().lastName" required />
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" [(ngModel)]="form().email" required />
+        </label>
+        <label class="field">
+          <span>Position</span>
+          <input name="position" [(ngModel)]="form().position" required />
+        </label>
+        <label class="field">
+          <span>Department</span>
+          <input name="department" [(ngModel)]="form().department" required />
+        </label>
+        @if (feedbackMessage()) {
+          <p class="feedback" [class.success]="feedbackType() === 'success'" [class.error]="feedbackType() === 'error'">
+            {{ feedbackMessage() }}
+          </p>
+        }
+
+        <button type="submit" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving…' : editingId() ? 'Update employee' : 'Create employee' }}
+        </button>
+      </form>
+
+      <section class="table-card">
+        <div class="table-heading">
+          <h2>Employees</h2>
+          <span>Connected to Python API</span>
+        </div>
+
+        @if (isLoading()) {
+          <div class="spinner">Loading employees…</div>
+        } @else {
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Position</th>
+                <th>Department</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (employee of employees(); track employee.id) {
+                <tr>
+                  <td>{{ employee.firstName }} {{ employee.lastName }}</td>
+                  <td>{{ employee.email }}</td>
+                  <td>{{ employee.position }}</td>
+                  <td>{{ employee.department }}</td>
+                  <td class="actions">
+                    <button type="button" class="secondary-btn" (click)="edit(employee)">Edit</button>
+                    <button type="button" class="danger-btn" (click)="deleteEmployee(employee.id)">Delete</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
+    </div>
+  </main>
+</section>

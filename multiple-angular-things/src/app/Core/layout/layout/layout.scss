@@ -1,0 +1,27 @@
+.layout-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.layout-shell.sidebar-open .page-container {
+  transform: translateX(0);
+}
+
+.page-container {
+  padding: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 900px) {
+  .layout-shell.sidebar-open .page-container {
+    transform: translateX(280px);
+  }
+}
+
+@media (max-width: 900px) {
+  .page-container {
+    padding: 1rem;
+  }
+}

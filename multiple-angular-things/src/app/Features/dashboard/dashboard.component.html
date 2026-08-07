@@ -1,0 +1,28 @@
+
+<section class="dashboard-page">
+  <div class="dashboard-header">
+    <div>
+      <p class="eyebrow">Welcome back</p>
+      <h1>Warehouse Management Dashboard</h1>
+      <p class="intro-text">A single source of truth for inventory, operations, and fulfillment analytics.</p>
+    </div>
+    <button pButton type="button" label="New report" icon="pi pi-plus" class="primary-btn"></button>
+  </div>
+
+  <div class="dashboard-grid">
+    <article
+      *ngFor="let card of cards"
+      pCard
+      class="dashboard-card"
+      tabindex="0"
+      role="button"
+    >
+      <div class="card-top">
+        <span class="card-icon"><i class="{{ card.icon }}"></i></span>
+        <h3>{{ card.title }}</h3>
+      </div>
+      <p>{{ card.description }}</p>
+      <button pButton type="button" label="View details" class="card-action"></button>
+    </article>
+  </div>
+</section>

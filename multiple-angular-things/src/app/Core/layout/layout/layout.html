@@ -1,0 +1,12 @@
+<app-header (toggle)="toggleSidebar()"></app-header>
+
+<div class="layout-shell" [class.sidebar-open]="isSidebarOpen()">
+  <app-sidebaar
+    [isOpen]="isSidebarOpen()"
+    (closeSidebar)="closeSidebar()">
+  </app-sidebaar>
+
+  <main class="page-container">
+    <router-outlet></router-outlet>
+  </main>
+</div>
