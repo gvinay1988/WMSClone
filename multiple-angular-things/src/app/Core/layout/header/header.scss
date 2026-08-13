@@ -1,164 +1,110 @@
-.header {
+
+
+.custom-navbar {
+  height: 58px;
+  min-height: 58px;
+  position: relative;
+  z-index: 1050;
+}
+.custom-navbar .nav-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333 !important;
+  padding: 20px 12px !important;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  gap: 5px;
+  transition: all 0.2s ease;
 }
 
-.header-left,
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.custom-navbar .nav-link:hover {
+  color: #0d6efd !important;
+  background-color: #f5f8ff;
 }
 
-.menu-btn,
-.icon-btn,
-.user-btn {
-  border: none;
-  background: transparent;
-  color: #0f172a;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.7rem;
-  border-radius: 0.75rem;
-  transition: background 0.2s ease;
+.hover-dropdown {
+  position: relative;
+}
+.hover-dropdown:hover > .dropdown-menu {
+  display: block;
 }
 
-.menu-btn:hover,
-.icon-btn:hover,
-.user-btn:hover {
-  background: #f1f5f9;
+.custom-navbar .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin: 0;
+  min-width: 95px;
+  padding: 5px 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  font-size: 12px;
+  z-index: 9999;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
+.more-link {
+  border-left: 1px solid #eeeeee;
+  padding-left: 18px !important;
+  padding-right: 18px !important;
+}
+.more-link i {
+  font-size: 14px;
+}
+.more-menu-container {
+  position: relative;
+}
+.more-menu-container .dropdown-menu {
+  position: fixed;
+  top: 58px;
+  right: 10px;
+  left: auto;
+  width: 190px;
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
 }
 
-.brand-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.85rem;
-  background: #2563eb;
-  color: white;
-  font-weight: 700;
-  font-size: 1rem;
+.custom-navbar .dropdown-item {
+  font-size: 12px;
+  padding: 8px 13px;
+  transition: all 0.15s ease;
 }
 
-.brand-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0f172a;
+.custom-navbar .dropdown-item:hover {
+  color: #0d6efd;
+  background-color: #f2f6ff;
+  padding-left: 17px;
 }
 
-.user-btn {
-  gap: 0.75rem;
-  min-width: 10rem;
-  padding: 0.65rem 1rem;
-  border: 1px solid #e2e8f0;
+html,
+body {
+  overflow-x: hidden;
 }
 
-.user-avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.35rem;
-  height: 2.35rem;
-  border-radius: 50%;
-  background: #eff6ff;
-  color: #2563eb;
-}
+@media (max-width: 991px) {
+  .custom-navbar {
+    height: auto;
+    min-height: 58px;
+  }
+  .custom-navbar .nav-link {
+    padding: 10px 12px !important;
+  }
+  .more-link {
+    border-left: none;
+  } 
 
-.user-name {
-  font-weight: 600;
-  color: #0f172a;
-}
+  .hover-dropdown:hover > .dropdown-menu {
+    display: none;
+  }
+  .hover-dropdown.show > .dropdown-menu {
+    display: block;
+  }
+  .more-menu-container .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    max-height: calc(100vh - 80px);
 
-.pi-angle-down {
-  font-size: 0.85rem;
-  align-items: center;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-}
-
-.avatar,
-.user-avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  font-size: 1.1rem;
-}
-
-.brand-copy {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.brand-title {
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.brand-subtitle {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.icon-btn,
-.user-btn {
-  border: none;
-  background: transparent;
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 0.75rem;
-  transition: background 0.2s ease;
-}
-
-.icon-btn:hover,
-.user-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.user-btn {
-  min-width: 10rem;
-  justify-content: center;
-}
-
-.user-name {
-  font-weight: 600;
-}
-
-.pi.pi-angle-down {
-  font-size: 0.85rem;
+    overflow-y: auto;
+  }
 }

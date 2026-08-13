@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
+import { RouterOutlet } from '@angular/router';
 
 
 interface DashboardCard {
@@ -14,7 +15,7 @@ interface DashboardCard {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, RippleModule],
+  imports: [CommonModule, CardModule, ButtonModule, RippleModule,RouterOutlet],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

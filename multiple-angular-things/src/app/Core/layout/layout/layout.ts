@@ -6,7 +6,7 @@ import { Sidebaar } from '../sidebaar/sidebaar';
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, Header, Sidebaar],
+  imports: [RouterOutlet, Header],
   templateUrl: './layout.html',
   styleUrl: './layout.scss'
 })
