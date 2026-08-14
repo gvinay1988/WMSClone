@@ -156,49 +156,81 @@
       </ul>
 
 
-    
-      <ul class="navbar-nav ms-auto">
 
-     
-<li class="nav-item dropdown hover-dropdown more-menu-container">
-<li class="nav-item dropdown hover-dropdown more-menu-container">
+     <ul class="navbar-nav ms-auto">
 
-  <a class="nav-link dropdown-toggle more-link"
-     href="javascript:void(0)">
+  <li class="nav-item dropdown hover-dropdown more-menu-container">
 
-    <i class="bi bi-three-dots"></i>
-    More
+    <a class="nav-link dropdown-toggle more-link"
+       href="javascript:void(0)">
 
-  </a>
+      <i class="bi bi-three-dots"></i>
+      More
 
-  <ul class="dropdown-menu dropdown-menu-end">
+    </a>
 
-    <li>
-      <a class="dropdown-item" routerLink="/reports">
-        <i class="bi bi-bar-chart me-2"></i>
-        Reports
-      </a>
-    </li>
+    <ul class="dropdown-menu dropdown-menu-end more-dropdown">
 
-    <li>
-      <a class="dropdown-item" routerLink="/settings">
-        <i class="bi bi-gear me-2"></i>
-        Settings
-      </a>
-    </li>
+      <!-- REPORTS WITH NESTED MENU -->
+      <li class="dropdown-submenu">
 
-    <li>
-      <a class="dropdown-item" routerLink="/help">
-        <i class="bi bi-question-circle me-2"></i>
-        Help
-      </a>
-    </li>
+        <a class="dropdown-item d-flex justify-content-between align-items-center"
+           href="javascript:void(0)">
 
-  </ul>
+          <span>
+            <i class="bi bi-bar-chart me-2"></i>
+            Masters
+          </span>
 
-</li>
+          <i class="bi bi-chevron-left"></i>
 
-      </ul>
+        </a>
+
+        <!-- NESTED MENU -->
+        <ul class="dropdown-menu report-submenu">
+
+          <li>
+            <a class="dropdown-item"
+               routerLink="Master/supplier">
+
+              <i class="bi bi-graph-up me-2"></i>
+              Supplier
+
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item"
+               routerLink="/reports/sales">
+
+              <i class="bi bi-graph-up me-2"></i>
+              Product
+
+            </a>
+          </li>
+
+        </ul>
+
+      </li>
+
+      <li>
+        <a class="dropdown-item" routerLink="/settings">
+          <i class="bi bi-gear me-2"></i>
+          Settings
+        </a>
+      </li>
+
+      <li>
+        <a class="dropdown-item" routerLink="/help">
+          <i class="bi bi-question-circle me-2"></i>
+          Help
+        </a>
+      </li>
+
+    </ul>
+
+  </li>
+
+</ul>
 
     </div>
 

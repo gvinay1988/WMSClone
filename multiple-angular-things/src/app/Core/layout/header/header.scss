@@ -91,7 +91,7 @@ body {
   }
   .more-link {
     border-left: none;
-  } 
+  }
 
   .hover-dropdown:hover > .dropdown-menu {
     display: none;
@@ -107,4 +107,49 @@ body {
 
     overflow-y: auto;
   }
+}
+/* First-level hover dropdown */
+.hover-dropdown {
+  position: relative;
+}
+
+.hover-dropdown:hover > .dropdown-menu {
+  display: block;
+}
+
+/* Nested Reports menu */
+.dropdown-submenu {
+  position: relative;
+}
+
+/* Hidden initially */
+.dropdown-submenu > .report-submenu {
+  display: none;
+  position: absolute;
+
+  /* Open to LEFT */
+  right: 100%;
+  left: auto;
+
+  top: 0;
+  margin: 0;
+
+  min-width: 180px;
+  z-index: 1060;
+}
+
+/* Show on hover */
+.dropdown-submenu:hover > .report-submenu {
+  display: block;
+}
+
+/* Keep parent highlighted */
+.dropdown-submenu:hover > .dropdown-item {
+  background-color: #f8f9fa;
+}
+
+/* Prevent clipping */
+.more-menu-container,
+.more-dropdown {
+  overflow: visible !important;
 }

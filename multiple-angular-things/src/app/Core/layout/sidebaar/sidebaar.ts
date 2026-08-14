@@ -23,6 +23,7 @@ export class Sidebaar {
   readonly items: SidebarItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', path: '/dashboard' },
     { label: 'Employees', icon: 'pi pi-users', path: '/employees' },
+    { label: 'Supplier Master', icon: 'pi pi-building', path: '/master/supplier' },
     { label: 'Products', icon: 'pi pi-box', path: '/products' },
     { label: 'Orders', icon: 'pi pi-shopping-cart', path: '/orders' },
     { label: 'Inventory', icon: 'pi pi-warehouse', path: '/inventory' },

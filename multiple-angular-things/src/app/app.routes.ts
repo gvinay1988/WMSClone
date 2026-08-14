@@ -21,6 +21,7 @@ export const routes: Routes = [
     path: '',
     component: Layout,
     canActivate: [authGuard],
+
     children: [
 
       {
@@ -42,6 +43,18 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./Features/create-user/createuser.routes')
             .then(m => m.routes)
+      },
+
+      {
+        path: 'master',
+        children: [
+          {
+            path: 'supplier',
+            loadComponent: () =>
+              import('./Features/Master/supplier-master/supplier-master')
+                .then(m => m.SupplierMaster)
+          }
+        ]
       }
 
     ]
