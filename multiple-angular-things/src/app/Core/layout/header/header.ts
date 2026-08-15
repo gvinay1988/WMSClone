@@ -1,32 +1,42 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
+import { Router, RouterLink } from '@angular/router';
 import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 
-@Component({ 
+@Component({
   selector: 'app-header',
   standalone: true,
-  imports: [MenuModule, ButtonModule,CommonModule],
+  imports: [MenuModule, ButtonModule, CommonModule,RouterLink],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
 export class Header {
   username = 'Vinay';
+  isDropdownOpen = false;
 
-isDropdownOpen = false;
+  @Output() toggle = new EventEmitter<void>();
 
-toggleDropdown() {
-  this.isDropdownOpen = !this.isDropdownOpen;
-}
+  constructor(
+    private readonly router: Router,
+    private readonly authService: AuthService
+  ) {}
 
-profile() {
-  console.log('Profile');
-}
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
 
-logout() {
-  console.log('Logout');
-}
+  profile(): void {
+    console.log('Profile');
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  onToggle(): void {
+    this.toggle.emit();
+  }
 }

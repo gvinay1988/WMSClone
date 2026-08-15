@@ -1,1 +1,276 @@
-<p>supplier-master works!</p>
+<div id="inBody">
+
+  <fieldset class="border rounded-2 p-3 pt-2" [formGroup]="supplierForm">
+
+    <legend class="float-none w-auto px-2 fs-6 fw-normal">
+      Supplier Details
+    </legend>
+
+    <div class="row g-3">
+
+      <!-- COLUMN 1 -->
+      <div class="col-md-4">
+
+        <!-- Supplier Code -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            Supplier Code
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="supplierCode"
+              placeholder="Supplier Code">
+          </div>
+        </div>
+
+        <!-- Supplier Name -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            Supplier Name
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="supplierName"
+              placeholder="Supplier Name">
+          </div>
+        </div>
+
+        <!-- Supplier Type -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            Supplier Type
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="supplierType"
+              placeholder="Supplier Type">
+          </div>
+        </div>
+
+        <!-- Contact Person -->
+        <div class="row align-items-center">
+          <label class="col-5 col-form-label">
+            Contact Person
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="contactPerson"
+              placeholder="Contact Person">
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- COLUMN 2 -->
+      <div class="col-md-4">
+
+        <!-- Email -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            Email
+          </label>
+          <div class="col-7">
+            <input
+              type="email"
+              class="form-control form-control-sm"
+              formControlName="email"
+              placeholder="Email">
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            Phone
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="phone"
+              placeholder="Phone Number">
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            Mobile
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="mobile"
+              placeholder="Mobile Number">
+          </div>
+        </div>
+
+        <!-- GST Number -->
+        <div class="row align-items-center">
+          <label class="col-5 col-form-label">
+            GST Number
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="gstNumber"
+              placeholder="GST Number">
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- COLUMN 3 -->
+      <div class="col-md-4">
+
+        <!-- PAN Number -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            PAN Number
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="panNumber"
+              placeholder="PAN Number">
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            Address
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="address"
+              placeholder="Address">
+          </div>
+        </div>
+
+        <!-- City -->
+        <div class="row align-items-center mb-3">
+          <label class="col-5 col-form-label">
+            City
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="city"
+              placeholder="City">
+          </div>
+        </div>
+
+        <!-- Pin Code -->
+        <div class="row align-items-center">
+          <label class="col-5 col-form-label">
+            Pin Code
+          </label>
+          <div class="col-7">
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="pinCode"
+              placeholder="Pin Code">
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+    <div class="d-flex justify-content-end gap-1 mt-3">
+
+      <button
+        type="button"
+        class="btn btn-info btn-sm px-3"
+        (click)="saveSupplier()">
+        Save
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-dark btn-sm px-3"
+        (click)="clearSupplier()">
+        Clear
+      </button>
+
+    </div>
+
+  </fieldset>
+  <div class="card">
+
+  <p-table
+    [value]="[{}]"
+    [paginator]="true"
+    [rows]="10"
+    [scrollable]="true"
+    scrollHeight="400px"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Supplier Code</th>
+        <th>Supplier Name</th>
+        <th>Supplier Type</th>
+        <th>Contact Person</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Mobile</th>
+        <th>GST Number</th>
+        <th>PAN Number</th>
+        <th>Address</th>
+        <th>City</th>
+        <th>Pin Code</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-supplier>
+      <tr>
+        <td>{{ supplier.supplierCode }}</td>
+        <td>{{ supplier.supplierName }}</td>
+        <td>{{ supplier.supplierType }}</td>
+        <td>{{ supplier.contactPerson }}</td>
+        <td>{{ supplier.email }}</td>
+        <td>{{ supplier.phone }}</td>
+        <td>{{ supplier.mobile }}</td>
+        <td>{{ supplier.gstNumber }}</td>
+        <td>{{ supplier.panNumber }}</td>
+        <td>{{ supplier.address }}</td>
+        <td>{{ supplier.city }}</td>
+        <td>{{ supplier.pinCode }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          No supplier records found
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+</div>
+
+</div>
