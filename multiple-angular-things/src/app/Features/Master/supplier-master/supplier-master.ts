@@ -7,6 +7,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 import { Supplieservice } from '../../../services/MasterDataService/supplieservice';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-supplier-master',
@@ -32,7 +33,7 @@ export class SupplierMaster implements OnInit {
   errorMessage = signal('');
 
   constructor(
-    private fb: FormBuilder,
+    private fb: FormBuilder,private toastr: ToastrService,
     private supplierService: Supplieservice,
     private messageService: MessageService
   ) {}
@@ -66,25 +67,29 @@ export class SupplierMaster implements OnInit {
     this.supplierForm.markAllAsTouched();
     return;
   }
-
   this.submitting.set(true);
-
   const supplierData = this.supplierForm.value;
-
   console.log('Supplier Data:', supplierData);
+this.supplierService.saveSupplierMasterData(supplierData).subscribe({
+  next: (response) => {
 
-  this.supplierService.saveSupplierMasterData(supplierData).subscribe({
-    next: (response) => {
-      console.log('Supplier saved successfully:', response);
+    console.log('Supplier saved successfully:', response);
 
-      this.supplierForm.reset();
-      this.submitting.set(false);
-    },
-    error: (error) => {
-      console.error('Error saving supplier:', error);
-      this.submitting.set(false);
-    }
-  });
+    this.toastr.success(
+      response.message || 'Supplier saved successfully',
+      'Success'
+    );
+
+    this.supplierForm.reset();
+  },
+  error: (error) => {
+    console.error('Error saving supplier:', error);
+    this.toastr.error(
+      error?.error?.detail || 'Failed to save supplier',
+      'Error'
+    );
+  }
+});
 }
   clearSupplier() {
     this.supplierForm.reset();

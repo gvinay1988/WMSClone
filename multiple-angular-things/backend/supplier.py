@@ -57,36 +57,23 @@ def get_connection():
 # =========================================================
 
 def get_current_user() -> str:
-
     print("[SUPPLIER] Checking JWT token...")
-
     authorization = request.headers.get("Authorization", "")
-
     print("[SUPPLIER] Authorization header present:",
           bool(authorization))
-
     if not authorization.startswith("Bearer "):
-
         print("[SUPPLIER] ERROR: Missing Bearer token")
-
         raise ValueError("Missing bearer token")
-
     token = authorization.split(" ", 1)[1].strip()
-
     if not token:
-
         print("[SUPPLIER] ERROR: Empty token")
-
         raise ValueError("Missing bearer token")
-
     try:
-
         payload: dict[str, Any] = jwt.decode(
             token,
             SECRET_KEY,
             algorithms=[ALGORITHM]
         )
-
         current_user = payload.get("sub", "")
 
         print("[SUPPLIER] JWT validation successful")

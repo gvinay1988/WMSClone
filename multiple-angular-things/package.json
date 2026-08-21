@@ -23,7 +23,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^20.3.26",
+    "@angular/animations": "^20.3.29",
     "@angular/common": "^20.3.0",
     "@angular/compiler": "^20.3.0",
     "@angular/core": "^20.3.0",
@@ -34,6 +34,7 @@
     "@angular/ssr": "^20.3.25",
     "@primeuix/themes": "^3.0.0",
     "express": "^5.1.0",
+    "ngx-toastr": "^20.0.5",
     "primeicons": "^8.0.0",
     "primeng": "^20.4.0",
     "rxjs": "~7.8.0",
