@@ -26,11 +26,9 @@ export class LoginComponent {
   onSubmit(): void {
     this.isSubmitting.set(true);
     this.loginError.set('');
-
     this.authService.login({ email: this.email(), password: this.password() }).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
-      },
+        this.router.navigate(['/dashboard']);},
       error: () => {
         this.loginError.set('Invalid email or password.');
         this.isSubmitting.set(false);
