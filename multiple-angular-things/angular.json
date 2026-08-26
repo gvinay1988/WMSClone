@@ -18,7 +18,7 @@
       "sourceRoot": "src",
       "prefix": "app",
       "architect": {
-        "build": {
+        "build": { 
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
@@ -31,16 +31,11 @@
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/ngx-toastr/toastr.css",
               "src/styles.scss"
-            ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "security": {
-              "allowedHosts": []
-            },
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            ]
+           
           },
           "configurations": {
             "production": {
@@ -93,12 +88,10 @@
               }
             ],
             "styles": [
-                "node_modules/bootstrap/dist/css/bootstrap.min.css",
-                "node_modules/ngx-toastr/toastr.css",
-                "src/styles.scss"
-              ]
-            
-            
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "src/styles.scss"
+            ]
           }
         }
       }

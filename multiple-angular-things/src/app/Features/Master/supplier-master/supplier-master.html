@@ -1,8 +1,7 @@
-<p-toast></p-toast>
 
-<div id="inBody">
-
-  <fieldset class="border rounded-2 p-3 pt-2" [formGroup]="supplierForm">
+<div id="inBody"> 
+  <div class="commonResponsivepanel">
+     <fieldset class="border rounded-2 p-3 pt-2" [formGroup]="supplierForm">
     <legend class="float-none w-auto px-2 fs-6 fw-normal">
       Supplier Details
     </legend>
@@ -167,51 +166,163 @@
 
   </fieldset>
 
-  <!-- Suppliers Table -->
-  <div class="mt-4">
-    <h5>Suppliers List</h5>
-    <!-- <p-table [value]="[{}]" [loading]="loading()" responsiveLayout="scroll" [paginator]="true" [rows]="10"
-      [globalFilterFields]="['supplierCode','supplierName']" styleClass="p-datatable-striped">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="supplierCode">
-            Supplier Code <p-sortIcon field="supplierCode"></p-sortIcon>
-          </th>
-          <th pSortableColumn="supplierName">
-            Supplier Name <p-sortIcon field="supplierName"></p-sortIcon>
-          </th>
-          <th>Supplier Type</th>
-          <th>Contact Person</th>
-          <th>Email</th>
-          <th>Mobile</th>
-          <th>City</th>
-          <th>Actions</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-supplier>
-        <tr>
-          <td>{{ supplier.supplierCode }}</td>
-          <td>{{ supplier.supplierName }}</td>
-          <td>{{ supplier.supplierType || '-' }}</td>
-          <td>{{ supplier.contactPerson || '-' }}</td>
-          <td>{{ supplier.email || '-' }}</td>
-          <td>{{ supplier.mobile || '-' }}</td>
-          <td>{{ supplier.city || '-' }}</td>
-          <td>
-            <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm"
-             tooltipPosition="top">
-            </button>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="8" class="text-center">
-            {{ loading() ? 'Loading suppliers...' : 'No suppliers found' }}
-          </td>
-        </tr>
-      </ng-template>
-    </p-table> -->
   </div>
+ 
+
+  <!-- Suppliers Table -->
+  <div class="commonResponsivepanel">
+<div class="mt-4">
+    <h5>Suppliers List</h5>
+   <div class="table-toolbar">
+
+  <div class="entries-section">
+
+    <label for="entries">Show Entries</label>
+
+    <select
+      id="entries"
+      class="form-select"
+      [ngModel]="rows()"
+      (ngModelChange)="rows.set(+$event)"
+    >
+      <option value="2">2</option>
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="25">25</option>
+      <option value="50">50</option>
+    </select>
+
+  </div>
+
+
+  <div class="search-section">
+
+    <label for="search">Search</label>
+
+    <input
+      id="search"
+      type="text"
+      pInputText
+      placeholder="Search suppliers..."
+      [(ngModel)]="searchValue"
+      (input)="supplierTable.filterGlobal(searchValue, 'contains')"
+    />
+
+  </div>
+
+</div>
+
+
+<p-table
+  #supplierTable
+  [value]="suppliers()"
+  [loading]="loading()"
+  [paginator]="true"
+  [rows]="rows()"
+  [globalFilterFields]="[
+    'supplierCode',
+    'supplierName',
+    'supplierType',
+    'contactPerson',
+    'email',
+    'mobile',
+    'city'
+  ]"
+  responsiveLayout="scroll"
+  styleClass="p-datatable-striped"
+>
+  <ng-template pTemplate="header">
+    <tr class="list table-header">
+      <th pSortableColumn="supplierCode">
+        Supplier Code
+        <p-sortIcon field="supplierCode"></p-sortIcon>
+      </th>
+
+      <th pSortableColumn="supplierName">
+        Supplier Name
+        <p-sortIcon field="supplierName"></p-sortIcon>
+      </th>
+
+      <th>
+        Supplier Type
+      </th>
+
+      <th>
+        Contact Person
+      </th>
+
+      <th>
+        Email
+      </th>
+
+      <th>
+        Mobile
+      </th>
+
+      <th>
+        City
+      </th>
+
+      <th>
+        Actions
+      </th>
+
+    </tr>
+
+  </ng-template>
+
+
+  <ng-template pTemplate="body" let-supplier>
+
+    <tr>
+
+      <td>
+        {{ supplier.supplierCode }}
+      </td>
+
+      <td>
+        {{ supplier.supplierName }}
+      </td>
+
+      <td>
+        {{ supplier.supplierType || '-' }}
+      </td>
+
+      <td>
+        {{ supplier.contactPerson || '-' }}
+      </td>
+
+      <td>
+        {{ supplier.email || '-' }}
+      </td>
+      <td>
+        {{ supplier.mobile || '-' }}
+      </td>
+      <td>
+        {{ supplier.city || '-' }}
+      </td>
+      <td>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          class="p-button-rounded p-button-danger p-button-sm"
+          pTooltip="Delete"
+          tooltipPosition="top">
+        </button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8" class="text-center">
+        {{ loading() ? 'Loading suppliers...' : 'No suppliers found' }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+  </div>
+  </div>
+
   
 </div>

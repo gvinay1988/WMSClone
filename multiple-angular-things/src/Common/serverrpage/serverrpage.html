@@ -1,0 +1,195 @@
+<div class="server-error-page min-vh-100 d-flex flex-column">
+
+  <!-- Top Header -->
+  <header class="container-fluid px-4 px-md-5 py-4">
+    <div class="d-flex justify-content-between align-items-center">
+
+      <!-- Logo / Application Name -->
+      <div class="d-flex align-items-center gap-2">
+        <div class="logo-box">
+          <i class="bi bi-boxes"></i>
+        </div>
+
+        <span class="fw-bold fs-4 text-dark">
+          YourCompany
+        </span>
+      </div>
+
+      <!-- Support -->
+      <div class="d-none d-sm-flex align-items-center gap-2 text-secondary">
+        <i class="bi bi-headset fs-5"></i>
+        <span>Need help?</span>
+        <a href="#" class="text-primary text-decoration-none fw-semibold">
+          Contact Support
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- Main Content -->
+  <main class="flex-grow-1 d-flex align-items-center justify-content-center px-3 px-md-4 py-4">
+
+    <div class="container">
+
+      <div class="server-error-card bg-white rounded-4 shadow-lg overflow-hidden">
+
+        <div class="row align-items-center g-0">
+
+          <!-- Illustration -->
+          <div class="col-lg-5 text-center p-4 p-md-5">
+
+            <div class="error-illustration">
+
+              <div class="server-rack">
+
+                <div class="server-unit">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+                <div class="server-unit">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+                <div class="server-unit">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+                <div class="server-unit">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+              </div>
+
+
+              <div class="monitor">
+
+                <div class="monitor-screen">
+
+                  <div class="display-error">
+                    <span class="error-number">500</span>
+                    <span class="error-label">
+                      SERVER ERROR
+                    </span>
+                  </div>
+
+                </div>
+
+                <div class="monitor-stand"></div>
+
+              </div>
+
+
+              <!-- Error Badge -->
+              <div class="error-badge">
+                <i class="bi bi-x-lg"></i>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- Content -->
+          <div class="col-lg-7 p-4 p-md-5">
+
+            <div class="error-content">
+
+              <!-- Small Label -->
+              <div class="d-inline-flex align-items-center gap-2
+                          px-3 py-2 rounded-pill
+                          bg-danger-subtle text-danger
+                          fw-semibold small mb-3">
+
+                <span class="status-dot"></span>
+
+                Server Error
+
+              </div>
+
+
+              <!-- Heading -->
+              <h1 class="display-5 fw-bold text-dark mb-3">
+
+                Something went wrong
+
+              </h1>
+
+
+              <!-- Description -->
+              <p class="lead text-secondary mb-2">
+
+                We couldn't complete your request.
+
+              </p>
+
+              <p class="text-secondary mb-4">
+
+                Your session may have expired or the request may
+                be invalid. Please try again or return to your dashboard.
+
+              </p>
+
+
+              <!-- Buttons -->
+              <div class="d-flex flex-column flex-sm-row gap-3">
+
+                <button
+                  type="button"
+                  class="btn btn-primary btn-lg px-4 shadow-sm"
+                  (click)="goToDashboard()">
+
+                  <i class="bi bi-grid-1x2-fill me-2"></i>
+
+                  Go to Dashboard
+
+                </button>
+
+
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-lg px-4"
+                  (click)="goToLogin()">
+
+                  <i class="bi bi-box-arrow-right me-2"></i>
+
+                  Go to Login
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="text-center py-4 px-3">
+
+    <small class="text-secondary">
+
+      © 2026 YourCompany. All rights reserved.
+
+    </small>
+
+  </footer>
+
+</div>

@@ -33,6 +33,7 @@
     "@angular/router": "^20.3.0",
     "@angular/ssr": "^20.3.25",
     "@primeuix/themes": "^3.0.0",
+    "bootstrap": "^5.3.8",
     "express": "^5.1.0",
     "ngx-toastr": "^20.0.5",
     "primeicons": "^8.0.0",

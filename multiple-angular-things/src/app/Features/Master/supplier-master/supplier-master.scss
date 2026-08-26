@@ -1,0 +1,40 @@
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.entries-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.entries-section label {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.entries-section select {
+  width: 75px;
+  height: 36px;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-section label {
+  margin: 0;
+  font-size: 14px;
+}
+
+.search-section input {
+  width: 250px;
+  height: 36px;
+}

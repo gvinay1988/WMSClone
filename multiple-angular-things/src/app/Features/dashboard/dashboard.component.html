@@ -1,1 +1,132 @@
-<router-outlet></router-outlet>
+<div class="momentum-page">
+
+  <div class="background-overlay"></div>
+
+  <header class="top-bar">
+
+    <div class="top-left">
+      <div class="weather">
+        <i class="pi pi-sun"></i>
+        <span>{{ temperature }}°</span>
+        <small>{{ weather }}</small>
+      </div>
+    </div>
+
+    <div class="top-right">
+
+      <button class="icon-button" title="Settings">
+        <i class="pi pi-cog"></i>
+      </button>
+
+      <button class="profile-button">
+
+        <div class="profile-avatar">
+          {{ userName.charAt(0) }}
+        </div>
+
+        <span>{{ userName }}</span>
+
+        <i class="pi pi-chevron-down"></i>
+
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <main class="main-content">
+
+    <!-- USER PHOTO -->
+
+    <div class="user-photo">
+
+      <img
+        src="assets/images/user-profile.jpg"
+        alt="User Profile"
+      />
+
+    </div>
+
+
+    <!-- TIME -->
+
+    <div class="clock">
+      {{ currentTime }}
+    </div>
+
+
+    <!-- GREETING -->
+
+    <div class="greeting">
+      {{ greeting }}, {{ userName }}
+    </div>
+
+
+    <!-- UPCOMING TASKS -->
+
+    <section class="upcoming-section">
+
+      <h3 class="upcoming-title">
+        Upcoming Tasks
+      </h3>
+
+      <div class="task-marquee">
+
+        <div class="task-track">
+
+          <div
+            class="upcoming-task"
+            *ngFor="let task of upcomingTasks"
+            [class.completed]="task.status === 'Completed'"
+          >
+
+            <div class="task-time">
+              {{ task.time }}
+            </div>
+            <div class="task-info">
+              <div class="task-title">
+                {{ task.title }}
+              </div>
+              <div class="task-status">
+                <span
+                  class="status-dot"
+                  [class.pending]="task.status === 'Pending'"
+                  [class.completed-dot]="task.status === 'Completed'"
+                  [class.in-progress]="task.status === 'In Progress'"
+                ></span>
+                {{ task.status }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- FOCUS -->
+
+    <section class="focus-section">
+
+      <div class="focus-label">
+        What is your main focus today?
+      </div>
+
+      <div class="focus-input-wrapper">
+
+        <input
+          type="text"
+          [(ngModel)]="focus"
+          placeholder="Enter your focus..."
+          (keyup.enter)="saveFocus()"
+        />
+
+        <button
+          *ngIf="focus"
+          class="clear-focus"
+          (click)="clearFocus()">
+
+          <i class="pi pi-check"></i>
+        </button>
+      </div>
+    </section>
+  </main>
+</div>

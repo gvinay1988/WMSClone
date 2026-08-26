@@ -1,10 +1,11 @@
 import {
-  ApplicationConfig,provideBrowserGlobalErrorListeners,provideZonelessChangeDetection} from '@angular/core';
-import {provideHttpClient,withFetch,withInterceptors} from '@angular/common/http';
+  ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection
+} from '@angular/core';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {provideClientHydration,withEventReplay} from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { provideToastr } from 'ngx-toastr';
 export const appConfig: ApplicationConfig = {
@@ -23,7 +24,9 @@ export const appConfig: ApplicationConfig = {
     provideToastr({
       timeOut: 3000,
       positionClass: 'toast-top-center',
-      preventDuplicates: true
+      preventDuplicates: true,
+      closeButton: true,
+      progressBar: true
     })
 
   ]

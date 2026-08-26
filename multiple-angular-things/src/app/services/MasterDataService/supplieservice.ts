@@ -23,6 +23,15 @@ saveSupplierMasterData(entityData: any) {
   httpReq.body = entityData;
   return this.httpService.restCall(httpReq);
 }
+findALLSuppliers(entityData: any) {
+  const httpReq: HttpReq = new HttpReq();
+  httpReq.type = this.REST_TYPE_POST; 
+  httpReq.url = 'supplier/services/fetchALLSuppliers';
+  httpReq.showLoader = true;
+  httpReq.contentType = 'applicationJSON';
+   httpReq.body = entityData;
+  return this.httpService.restCall(httpReq); 
+}
  
 }
 

@@ -18,10 +18,16 @@ export const routes: Routes = [
   },
 
   {
+    path: 'server-error',
+    loadComponent: () =>
+      import('../Common/serverrpage/serverrpage')
+        .then(m => m.Serverrpage)
+  },
+
+  {
     path: '',
     component: Layout,
     canActivate: [authGuard],
-
     children: [
 
       {
@@ -32,28 +38,16 @@ export const routes: Routes = [
       },
 
       {
-        path: 'employees',
-        loadChildren: () =>
-          import('./Features/Employees/employee.routes')
-            .then(m => m.routes)
-      },
-
-      {
-        path: 'createuser',
-        loadChildren: () =>
-          import('./Features/create-user/createuser.routes')
-            .then(m => m.routes)
-      },
-
-      {
         path: 'master',
         children: [
+
           {
             path: 'supplier',
             loadComponent: () =>
               import('./Features/Master/supplier-master/supplier-master')
                 .then(m => m.SupplierMaster)
           }
+
         ]
       }
 
@@ -62,7 +56,7 @@ export const routes: Routes = [
 
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: '/server-error'
   }
 
 ];

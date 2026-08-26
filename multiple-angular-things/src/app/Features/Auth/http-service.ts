@@ -106,7 +106,13 @@ export class HttpService {
         });
     }
 
-  getAccessToken(): string | null {
-  return sessionStorage.getItem('jwt_token');
+ getAccessToken(): string | null {
+  if (typeof window !== 'undefined') {
+    const token = sessionStorage.getItem('jwt_token');
+    console.log('JWT TOKEN:', token);
+    return token;
+  }
+
+  return null;
 }
 }
