@@ -49,6 +49,25 @@ export const routes: Routes = [
           }
 
         ]
+      },
+        {
+        path: 'configuration',
+        children: [
+
+          {
+            path: 'parameter',
+            loadComponent: () =>
+              import('./configuration/parameter/parameter')
+                .then(m => m.Parameter)
+          },
+          {
+            path: 'userConfiguration',
+            loadComponent: () =>
+              import('./configuration/user-configuration/user-configuration')
+                .then(m => m.UserConfiguration)
+          }
+
+        ]
       }
 
     ]

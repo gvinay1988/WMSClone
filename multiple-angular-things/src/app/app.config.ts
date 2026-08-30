@@ -8,6 +8,14 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { provideToastr } from 'ngx-toastr';
+import {
+  provideTranslateService
+} from '@ngx-translate/core';
+import {
+  provideTranslateHttpLoader
+} from '@ngx-translate/http-loader';
+
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -27,7 +35,16 @@ export const appConfig: ApplicationConfig = {
       preventDuplicates: true,
       closeButton: true,
       progressBar: true
+    }),
+     provideTranslateService({
+      loader: provideTranslateHttpLoader({
+        prefix: './assets/i18n/',
+        suffix: '.json'
+      }),
+      fallbackLang: 'en',
+      lang: 'en'
     })
+    
 
   ]
 
