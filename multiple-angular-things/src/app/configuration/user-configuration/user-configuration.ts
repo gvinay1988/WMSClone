@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { Constants } from '../../../Constant/constantFiles';
+import { signal } from '@angular/core';
 import { CommonmoduleimportModule } from '../../commonSharedService/commonmoduleimport/commonmoduleimport-module';
 
 
@@ -26,6 +27,11 @@ export class UserConfiguration {
     'View',
     'Update'
   ];
+ 
+
+userConfigurations: any[] = [];
+
+filteredUserConfigurations : any
   role = 'ROLE_SUPER_ADMIN';
   userIDName = '';
   isReadMode = false;
@@ -103,85 +109,34 @@ export class UserConfiguration {
       }
     });
   }
-userConfigurations: any[] = [];
-filteredUserConfigurations: any[] = [];
+
 
 pageSize: number = 10;
 
-  fetchUserConfiguration(): void {
+fetchUserConfiguration() {
   this.userService.findUserConfiguration({}).subscribe({
     next: (response: any) => {
-      console.log('Fetch user configuration response:', response);
+      console.log('User configuration response:', response);
 
-      if (response?.statusCode === 200) {
-      this.userConfigurations = response.userConfigurationList || [];
+      if (response.statusCode === 200) {
+        this.userConfigurations = response.userConfigurationList || [];
 
-        // Important: table is using filteredUserConfigurations
-        this.filteredUserConfigurations = [...this.userConfigurations];
-
-        console.log(
-          'User configurations:',
-          this.filteredUserConfigurations
-        );
-
-      } else {
-        this.userConfigurations = [];
-        this.filteredUserConfigurations = [];
-
-        this.toastr.error(
-          response?.statusMsg || 'Failed to fetch user configurations',
-          'Error'
-        );
+        console.log('User configurations:', this.userConfigurations);
       }
     },
 
-    error: (error: any) => {
+    error: (error) => {
       console.error('Fetch user configuration error:', error);
-
-      this.userConfigurations = [];
-      this.filteredUserConfigurations = [];
-
-      this.toastr.error(
-        error?.error?.statusMsg ||
-        error?.error?.detail ||
-        error?.message ||
-        'Failed to fetch user configurations',
-        'Error'
-      );
     }
   });
 }
   onSearch() {
-
     const search = this.searchText
       .toLowerCase()
       .trim();
-
-    if (!search) {
-
-      this.filteredUserConfigurations =
-        [...this.userConfigurations];
-
-      return;
-    }
-
-    this.filteredUserConfigurations =
-      this.userConfigurations.filter((user: any) => {
-
-        return Object.values(user).some((value: any) => {
-
-          if (value === null || value === undefined) {
-            return false;
-          }
-
-          return String(value)
-            .toLowerCase()
-            .includes(search);
-        });
-
-      });
   }
-  onPageSizeChange() {
+
+  onPageSizeChange() { 
     // PrimeNG automatically updates the table rows.
   }
   clear(): void {

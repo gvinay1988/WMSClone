@@ -307,112 +307,50 @@
 <div class="card">
 
 <p-table
-  [value]="filteredUserConfigurations"
+  [value]="userConfigurations"
   [paginator]="true"
-  [rows]="pageSize"
-  [rowsPerPageOptions]="[5, 10, 25, 50, 100]"
+  [rows]="10"
   [showCurrentPageReport]="true"
-  [currentPageReportTemplate]="'SHOWING_ENTRIES' | translate"
-  [tableStyle]="{ 'min-width': '1800px' }"
-  responsiveLayout="scroll"
-  styleClass="p-datatable-sm p-datatable-gridlines">
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+  [rowsPerPageOptions]="[5, 10, 20, 50]"
+  [globalFilterFields]="[
+    'userID',
+    'userIDName',
+    'firstName',
+    'lastName',
+    'email',
+    'phoneNumber',
+    'city',
+    'state',
+    'status'
+  ]"
+>
 
-  <!-- Header -->
   <ng-template pTemplate="header">
     <tr>
-      <th>{{ 'ID' | translate }}</th>
-      <th>{{ 'USER_ID' | translate }}</th>
-      <th>{{ 'USER_ID_NAME' | translate }}</th>
-      <th>{{ 'FIRST_NAME' | translate }}</th>
-      <th>{{ 'LAST_NAME' | translate }}</th>
-      <th>{{ 'EMAIL' | translate }}</th>
-      <th>{{ 'PHONE_NUMBER' | translate }}</th>
-      <th>{{ 'ADDRESS' | translate }}</th>
-      <th>{{ 'CITY' | translate }}</th>
-      <th>{{ 'STATE' | translate }}</th>
-      <th>{{ 'COUNTRY' | translate }}</th>
-      <th>{{ 'PIN' | translate }}</th>
-      <th>{{ 'BUSINESS_UNIT' | translate }}</th>
-      <th>{{ 'STATUS' | translate }}</th>
-      <th>{{ 'USERS_CREATION_LIMIT' | translate }}</th>
-      <th>{{ 'CONCURRENT_LOGINS' | translate }}</th>
-      <th>{{ 'ROLES' | translate }}</th>
-      <th>{{ 'CREATED_BY' | translate }}</th>
-      <th>{{ 'CREATED_AT' | translate }}</th>
-      <th>{{ 'UPDATED_AT' | translate }}</th>
+      <th>User ID</th>
+      <th>User Name</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>City</th>
+      <th>State</th>
+      <th>Status</th>
     </tr>
   </ng-template>
 
-  <!-- Body -->
   <ng-template pTemplate="body" let-user>
     <tr>
-      <td>{{ user?.id ?? '-' }}</td>
-
-      <td>{{ user?.userID ?? '-' }}</td>
-
-      <td>{{ user?.userIDName ?? '-' }}</td>
-
-      <td>{{ user?.firstName ?? '-' }}</td>
-
-      <td>{{ user?.lastName ?? '-' }}</td>
-
-      <td>{{ user?.email ?? '-' }}</td>
-
-      <td>{{ user?.phoneNumber ?? '-' }}</td>
-
-      <td>{{ user?.address ?? '-' }}</td>
-
-      <td>{{ user?.city ?? '-' }}</td>
-
-      <td>{{ user?.state ?? '-' }}</td>
-
-      <td>{{ user?.country ?? '-' }}</td>
-
-      <td>{{ user?.pin ?? '-' }}</td>
-
-      <td>{{ user?.businessUnit ?? '-' }}</td>
-
-      <td>
-        <span
-          class="badge"
-          [ngClass]="{
-            'bg-success': user?.status === 'Active',
-            'bg-danger': user?.status !== 'Active'
-          }">
-          {{ user?.status ?? '-' }}
-        </span>
-      </td>
-
-      <td>{{ user?.usersCreationLimit ?? '-' }}</td>
-
-      <td>{{ user?.concurrentLogins ?? '-' }}</td>
-
-      <td>
-        {{ user?.rolesList || '-' }}
-      </td>
-
-      <td>{{ user?.createdBy || '-' }}</td>
-
-      <td>
-        {{ user?.createdAt
-          ? (user.createdAt | date:'dd-MM-yyyy HH:mm:ss')
-          : '-' }}
-      </td>
-
-      <td>
-        {{ user?.updatedAt
-          ? (user.updatedAt | date:'dd-MM-yyyy HH:mm:ss')
-          : '-' }}
-      </td>
-    </tr>
-  </ng-template>
-
-  <!-- Empty Message -->
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="20" class="text-center">
-        {{ 'NO_USER_CONFIGURATIONS_FOUND' | translate }}
-      </td>
+      <td>{{ user.userID }}</td>
+      <td>{{ user.userIDName }}</td>
+      <td>{{ user.firstName }}</td>
+      <td>{{ user.lastName }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.phoneNumber }}</td>
+      <td>{{ user.city }}</td>
+      <td>{{ user.state }}</td>
+      <td>{{ user.status }}</td>
     </tr>
   </ng-template>
 
