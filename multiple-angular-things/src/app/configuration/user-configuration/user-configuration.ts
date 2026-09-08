@@ -30,8 +30,7 @@ export class UserConfiguration {
  
 
 userConfigurations: any[] = [];
-
-filteredUserConfigurations : any
+filteredUserConfigurations: any[] = [];
   role = 'ROLE_SUPER_ADMIN';
   userIDName = '';
   isReadMode = false;
@@ -113,28 +112,57 @@ filteredUserConfigurations : any
 
 pageSize: number = 10;
 
-fetchUserConfiguration() {
+fetchUserConfiguration(): void {
   this.userService.findUserConfiguration({}).subscribe({
     next: (response: any) => {
       console.log('User configuration response:', response);
 
-      if (response.statusCode === 200) {
-        this.userConfigurations = response.userConfigurationList || [];
+      if (response?.statusCode === 200) {
+        this.userConfigurations = Array.isArray(response.userConfigurationList)
+          ? response.userConfigurationList
+          : [];
+        this.filteredUserConfigurations = [...this.userConfigurations];
 
-        console.log('User configurations:', this.userConfigurations);
+        console.log('User configurations:', this.filteredUserConfigurations);
+      } else {
+        this.userConfigurations = [];
+        this.filteredUserConfigurations = [];
+        this.toastr.error(
+          response?.statusMsg || 'Failed to fetch user configurations',
+          'Error'
+        );
       }
     },
 
     error: (error) => {
       console.error('Fetch user configuration error:', error);
+      this.userConfigurations = [];
+      this.filteredUserConfigurations = [];
+      this.toastr.error(
+        error?.error?.statusMsg ||
+        error?.error?.detail ||
+        error?.message ||
+        'Failed to fetch user configurations',
+        'Error'
+      );
     }
   });
 }
-  onSearch() {
-    const search = this.searchText
-      .toLowerCase()
-      .trim();
-  }
+onSearch() {
+  const search = this.searchText
+    .toLowerCase()
+    .trim();
+
+  this.filteredUserConfigurations = search
+    ? this.userConfigurations.filter((user: any) =>
+      Object.values(user).some((value) =>
+        value !== null &&
+        value !== undefined &&
+        String(value).toLowerCase().includes(search)
+      )
+    )
+    : [...this.userConfigurations];
+}
 
   onPageSizeChange() { 
     // PrimeNG automatically updates the table rows.
