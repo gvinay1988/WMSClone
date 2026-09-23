@@ -5,6 +5,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { DeletePopUp } from '../../../Common/delete-pop-up/delete-pop-up';
+
 
 
 
@@ -18,7 +21,9 @@ import { TableModule } from 'primeng/table';
     InputTextModule,
     TranslatePipe,
     ReactiveFormsModule,
-    SelectModule
+    SelectModule,
+    DialogModule,
+    DeletePopUp
 
   ],
   exports: [
@@ -29,7 +34,9 @@ import { TableModule } from 'primeng/table';
     InputTextModule,
     TranslatePipe,
     ReactiveFormsModule,
-    SelectModule
+    SelectModule,
+    DialogModule,
+    DeletePopUp
 
   ],
 })

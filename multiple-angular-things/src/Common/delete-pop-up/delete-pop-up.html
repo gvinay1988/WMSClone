@@ -1,0 +1,71 @@
+
+<!-- Delete Confirmation Dialog -->
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="false"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '420px' }"
+  styleClass="border-0">
+
+  <!-- Header -->
+  <div class="text-center pt-2">
+
+    <!-- Delete Icon -->
+    <div class="mb-3">
+      <div class="d-inline-flex align-items-center justify-content-center
+                  rounded-circle bg-danger bg-opacity-10"
+           style="width: 65px; height: 65px;">
+
+        <i class="pi pi-trash text-danger fs-3"></i>
+
+      </div>
+    </div>
+
+    <!-- Title -->
+    <h5 class="fw-bold mb-2">
+      Delete Record?
+    </h5>
+
+    <!-- Message -->
+    <p class="text-muted mb-4">
+      Are you sure you want to delete this record?
+      <br>
+      This action cannot be undone.
+    </p>
+
+  </div>
+
+  <!-- Footer Buttons -->
+  <ng-template #footer>
+
+    <div class="d-flex justify-content-center gap-2 w-100">
+
+      <!-- Cancel -->
+      <button
+        type="button"
+        class="btn btn-outline-secondary px-4"
+        (click)="cancelDelete()">
+
+        <i class="pi pi-times me-2"></i>
+        Cancel
+
+      </button>
+
+      <!-- Delete -->
+      <button
+        type="button"
+        class="btn btn-danger px-4"
+        (click)="confirmDelete()">
+
+        <i class="pi pi-trash me-2"></i>
+        Delete
+
+      </button>
+
+    </div>
+
+  </ng-template>
+
+</p-dialog>

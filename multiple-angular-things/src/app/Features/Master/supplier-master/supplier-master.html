@@ -1,225 +1,208 @@
-
-<div id="inBody"> 
+<div id="inBody">
   <div class="commonResponsivepanel">
-     <fieldset class="border rounded-2 p-3 pt-2" [formGroup]="supplierForm">
-    <legend class="float-none w-auto px-2 fs-6 fw-normal">
-      Supplier Details
-    </legend>
-    <div class="row g-3">
-      <!-- COLUMN 1 -->
-      <div class="col-md-4">
+    <fieldset class="border rounded-2 p-3 pt-2" [formGroup]="supplierForm">
+      <legend class="float-none w-auto px-2 fs-6 fw-normal">
+        Supplier Details
+      </legend>
+      <div class="row g-3">
+        <!-- COLUMN 1 -->
+        <div class="col-md-4">
 
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label"> Supplier Code <span class="text-danger">*</span> </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm"
-              [class.is-invalid]="supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched"
-              formControlName="supplierCode" placeholder="Supplier Code">
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label"> Supplier Code <span class="text-danger">*</span> </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm"
+                [class.is-invalid]="supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched"
+                formControlName="supplierCode" placeholder="Supplier Code">
+            </div>
           </div>
+
+          <!-- Supplier Name -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              Supplier Name <span class="text-danger">*</span>
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm"
+                [class.is-invalid]="supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched"
+                formControlName="supplierName" placeholder="Supplier Name">
+            </div>
+          </div>
+
+          <!-- Supplier Type -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              Supplier Type
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="supplierType"
+                placeholder="Supplier Type">
+            </div>
+          </div>
+
+          <!-- Contact Person -->
+          <div class="row align-items-center">
+            <label class="col-5 col-form-label">
+              Contact Person
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="contactPerson"
+                placeholder="Contact Person">
+            </div>
+          </div>
+
         </div>
 
-        <!-- Supplier Name -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            Supplier Name <span class="text-danger">*</span>
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm"
-              [class.is-invalid]="supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched"
-              formControlName="supplierName" placeholder="Supplier Name">
+
+        <!-- COLUMN 2 -->
+        <div class="col-md-4">
+
+          <!-- Email -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              Email
+            </label>
+            <div class="col-7">
+              <input type="email" class="form-control form-control-sm" formControlName="email" placeholder="Email">
+            </div>
           </div>
+
+          <!-- Phone -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              Phone
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="phone"
+                placeholder="Phone Number">
+            </div>
+          </div>
+
+          <!-- Mobile -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              Mobile
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="mobile"
+                placeholder="Mobile Number">
+            </div>
+          </div>
+
+          <!-- GST Number -->
+          <div class="row align-items-center">
+            <label class="col-5 col-form-label">
+              GST Number
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="gstNumber"
+                placeholder="GST Number">
+            </div>
+          </div>
+
         </div>
 
-        <!-- Supplier Type -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            Supplier Type
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="supplierType"
-              placeholder="Supplier Type">
-          </div>
-        </div>
 
-        <!-- Contact Person -->
-        <div class="row align-items-center">
-          <label class="col-5 col-form-label">
-            Contact Person
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="contactPerson"
-              placeholder="Contact Person">
+        <!-- COLUMN 3 -->
+        <div class="col-md-4">
+          <!-- PAN Number -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              PAN Number
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="panNumber"
+                placeholder="PAN Number">
+            </div>
           </div>
+
+          <!-- Address -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              Address
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="address" placeholder="Address">
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="row align-items-center mb-3">
+            <label class="col-5 col-form-label">
+              City
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="city" placeholder="City">
+            </div>
+          </div>
+
+          <!-- Pin Code -->
+          <div class="row align-items-center">
+            <label class="col-5 col-form-label">
+              Pin Code
+            </label>
+            <div class="col-7">
+              <input type="text" class="form-control form-control-sm" formControlName="pinCode" placeholder="Pin Code">
+            </div>
+          </div>
+
         </div>
 
       </div>
 
 
-      <!-- COLUMN 2 -->
-      <div class="col-md-4">
-
-        <!-- Email -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            Email
-          </label>
-          <div class="col-7">
-            <input type="email" class="form-control form-control-sm" formControlName="email" placeholder="Email">
-          </div>
-        </div>
-
-        <!-- Phone -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            Phone
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="phone" placeholder="Phone Number">
-          </div>
-        </div>
-
-        <!-- Mobile -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            Mobile
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="mobile"
-              placeholder="Mobile Number">
-          </div>
-        </div>
-
-        <!-- GST Number -->
-        <div class="row align-items-center">
-          <label class="col-5 col-form-label">
-            GST Number
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="gstNumber"
-              placeholder="GST Number">
-          </div>
-        </div>
-
+      <!-- BUTTONS -->
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button type="button" class="btn btn-sm btn-primary" (click)="saveSupplier()"
+          [disabled]="supplierForm.invalid || submitting()">
+          <span *ngIf="submitting()">Saving...</span>
+          <span *ngIf="!submitting()">Save Supplier</span>
+        </button>
+        <button type="button" class="btn btn-sm btn-secondary" (click)="clearSupplier()">
+          Clear
+        </button>
       </div>
 
-
-      <!-- COLUMN 3 -->
-      <div class="col-md-4">
-
-        <!-- PAN Number -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            PAN Number
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="panNumber"
-              placeholder="PAN Number">
-          </div>
-        </div>
-
-        <!-- Address -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            Address
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="address" placeholder="Address">
-          </div>
-        </div>
-
-        <!-- City -->
-        <div class="row align-items-center mb-3">
-          <label class="col-5 col-form-label">
-            City
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="city" placeholder="City">
-          </div>
-        </div>
-
-        <!-- Pin Code -->
-        <div class="row align-items-center">
-          <label class="col-5 col-form-label">
-            Pin Code
-          </label>
-          <div class="col-7">
-            <input type="text" class="form-control form-control-sm" formControlName="pinCode" placeholder="Pin Code">
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- BUTTONS -->
-    <div class="d-flex justify-content-end gap-2 mt-3">
-      <button type="button" class="btn btn-sm btn-primary" (click)="saveSupplier()"
-        [disabled]="supplierForm.invalid || submitting()">
-        <span *ngIf="submitting()">Saving...</span>
-        <span *ngIf="!submitting()">Save Supplier</span>
-      </button>
-      <button type="button" class="btn btn-sm btn-secondary" (click)="clearSupplier()">
-        Clear
-      </button>
-    </div>
-
-  </fieldset>
+    </fieldset>
 
   </div>
- 
+
 
   <!-- Suppliers Table -->
   <div class="commonResponsivepanel">
-<div class="mt-4">
-    <h5>Suppliers List</h5>
-   <div class="table-toolbar">
+    <div class="mt-4">
+      <h5>Suppliers List</h5>
+      <div class="table-toolbar">
 
-  <div class="entries-section">
+        <div class="entries-section">
 
-    <label for="entries">Show Entries</label>
+          <label for="entries">Show Entries</label>
 
-    <select
-      id="entries"
-      class="form-select"
-      [ngModel]="rows()"
-      (ngModelChange)="rows.set(+$event)"
-    >
-      <option value="2">2</option>
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="25">25</option>
-      <option value="50">50</option>
-    </select>
+          <select id="entries" class="form-select" [ngModel]="rows()" (ngModelChange)="rows.set(+$event)">
+            <option value="2">2</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
 
-  </div>
+        </div>
 
 
-  <div class="search-section">
+        <div class="search-section">
 
-    <label for="search">Search</label>
+          <label for="search">Search</label>
 
-    <input
-      id="search"
-      type="text"
-      pInputText
-      placeholder="Search suppliers..."
-      [(ngModel)]="searchValue"
-      (input)="supplierTable.filterGlobal(searchValue, 'contains')"
-    />
+          <input id="search" type="text" pInputText placeholder="Search suppliers..." [(ngModel)]="searchValue"
+            (input)="supplierTable.filterGlobal(searchValue, 'contains')" />
 
-  </div>
+        </div>
 
-</div>
+      </div>
 
 
-<p-table
-  #supplierTable
-  [value]="suppliers()"
-  [loading]="loading()"
-  [paginator]="true"
-  [rows]="rows()"
-  [globalFilterFields]="[
+      <p-table #supplierTable [value]="suppliers()" [loading]="loading()" [paginator]="true" [rows]="rows()"
+        [globalFilterFields]="[
     'supplierCode',
     'supplierName',
     'supplierType',
@@ -227,102 +210,94 @@
     'email',
     'mobile',
     'city'
-  ]"
-  responsiveLayout="scroll"
-  styleClass="p-datatable-striped"
->
-  <ng-template pTemplate="header">
-    <tr class="list table-header">
-      <th pSortableColumn="supplierCode">
-        Supplier Code
-        <p-sortIcon field="supplierCode"></p-sortIcon>
-      </th>
+  ]" responsiveLayout="scroll" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
+          <tr class="list table-header">
+            <th pSortableColumn="supplierCode">
+              Supplier Code
+              <p-sortIcon field="supplierCode"></p-sortIcon>
+            </th>
 
-      <th pSortableColumn="supplierName">
-        Supplier Name
-        <p-sortIcon field="supplierName"></p-sortIcon>
-      </th>
+            <th pSortableColumn="supplierName">
+              Supplier Name
+              <p-sortIcon field="supplierName"></p-sortIcon>
+            </th>
 
-      <th>
-        Supplier Type
-      </th>
+            <th>
+              Supplier Type
+            </th>
 
-      <th>
-        Contact Person
-      </th>
+            <th>
+              Contact Person
+            </th>
 
-      <th>
-        Email
-      </th>
+            <th>
+              Email
+            </th>
 
-      <th>
-        Mobile
-      </th>
+            <th>
+              Mobile
+            </th>
 
-      <th>
-        City
-      </th>
+            <th>
+              City
+            </th>
 
-      <th>
-        Actions
-      </th>
+            <th>
+              Actions
+            </th>
 
-    </tr>
+          </tr>
 
-  </ng-template>
+        </ng-template>
 
 
-  <ng-template pTemplate="body" let-supplier>
+        <ng-template pTemplate="body" let-supplier>
 
-    <tr>
+          <tr>
 
-      <td>
-        {{ supplier.supplierCode }}
-      </td>
+            <td>
+              {{ supplier.supplierCode }}
+            </td>
 
-      <td>
-        {{ supplier.supplierName }}
-      </td>
+            <td>
+              {{ supplier.supplierName }}
+            </td>
 
-      <td>
-        {{ supplier.supplierType || '-' }}
-      </td>
+            <td>
+              {{ supplier.supplierType || '-' }}
+            </td>
 
-      <td>
-        {{ supplier.contactPerson || '-' }}
-      </td>
+            <td>
+              {{ supplier.contactPerson || '-' }}
+            </td>
 
-      <td>
-        {{ supplier.email || '-' }}
-      </td>
-      <td>
-        {{ supplier.mobile || '-' }}
-      </td>
-      <td>
-        {{ supplier.city || '-' }}
-      </td>
-      <td>
-        <button
-          pButton
-          type="button"
-          icon="pi pi-trash"
-          class="p-button-rounded p-button-danger p-button-sm"
-          pTooltip="Delete"
-          tooltipPosition="top">
-        </button>
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="8" class="text-center">
-        {{ loading() ? 'Loading suppliers...' : 'No suppliers found' }}
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
-  </div>
+            <td>
+              {{ supplier.email || '-' }}
+            </td>
+            <td>
+              {{ supplier.mobile || '-' }}
+            </td>
+            <td>
+              {{ supplier.city || '-' }}
+            </td>
+            <td>
+              <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm"
+                pTooltip="Delete" tooltipPosition="top">
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8" class="text-center">
+              {{ loading() ? 'Loading suppliers...' : 'No suppliers found' }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
   </div>
 
-  
+
 </div>

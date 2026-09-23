@@ -1,0 +1,56 @@
+:host ::ng-deep .p-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Showing 1 to 2 of 2 entries - LEFT */
+:host ::ng-deep .p-paginator-current {
+  margin-right: auto;
+}
+
+/* Pagination buttons + rows dropdown - RIGHT */
+:host ::ng-deep .p-paginator-pages,
+:host ::ng-deep .p-paginator-first,
+:host ::ng-deep .p-paginator-prev,
+:host ::ng-deep .p-paginator-next,
+:host ::ng-deep .p-paginator-last,
+:host ::ng-deep .p-paginator-rpp-dropdown {
+  margin-left: 4px;
+}
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.show-entries {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.show-entries label,
+.show-entries span {
+  font-size: 14px;
+}
+
+.table-search input {
+  width: 250px;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+}
+
+.table-search input:focus {
+  outline: none;
+}
+.tableBackGround{
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin:10px;
+}
