@@ -861,3 +861,11 @@ input:focus {
   justify-content: flex-start !important;
   flex-wrap: wrap;
 }
+.p-dialog {
+    background-color: yellow!important;
+    color: black !important;
+    padding: 1rem;
+}
+.p-button-label {
+   padding: 1rem!important;
+}

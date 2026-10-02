@@ -12,7 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       ? sessionStorage.getItem('jwt_token')
       : null;
 
-  console.log('Access Token:', token);
+ 
 
   if (token) {
     req = req.clone({

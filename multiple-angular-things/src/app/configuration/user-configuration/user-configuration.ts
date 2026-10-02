@@ -6,10 +6,13 @@ import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../../services/MasterDataService/user-service';
 import { Constants } from '../../../Constant/constantFiles';
 import { CommonmoduleimportModule } from '../../commonSharedService/commonmoduleimport/commonmoduleimport-module';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-user-configuration',
-  imports: [CommonmoduleimportModule],
+  imports: [CommonmoduleimportModule, ConfirmDialogModule],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './user-configuration.html',
   styleUrl: './user-configuration.scss'
 })
@@ -134,190 +137,136 @@ export class UserConfiguration {
   // CONSTRUCTOR
   // ---------------------------------------------------------
 
-  constructor(
+  constructor(private confirmationService: ConfirmationService,
     private fb: FormBuilder,
     private userService: UserService,
     private toastr: ToastrService,
     private translate: TranslateService,
     private cdRef: ChangeDetectorRef
-  ) {}
+  ) { }
 
-  // ---------------------------------------------------------
-  // INIT
-  // ---------------------------------------------------------
+
 
   ngOnInit(): void {
-
     this.createForm();
-
     this.fetchUserConfiguration();
-
   }
-
-  // ---------------------------------------------------------
-  // CREATE FORM
-  // ---------------------------------------------------------
-
   createForm(): void {
-
     this.userConfigForm = this.fb.group({
-
-      firstName: [
-        '',
-        Validators.required
-      ],
-
-      lastName: [
-        '',
-        Validators.required
-      ],
-
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       userID: [''],
-
       userIDName: [''],
-
       password: [''],
-
       createdBy: [''],
-
       rolesList: [null],
-
       businessUnit: [''],
-
       usersCreationLimit: [0],
-
       concurrentLogins: [1],
-
       address: [''],
-
       country: [null],
-
       state: [''],
-
       city: [''],
-
       email: [''],
-
       phoneNumber: [''],
-
       pin: [''],
-
       status: ['Active'],
-
-      // Image file
       userImage: [null]
-
     });
+  }
 
+  save(): void {
+    this.userService.saveUserConfiguration(this.userConfigForm.value)
+      .subscribe({
+        next: (response: any) => {
+          this.toastr.success(response?.statusMsg || 'Saved successfully', 'Success');
+          this.fetchUserConfiguration();
+          this.clear();
+          this.deleteImage();          // <-- clears imagePreview & selectedImage only after successful save
+        },
+        error: (error: any) => {
+          this.toastr.error(error?.error?.statusMsg || 'Failed to save', 'Error');
+        }
+      });
+  }
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result.split(',')[1]);
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
   }
 
   // ---------------------------------------------------------
-  // SAVE USERf
+  // IMAGE SELECT
   // ---------------------------------------------------------
+imageDeleted = false;
+onImageSelected(event: any): void {
+  const file = event.target.files?.[0];
 
-save(): void {
-
-  if (this.userConfigForm.invalid) {
-    this.userConfigForm.markAllAsTouched();
-
-    this.toastr.warning(
-      'Please fill all required fields',
-      'Validation'
-    );
-
+  if (!file) {
     return;
   }
 
-  // Create FormData directly from the form
-  const formData = new FormData();
+  this.imageDeleted = false;
+  this.selectedImage = file;
 
-  // Add all form fields
-  Object.keys(this.userConfigForm.controls).forEach(
-    (controlName: string) => {
+  const reader = new FileReader();
 
-      // Image will be added separately as File
-      if (controlName === 'userImage') {
-        return;
-      }
+  reader.onload = () => {
+    const dataUrl = reader.result as string;
+    this.imagePreview = dataUrl;                 // full data URL, for the <img> preview
+    const base64Only = dataUrl.split(',')[1];    // strip the "data:image/...;base64," prefix
+    this.userConfigForm.get('userImage')?.setValue(base64Only);
+  };
 
-      const value =
-        this.userConfigForm.get(controlName)?.value;
-
-      // Add every normal field
-      if (value !== null && value !== undefined) {
-
-        formData.append(
-          controlName,
-          String(value)
-        );
-
-      } else {
-
-        // Send empty value instead of skipping field
-        formData.append(
-          controlName,
-          ''
-        );
-
-      }
-
-    }
-  );
-
-  // Add image to the SAME FormData
-  if (this.selectedImage) {
-
-    formData.append(
-      'userImage',
-      this.selectedImage,
-      this.selectedImage.name
-    );
-
+  reader.readAsDataURL(file);
+}
+getImageSrc(base64: string | null): string | null {
+  if (!base64) {
+    return null;
   }
+  // if it's already a full data URL (e.g. from imagePreview during edit), leave it alone
+  if (base64.startsWith('data:')) {
+    return base64;
+  }
+  return `data:image/jpeg;base64,${base64}`;
+}
+deleteImage(): void {
+  this.imagePreview = null;
+  this.selectedImage = null;
+  this.imageDeleted = true;
+  this.userConfigForm.get('userImage')?.setValue(null);
+}
+  fetchUserConfiguration(): void {
 
-  // Optional: check exactly what is going to API
-  formData.forEach((value, key) => {
-    console.log(
-      key,
-      value instanceof File
-        ? value.name
-        : value
-    );
-  });
-
-  // Direct API call
-  this.userService.saveUserConfiguration(formData)
-    .subscribe({
-
+    this.userService.findUserConfiguration({}).subscribe({
       next: (response: any) => {
+        if (response?.statusCode === 200) {
+          this.userConfigurations = Array.isArray(response.userConfigurationList)
+            ? response.userConfigurationList
+            : [];
+          this.filteredUserConfigurations =
+            [
+              ...this.userConfigurations
+            ];
+          this.cdRef.detectChanges();
 
-        console.log(
-          'Save response:',
-          response
-        );
 
-        if (
-          response?.statusCode === 200 ||
-          response?.statusCode === 201
-        ) {
-
-          this.toastr.success(
-            response?.statusMsg ||
-            'User configuration saved successfully',
-            'Success'
-          );
-
-          // Refresh table
-          this.fetchUserConfiguration();
-
-          // Clear form
-          this.clear();
 
         } else {
 
+          this.userConfigurations = [];
+
+          this.filteredUserConfigurations = [];
+
           this.toastr.error(
             response?.statusMsg ||
-            'Failed to save user configuration',
+            'Failed to fetch user configurations',
             'Error'
           );
 
@@ -328,151 +277,28 @@ save(): void {
       error: (error: any) => {
 
         console.error(
-          'Save user configuration error:',
+          'Fetch user configuration error:',
           error
         );
 
+        this.userConfigurations = [];
+
+        this.filteredUserConfigurations = [];
+
         this.toastr.error(
+
           error?.error?.statusMsg ||
           error?.error?.detail ||
           error?.message ||
-          'Failed to save user configuration',
+          'Failed to fetch user configurations',
+
           'Error'
+
         );
 
       }
 
     });
-
-}
-
-  // ---------------------------------------------------------
-  // IMAGE SELECT
-  // ---------------------------------------------------------
-
-  onImageSelected(event: Event): void {
-
-  const input =
-    event.target as HTMLInputElement;
-
-  if (!input.files || input.files.length === 0) {
-    return;
-  }
-
-  const file = input.files[0];
-
-  // Validate image
-  if (!file.type.startsWith('image/')) {
-
-    this.toastr.warning(
-      'Please select a valid image file',
-      'Invalid Image'
-    );
-
-    input.value = '';
-
-    return;
-  }
-
-  // Keep selected file
-  this.selectedImage = file;
-
-  // Also keep it in Reactive Form
-  this.userConfigForm
-    .get('userImage')
-    ?.setValue(file);
-
-  // Preview
-  const reader = new FileReader();
-
-  reader.onload = () => {
-
-    this.imagePreview =
-      reader.result as string;
-
-  };
-
-  reader.readAsDataURL(file);
-
-}
-
-  // ---------------------------------------------------------
-  // DELETE SELECTED IMAGE
-  // ---------------------------------------------------------
-
-  deleteImage(): void {
-
-  this.imagePreview = null;
-
-  this.selectedImage = null;
-
-  this.userConfigForm
-    .get('userImage')
-    ?.setValue(null);
-
-}
-
-  // ---------------------------------------------------------
-  // FETCH USERS
-  // ---------------------------------------------------------
-
-  fetchUserConfiguration(): void {
-
-    this.userService.findUserConfiguration({}).subscribe({
-        next: (response: any) => {
-          if (response?.statusCode === 200) {
-            this.userConfigurations = Array.isArray(response.userConfigurationList)
-                ? response.userConfigurationList
-                : [];
-            this.filteredUserConfigurations =
-              [
-                ...this.userConfigurations
-              ];
-            this.cdRef.detectChanges();
-
-         
-
-          } else {
-
-            this.userConfigurations = [];
-
-            this.filteredUserConfigurations = [];
-
-            this.toastr.error(
-              response?.statusMsg ||
-              'Failed to fetch user configurations',
-              'Error'
-            );
-
-          }
-
-        },
-
-        error: (error: any) => {
-
-          console.error(
-            'Fetch user configuration error:',
-            error
-          );
-
-          this.userConfigurations = [];
-
-          this.filteredUserConfigurations = [];
-
-          this.toastr.error(
-
-            error?.error?.statusMsg ||
-            error?.error?.detail ||
-            error?.message ||
-            'Failed to fetch user configurations',
-
-            'Error'
-
-          );
-
-        }
-
-      });
 
   }
 
@@ -493,35 +319,21 @@ save(): void {
         [
           ...this.userConfigurations
         ];
-
       return;
-
     }
-
     this.filteredUserConfigurations =
       this.userConfigurations.filter(
         (user: any) => {
-
           return [
-
             user.userID,
-
             user.userIDName,
-
             user.firstName,
-
             user.lastName,
-
             user.email,
-
             user.phoneNumber,
-
             user.city,
-
             user.state,
-
             user.status
-
           ].some(
 
             value =>
@@ -582,178 +394,15 @@ save(): void {
   // ---------------------------------------------------------
 
   clear(): void {
-
-    this.userConfigForm.reset({
-
-      firstName: '',
-
-      lastName: '',
-
-      userID: '',
-
-      userIDName: '',
-
-      password: '',
-
-      createdBy: '',
-
-      rolesList: null,
-
-      businessUnit: '',
-
-      usersCreationLimit: 0,
-
-      concurrentLogins: 1,
-
-      address: '',
-
-      country: null,
-
-      state: '',
-
-      city: '',
-
-      email: '',
-
-      phoneNumber: '',
-
-      pin: '',
-
-      status: 'Active',
-
-      userImage: null
-
-    });
-
-    // Reset image
+    this.userConfigForm.reset()
     this.imagePreview = null;
-
     this.selectedImage = null;
-
-    // Reset state
     this.isReadMode = false;
-
     this.userIDName = '';
-
   }
-
-  // ---------------------------------------------------------
-  // EDIT USER
-  // ---------------------------------------------------------
-
-  edit(user: any): void {
-
-   
-
-    this.userConfigForm.patchValue({
-
-      firstName:
-        user.firstName || '',
-
-      lastName:
-        user.lastName || '',
-
-      userID:
-        user.userID || '',
-
-      userIDName:
-        user.userIDName || '',
-
-      password:
-        user.password || '',
-
-      createdBy:
-        user.createdBy || '',
-
-      rolesList:
-        user.rolesList?.length > 0
-          ? user.rolesList[0].roleName
-          : null,
-
-      businessUnit:
-        user.businessUnit || '',
-      usersCreationLimit:
-        user.usersCreationLimit || 0,
-      concurrentLogins:
-        user.concurrentLogins || 1,
-      address:
-        user.address || '',
-      country:
-        user.country || null,
-      state:
-        user.state || '',
-
-      city:
-        user.city || '',
-
-      email:
-        user.email || '',
-
-      phoneNumber:
-        user.phoneNumber || '',
-
-      pin:
-        user.pin || '',
-
-      status:
-        user.status || 'Active',
-
-      userImage: null
-
-    });
-
-    // Clear new image selection
-    this.selectedImage = null;
-
-    this.imagePreview = null;
-
-    this.userIDName =
-      user.userIDName || '';
-
-    this.isReadMode = true;
-
-  }
-
-  // ---------------------------------------------------------
-  // DELETE USER
-  // ---------------------------------------------------------
-
   delete(user: any): void {
-
-    this.deleteInfo = {
-
-      userID:
-        user.userID,
-
-      userIDName:
-        user.userIDName
-
-    };
-
+    this.deleteInfo = {userID:user.userID,userIDName:user.userIDName};
   }
-
-  // ---------------------------------------------------------
-  // OPEN DELETE POPUP
-  // ---------------------------------------------------------
-
-  openDeletePopup(user: any): void {
-
-    this.deleteInfo = user;
-
-  }
-
-  // ---------------------------------------------------------
-  // DELETE CONFIRMATION
-  // ---------------------------------------------------------
-
-  getConfirmation(event: any): void {
-
-   
-  }
-
-  // ---------------------------------------------------------
-  // VALIDATION ERROR
-  // ---------------------------------------------------------
 
   shouldShowErrors(
     controlName: string,
@@ -869,40 +518,19 @@ save(): void {
           ).length >=
           this.minUpper
         );
-
       default:
-
         return false;
-
     }
-
   }
-
-  // ---------------------------------------------------------
-  // FOCUS EVENTS
-  // ---------------------------------------------------------
-
   onFocusForElement(
     element: string
   ): void {
 
-  
-
   }
-
   onFocusOutForElement(): void {
-
-   
   }
-
   onFocusOutForElementWithoutValidation(): void {
-
-   
   }
-
-  // ---------------------------------------------------------
-  // SET USER NAME
-  // ---------------------------------------------------------
 
   setName(): void {
 
@@ -923,50 +551,59 @@ save(): void {
     this.userConfigForm
       .get('userIDName')
       ?.setValue(userIDName);
-
   }
-
-  // ---------------------------------------------------------
-  // PAGE SIZE
-  // ---------------------------------------------------------
-
-  onPageSizeChange(): void {
-
-    // PrimeNG automatically
-    // updates table rows.
-
-  }
-
-  // ---------------------------------------------------------
-  // PAGE CHANGE
-  // ---------------------------------------------------------
-
-  onPageChange(event: any): void {
 
   
 
+  
+  openDeletePopup(user: any): void {
+    this.confirmationService.confirm({
+      header: 'Delete User',
+      message: `Are you sure you want to delete?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.deleteUser(user)
+    });
+  }
+ editUser(user: any): void {
+
+  // Patch all form fields (form control keeps raw base64 userImage, no prefix)
+  this.userConfigForm.patchValue(user);
+
+  // Set image preview from backend — needs the data: prefix to actually render
+  if (user.userImage) {
+    this.imagePreview = this.getImageSrc(user.userImage);
+    this.showImage = true;
+  } else {
+    this.imagePreview = null;
+    this.showImage = true;
   }
 
-  // ---------------------------------------------------------
-  // ROWS CHANGE
-  // ---------------------------------------------------------
+  // Clear selected file because this is an existing image
+  this.selectedImage = null;
 
-  onRowsChange(event: any): void {
-
-    if (event?.target) {
-
-      this.itemsPerPage =
-        Number(
-          event.target.value
+  console.log('Edited User:', user);
+  console.log('Image Preview:', this.imagePreview);
+}
+deleteUser(user: any): void {
+  const payload = {
+    id: user.id
+  };
+  this.userService.deleteUserConfiguration(payload)
+    .subscribe({
+      next: (response: any) => {
+        this.toastr.success(
+          response?.statusMsg || 'User deleted successfully',
+          'Success'
         );
-
-    } else if (event?.rows) {
-
-      this.itemsPerPage =
-        event.rows;
-
-    }
-
-  }
-
+        this.fetchUserConfiguration();
+      },
+      error: (error: any) => {
+        this.toastr.error(
+          error?.error?.statusMsg || 'Failed to delete user',
+          'Error'
+        );
+      }
+    });
+}
 }

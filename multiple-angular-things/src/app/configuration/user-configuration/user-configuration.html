@@ -2,9 +2,9 @@
   <div class="col-md-12">
     <div class="row">
       <div class="col-md-12">
-        <div class="udcBtns float-right">
+      <!--   <div class="udcBtns float-right">
           <i class="pi pi-print"></i>
-        </div>
+        </div> -->
       </div>
     </div>
     <form [formGroup]="userConfigForm">
@@ -106,75 +106,61 @@
                           [ngClass]="{'valiError': shouldShowErrors('createdBy', userConfigForm), 'valiSucess': shouldShowSuccess('createdBy')}"
                           (focus)="onFocusForElement('createdBy')" (focusout)="onFocusOutForElement()"
                           placeholder="{{'Created By' |translate}}" class="form-control" required value="" type="text">
-
                       </div>
                     </div>
-                    <!-- User Image -->
-                   <!-- User Image -->
-<div class="form-group row" *ngIf="showImage">
+                    <div class="form-group row" *ngIf="showImage">
+                      <label class="col-sm-5 col-form-label">
+                        {{ 'User Image' | translate }}
+                      </label>
 
-  <label class="col-sm-5 col-form-label">
-    {{ 'User Image' | translate }}
-  </label>
+                      <div class="col-sm-7">
 
-  <div class="col-sm-7">
+                        <!-- Image Box -->
+                        <div class="border rounded p-3 text-center">
 
-    <!-- Image Box -->
-    <div class="border rounded p-3 text-center">
+                          <!-- Image Preview -->
+                          <div *ngIf="imagePreview" class="position-relative d-inline-block">
 
-      <!-- Image Preview -->
-      <div
-        *ngIf="imagePreview"
-        class="position-relative d-inline-block">
+                            <img [src]="imagePreview" alt="User Image" class="img-thumbnail"
+                              style="width: 150px; height: 150px; object-fit: cover;">
 
-        <img
-          [src]="imagePreview"
-          alt="User Image"
-          class="img-thumbnail"
-          style="width: 150px; height: 150px; object-fit: cover;">
+                            <!-- Remove Image -->
+                            <button type="button"
+                              class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle"
+                              (click)="deleteImage()" title="Remove Image">
 
-        <!-- Remove Image -->
-        <button
-          type="button"
-          class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle"
-          (click)="deleteImage()"
-          title="Remove Image">
+                              <i class="fa fa-times"></i>
 
-          <i class="fa fa-times"></i>
+                            </button>
 
-        </button>
+                          </div>
 
-      </div>
+                          <!-- Upload -->
+                          <div *ngIf="!imagePreview">
 
-      <!-- Upload -->
-      <div *ngIf="!imagePreview">
+                            <i class="fa fa-cloud-upload fa-2x text-secondary mb-2"></i>
 
-        <i class="fa fa-cloud-upload fa-2x text-secondary mb-2"></i>
+                            <div class="text-muted mb-2">
+                              Upload User Image
+                            </div>
 
-        <div class="text-muted mb-2">
-          Upload User Image
-        </div>
+                            <label class="btn btn-outline-primary btn-sm mb-0">
 
-        <label class="btn btn-outline-primary btn-sm mb-0">
+                              <i class="fa fa-upload me-1"></i>
+                              Upload
 
-          <i class="fa fa-upload me-1"></i>
-          Upload
+                              <input type="file" hidden accept="image/png,image/jpeg,image/gif"
+                                (change)="onImageSelected($event)">
 
-          <input
-            type="file"
-            hidden
-            accept="image/png,image/jpeg,image/gif"
-            (change)="onImageSelected($event)">
+                            </label>
 
-        </label>
+                          </div>
 
-      </div>
+                        </div>
 
-    </div>
+                      </div>
 
-  </div>
-
-</div>
+                    </div>
                     <div class="form-group row" *ngIf="role === 'ROLE_CLIENT'">
                       <label class="col-sm-5 col-form-label">{{'Role' |translate}}
                       </label>
@@ -354,28 +340,23 @@
       </div>
     </form>
   </div>
-</div>
-<div class="card">
-  <div class="table-header">
-
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+  <div class="table-header m-3">
     <!-- Left: Show Entries -->
     <div class="show-entries">
       <label for="rows">Show</label>
-
       <p-select id="rows" [options]="[5, 10, 20, 50]" [(ngModel)]="rows" [style]="{ width: '80px' }">
       </p-select>
-
       <span>entries</span>
     </div>
-
     <!-- Right: Search -->
     <div class="table-search">
       <input pInputText type="text" [(ngModel)]="searchText" (input)="searchUsers()" placeholder="Search..." />
     </div>
-
   </div>
-  <div class="tableBackGround">
-   <p-table
+  <p-table
   [value]="filteredUserConfigurations"
   [paginator]="true"
   [rows]="rows"
@@ -383,113 +364,163 @@
   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
 
   <ng-template pTemplate="header">
-
-    <tr>
-
+    <tr class="m-1">
+      <th>S.No</th>
       <th>User ID</th>
-
       <th>User Name</th>
-
       <th>User Image</th>
-
       <th>First Name</th>
-
       <th>Last Name</th>
-
-      <th>Email</th>
-
-      <th>Phone</th>
-
-      <th>City</th>
-
+      <th>Password</th>
+      <th>Role</th>
+      <th>Business Unit</th>
+      <th>Users Limit</th>
+      <th>Concurrent Logins</th>
+      <th>Created By</th>
+      <th>Address</th>
+      <th>Country</th>
       <th>State</th>
-
+      <th>City</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Pin</th>
       <th>Status</th>
-
       <th>Action</th>
-
     </tr>
-
   </ng-template>
-
-  <ng-template pTemplate="body" let-user>
-
+  <ng-template pTemplate="body" let-user let-i="rowIndex">
     <tr>
 
-      <td>
+      <!-- S.No -->
+      <td>{{ i + 1 }}</td>
+
+      <!-- User ID -->
+      <td (click)="editUser(user)" class="clickable">
         {{ user.userID }}
       </td>
 
+      <!-- User Name -->
       <td>
         {{ user.userIDName }}
       </td>
 
-      <!-- 3rd column -->
+      <!-- User Image -->
       <td>
-
         <img
-          *ngIf="user.userImage"
-          [src]="user.userImage"
-          alt="User Image"
-          class="img-thumbnail rounded-circle"
-          style="width: 50px; height: 50px; object-fit: cover;"
-        />
+  *ngIf="user.userImage"
+  [src]="getImageSrc(user.userImage)"
+  alt="User Image"
+  class="img-thumbnail rounded-circle"
+  style="width: 50px; height: 50px; object-fit: cover;"
+/>
 
-        <span
-          *ngIf="!user.userImage"
-          class="text-muted">
+        <span *ngIf="!user.userImage" class="text-muted">
           No Image
         </span>
-
       </td>
 
+      <!-- First Name -->
       <td>
         {{ user.firstName }}
       </td>
 
+      <!-- Last Name -->
       <td>
         {{ user.lastName }}
       </td>
 
+      <!-- Password -->
       <td>
-        {{ user.email }}
+        <span *ngIf="user.password">******</span>
+        <span *ngIf="!user.password" class="text-muted">-</span>
       </td>
 
+      <!-- Role -->
       <td>
-        {{ user.phoneNumber }}
+        {{ user.rolesList }}
       </td>
 
+      <!-- Business Unit -->
       <td>
-        {{ user.city }}
+        {{ user.businessUnit }}
       </td>
 
+      <!-- Users Creation Limit -->
+      <td>
+        {{ user.usersCreationLimit }}
+      </td>
+
+      <!-- Concurrent Logins -->
+      <td>
+        {{ user.concurrentLogins }}
+      </td>
+
+      <!-- Created By -->
+      <td>
+        {{ user.createdBy }}
+      </td>
+
+      <!-- Address -->
+      <td>
+        {{ user.address }}
+      </td>
+
+      <!-- Country -->
+      <td>
+        {{ user.country }}
+      </td>
+
+      <!-- State -->
       <td>
         {{ user.state }}
       </td>
 
+      <!-- City -->
+      <td>
+        {{ user.city }}
+      </td>
+
+      <!-- Email -->
+      <td>
+        {{ user.email }}
+      </td>
+
+      <!-- Phone -->
+      <td>
+        {{ user.phoneNumber }}
+      </td>
+
+      <!-- Pin -->
+      <td>
+        {{ user.pin }}
+      </td>
+
+      <!-- Status -->
       <td>
         {{ user.status }}
       </td>
 
+      <!-- Action -->
       <td>
-
         <button
+          type="button"
           class="btn btn-danger btn-sm"
           (click)="openDeletePopup(user)">
-
           <i class="pi pi-trash"></i>
-
         </button>
-
       </td>
 
     </tr>
-
   </ng-template>
 
 </p-table>
-  </div>
-
-
 </div>
-<app-delete-pop-up></app-delete-pop-up>
+  </div>
+</div>
+</div>
+<p-confirmDialog
+  header="Delete User"
+  icon="pi pi-exclamation-triangle"
+  acceptButtonStyleClass="p-button-danger"
+  rejectButtonStyleClass="p-button-secondary">
+</p-confirmDialog>

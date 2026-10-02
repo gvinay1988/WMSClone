@@ -31,5 +31,14 @@ findUserConfiguration(entityData: any) {
    httpReq.body = entityData;
   return this.httpService.restCall(httpReq); 
 }
+deleteUserConfiguration(entityData: any) {
+  const httpReq: HttpReq = new HttpReq();
+  httpReq.type = this.REST_TYPE_POST;
+  httpReq.url = '/userConfiguration/services/deleteUserConfiguration';
+  httpReq.showLoader = true;
+  httpReq.contentType = 'application/json';
+  httpReq.body = entityData;
+  return this.httpService.restCall(httpReq);
+}
  
 }

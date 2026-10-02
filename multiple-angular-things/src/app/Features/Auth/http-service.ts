@@ -33,14 +33,13 @@ export class HttpService {
       'Content-Type': this.CONTENT_APPLICATION_JSON
     });
   }
-  console.log('Access Token:', this.getAccessToken());
-  console.log('Request URL:', url);
+  
   
   return this.http.post(url,httpReq.body,{ headers }).pipe(map((response: any) => {
       return response;
     }),
     catchError((error) => {
-      console.error('POST Error:', error);
+
       return throwError(() => error);
     })
 
@@ -109,7 +108,7 @@ export class HttpService {
  getAccessToken(): string | null {
   if (typeof window !== 'undefined') {
     const token = sessionStorage.getItem('jwt_token');
-    console.log('JWT TOKEN:', token);
+
     return token;
   }
 
