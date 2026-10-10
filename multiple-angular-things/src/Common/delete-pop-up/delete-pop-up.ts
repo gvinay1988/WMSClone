@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 
 @Component({
@@ -8,19 +8,18 @@ import { DialogModule } from 'primeng/dialog';
   styleUrl: './delete-pop-up.scss',
 })
 export class DeletePopUp {
-visible = false;
+  @Input() visible = false;
+  @Output() visibleChange = new EventEmitter<boolean>();
+  @Output() onConfirm = new EventEmitter<void>();
 
-openDeleteDialog() {
-  this.visible = true;
-}
+  cancelDelete(): void {
+    this.visible = false;
+    this.visibleChange.emit(false);
+  }
 
-confirmDelete() {
-  // Your delete API call will come here
-
-  this.visible = false;
-}
-
-cancelDelete() {
-  this.visible = false;
-}
+  confirmDelete(): void {
+    this.visible = false;
+    this.visibleChange.emit(false);
+    this.onConfirm.emit();
+  }
 }

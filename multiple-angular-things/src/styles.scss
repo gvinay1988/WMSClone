@@ -869,3 +869,45 @@ input:focus {
 .p-button-label {
    padding: 1rem!important;
 }
+.custom-panel {
+  position: relative;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  margin: 30px 0 20px;
+  background: #fff;
+}
+
+.panel-title {
+  position: absolute;
+  top: -16px;
+  left: 25px;
+  min-width: 150px;
+  padding: 5px 12px;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  z-index: 2;
+}
+
+.panel-title:hover {
+  background: #f8f8f8;
+}
+
+.panel-title i {
+  font-size: 12px;
+}
+
+.panel-content {
+  padding: 30px 15px 15px;
+}
+.col-md-12 {
+  margin:10px
+}

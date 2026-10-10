@@ -1,1 +1,27 @@
-<p>parameter works!</p>
+<div class="row">
+  <div class="col-md-12">
+    <div class="custom-panel">
+      <div class="panel-title" (click)="togglePanel()">
+        <span>{{ title }}</span>
+        <i class="fa" [ngClass]="collapsed ? 'fa-chevron-down' : 'fa-chevron-up'">
+        </i>
+      </div>
+      <div class="panel-content" *ngIf="!collapsed">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group row">
+              <label class="col-md-3 control-label">Country </label>
+              <div class="col-md-9">
+                <tag-input [(ngModel)]="countryList" [ngModelOptions]="{ standalone: true }" displayBy="countryName"
+                  [identifyBy]="'countryName'" placeholder="Enter country" secondaryPlaceholder="Enter country"
+                  (onAdd)="saveParameter($event, 'country')" (onRemove)="openDeletePopup($event, 'country')">
+                </tag-input>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-delete-pop-up [(visible)]="deleteInfo" (onConfirm)="deleteCountry()"></app-delete-pop-up>
