@@ -71,6 +71,13 @@ $text: #495057;
     }
   }
 
+  .instructions-input {
+    height: auto;
+    min-height: 90px;
+    padding: 10px 14px;
+    resize: vertical;
+  }
+
   .err {
     display: block;
     margin-top: 4px;
@@ -127,6 +134,20 @@ $text: #495057;
 
   .table-toolbar {
     width: 100%;
+  }
+
+  .product-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  ::ng-deep .product-table-scroll .p-datatable-table {
+    min-width: 2600px;
+  }
+
+  ::ng-deep .product-table-scroll th,
+  ::ng-deep .product-table-scroll td {
+    white-space: nowrap;
   }
 
   ::ng-deep .product-table-paginator {

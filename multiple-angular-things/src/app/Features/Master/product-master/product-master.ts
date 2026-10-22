@@ -16,11 +16,33 @@ interface ProductFormControls {
   product: FormControl<string>;
   description: FormControl<string>;
   category: FormControl<string>;
+  hsnType: FormControl<string>;
   hsnCode: FormControl<string>;
   category1: FormControl<string>;
   category2: FormControl<string>;
   category3: FormControl<string>;
+  configuration: FormControl<string>;
+  dfsCode: FormControl<string>;
+  type: FormControl<string>;
+  productClass: FormControl<string>;
+  productType: FormControl<string>;
+  upcEan: FormControl<string>;
+  warehouse: FormControl<string>;
   productImage: FormControl<string>;
+  length: FormControl<number | null>;
+  width: FormControl<number | null>;
+  height: FormControl<number | null>;
+  weight: FormControl<number | null>;
+  mrp: FormControl<number | null>;
+  sellingPrice: FormControl<number | null>;
+  tax: FormControl<number | null>;
+  baseUnit: FormControl<string>;
+  salesUnit: FormControl<string>;
+  purchaseUnit: FormControl<string>;
+  minStock: FormControl<number | null>;
+  maxStock: FormControl<number | null>;
+  leadTime: FormControl<number | null>;
+  instructions: FormControl<string>;
 }
 
 @Component({
@@ -35,6 +57,11 @@ export class ProductMaster implements OnInit {
   readonly categories = [
     { label: 'Category A', value: 'a' },
     { label: 'Category B', value: 'b' },
+    { label: 'Electronics', value: 'electronics' },
+    { label: 'Office Supplies', value: 'office-supplies' },
+    { label: 'Furniture', value: 'furniture' },
+    { label: 'Consumables', value: 'consumables' },
+    { label: 'Raw Materials', value: 'raw-materials' },
   ];
   productForm: FormGroup<ProductFormControls>;
   products: ProductRecord[] = [];
@@ -58,11 +85,38 @@ export class ProductMaster implements OnInit {
       product: this.fb.nonNullable.control(''),
       description: this.fb.nonNullable.control(''),
       category: this.fb.nonNullable.control('', Validators.required),
+      hsnType: this.fb.nonNullable.control(''),
       hsnCode: this.fb.nonNullable.control(''),
       category1: this.fb.nonNullable.control(''),
       category2: this.fb.nonNullable.control(''),
       category3: this.fb.nonNullable.control(''),
+      configuration: this.fb.nonNullable.control(''),
+      dfsCode: this.fb.nonNullable.control(''),
+      type: this.fb.nonNullable.control(''),
+      productClass: this.fb.nonNullable.control(''),
+      productType: this.fb.nonNullable.control(''),
+      upcEan: this.fb.nonNullable.control(''),
+      warehouse: this.fb.nonNullable.control(''),
       productImage: this.fb.nonNullable.control('', Validators.required),
+      length: this.fb.control<number | null>(null, Validators.min(0)),
+      width: this.fb.control<number | null>(null, Validators.min(0)),
+      height: this.fb.control<number | null>(null, Validators.min(0)),
+      weight: this.fb.control<number | null>(null, Validators.min(0)),
+      mrp: this.fb.control<number | null>(null, Validators.min(0)),
+      sellingPrice: this.fb.control<number | null>(null, Validators.min(0)),
+      tax: this.fb.control<number | null>(null, Validators.min(0)),
+      baseUnit: this.fb.nonNullable.control(''),
+      salesUnit: this.fb.nonNullable.control(''),
+      purchaseUnit: this.fb.nonNullable.control(''),
+      minStock: this.fb.control<number | null>(null, Validators.min(0)),
+      maxStock: this.fb.control<number | null>(null, Validators.min(0)),
+      leadTime: this.fb.control<number | null>(null, [
+        Validators.min(0),
+        control => control.value === null || Number.isInteger(control.value)
+          ? null
+          : { wholeNumber: true },
+      ]),
+      instructions: this.fb.nonNullable.control(''),
     });
   }
 
@@ -131,16 +185,42 @@ export class ProductMaster implements OnInit {
     return this.products.filter(product =>
       [
         product.id, product.name, product.product, product.description, product.category,
-        product.hsnCode, product.category1, product.category2, product.category3,
+        product.hsnType, product.hsnCode, product.category1, product.category2,
+        product.category3, product.configuration, product.dfsCode, product.type,
+        product.productClass, product.productType, product.upcEan, product.warehouse,
+        product.length, product.width, product.height, product.weight, product.mrp,
+        product.sellingPrice, product.tax, product.baseUnit, product.salesUnit,
+        product.purchaseUnit, product.minStock, product.maxStock, product.leadTime,
+        product.instructions,
       ].some(value => String(value ?? '').toLowerCase().includes(search))
     );
   }
 
   edit(product: ProductRecord): void {
-    this.productForm.reset({
-      ...product,
-      productImage: product.productImage || '',
-    });
+    try {
+      this.productForm.reset({
+        ...product,
+        productImage: product.productImage || '',
+        length: this.toFormNumber(product.length),
+        width: this.toFormNumber(product.width),
+        height: this.toFormNumber(product.height),
+        weight: this.toFormNumber(product.weight),
+        mrp: this.toFormNumber(product.mrp),
+        sellingPrice: this.toFormNumber(product.sellingPrice),
+        tax: this.toFormNumber(product.tax),
+        minStock: this.toFormNumber(product.minStock),
+        maxStock: this.toFormNumber(product.maxStock),
+        leadTime: this.toFormNumber(product.leadTime),
+      });
+    } catch (error) {
+      this.toastr.error(
+        error instanceof Error
+          ? `This product cannot be edited: ${error.message}`
+          : 'This product contains invalid numeric data and cannot be edited.',
+        'Error'
+      );
+      return;
+    }
     this.imagePreview = product.productImage || null;
     this.editing = true;
     this.productForm.controls.id.disable();
@@ -180,6 +260,18 @@ export class ProductMaster implements OnInit {
     this.imagePreview = null;
     this.editing = false;
     this.submitting = false;
+  }
+
+  private toFormNumber(value: number | string | null): number | null {
+    if (value === null || value === '') {
+      return null;
+    }
+
+    const number = Number(value);
+    if (!Number.isFinite(number)) {
+      throw new Error('Invalid product number');
+    }
+    return number;
   }
 
   onFileChange(event: Event): void {

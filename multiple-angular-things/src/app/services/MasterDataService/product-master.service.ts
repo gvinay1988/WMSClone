@@ -9,11 +9,33 @@ export interface ProductRecord {
   product: string;
   description: string;
   category: string;
+  hsnType: string;
   hsnCode: string;
   category1: string;
   category2: string;
   category3: string;
+  configuration: string;
+  dfsCode: string;
+  type: string;
+  productClass: string;
+  productType: string;
+  upcEan: string;
+  warehouse: string;
   productImage: string;
+  length: number | string | null;
+  width: number | string | null;
+  height: number | string | null;
+  weight: number | string | null;
+  mrp: number | string | null;
+  sellingPrice: number | string | null;
+  tax: number | string | null;
+  baseUnit: string;
+  salesUnit: string;
+  purchaseUnit: string;
+  minStock: number | string | null;
+  maxStock: number | string | null;
+  leadTime: number | string | null;
+  instructions: string;
 }
 
 export interface ProductMasterResponse {
@@ -22,8 +44,20 @@ export interface ProductMasterResponse {
   productList?: ProductRecord[];
 }
 
-export type ProductSavePayload = Pick<ProductRecord, 'id' | 'name' | 'category'>
-  & Partial<ProductRecord>;
+type ProductNumericField =
+  | 'length'
+  | 'width'
+  | 'height'
+  | 'weight'
+  | 'mrp'
+  | 'sellingPrice'
+  | 'tax'
+  | 'minStock'
+  | 'maxStock'
+  | 'leadTime';
+
+export type ProductSavePayload = Omit<ProductRecord, ProductNumericField>
+  & { [Field in ProductNumericField]: number | null };
 
 interface ProductMutationResponse {
   statusCode: number;
