@@ -1,0 +1,192 @@
+<div id="inBody" class="state-master-page">
+  <div class="panel">
+    <!-- Tab header + collapse arrow -->
+    <div class="tab-bar">
+      <ul class="tab-list" role="tablist">
+        <li role="tab" class="tab" [class.active]="activeTab === 'details'"
+          [attr.aria-selected]="activeTab === 'details'" (click)="selectTab('details')">
+          State Details
+        </li>
+        <li role="tab" class="tab" [class.active]="activeTab === 'list'"
+          [attr.aria-selected]="activeTab === 'list'" (click)="selectTab('list')">
+          States List
+        </li>
+        <li role="tab" class="tab" [class.active]="activeTab === 'import'"
+          [attr.aria-selected]="activeTab === 'import'" (click)="selectTab('import')">
+          Import / Export
+        </li>
+      </ul>
+
+      <button type="button" class="collapse-btn" (click)="toggleCollapse()"
+        [attr.aria-expanded]="!collapsed" aria-label="Toggle panel">
+        <i class="pi" [ngClass]="collapsed ? 'pi-chevron-down' : 'pi-chevron-up'"></i>
+      </button>
+    </div>
+
+    <!-- Tab content (hidden, not destroyed, so form and table state survive tab switches) -->
+    <div class="tab-body" [hidden]="collapsed">
+
+      <!-- ========== TAB 1: State Details ========== -->
+      <div [hidden]="activeTab !== 'details'">
+        <form [formGroup]="stateForm">
+          <div class="form-grid">
+            <label for="stateCode">State Code <span class="req">*</span></label>
+            <div class="field">
+              <input id="stateCode" type="text" class="pf-input" formControlName="stateCode"
+                maxlength="20" placeholder="State Code"
+                [class.is-invalid]="stateForm.get('stateCode')?.invalid && stateForm.get('stateCode')?.touched">
+              <small class="err"
+                *ngIf="stateForm.get('stateCode')?.invalid && stateForm.get('stateCode')?.touched">
+                Enter a state code (20 characters max).
+              </small>
+            </div>
+
+            <label for="stateName">State Name <span class="req">*</span></label>
+            <div class="field">
+              <input id="stateName" type="text" class="pf-input" formControlName="stateName"
+                maxlength="100" placeholder="State Name"
+                [class.is-invalid]="stateForm.get('stateName')?.invalid && stateForm.get('stateName')?.touched">
+              <small class="err"
+                *ngIf="stateForm.get('stateName')?.invalid && stateForm.get('stateName')?.touched">
+                Enter a state name.
+              </small>
+            </div>
+
+            <label for="country">Country</label>
+            <div class="field">
+              <ng-select id="country" formControlName="country" [items]="countries"
+                bindLabel="countryName" bindValue="countryName" placeholder="Select country"
+                appendTo="body" [searchable]="true">
+              </ng-select>
+            </div>
+
+            <label for="capital">Capital <span class="req">*</span></label>
+            <div class="field">
+              <input id="capital" type="text" class="pf-input" formControlName="capital"
+                maxlength="100" placeholder="Capital"
+                [class.is-invalid]="stateForm.get('capital')?.invalid && stateForm.get('capital')?.touched">
+              <small class="err"
+                *ngIf="stateForm.get('capital')?.invalid && stateForm.get('capital')?.touched">
+                Enter a capital.
+              </small>
+            </div>
+
+            <label for="status">Status <span class="req">*</span></label>
+            <div class="field">
+              <select id="status" class="pf-input" formControlName="status">
+                <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn btn-sm btn-primary" (click)="save()" [disabled]="submitting">
+              {{ submitting ? 'Saving...' : editing ? 'Update State' : 'Save State' }}
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary" (click)="clear()" [disabled]="submitting">
+              Clear
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ========== TAB 2: States List ========== -->
+      <div [hidden]="activeTab !== 'list'">
+        <div class="table-toolbar d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+          <div class="entries-section d-flex align-items-center gap-2">
+            <label for="stateRows">Show Entries</label>
+            <select id="stateRows" class="pf-input pf-sm" [(ngModel)]="rows"
+              [ngModelOptions]="{ standalone: true }" (ngModelChange)="stateTable.first = 0">
+              <option [ngValue]="5">5</option>
+              <option [ngValue]="10">10</option>
+              <option [ngValue]="25">25</option>
+              <option [ngValue]="50">50</option>
+            </select>
+          </div>
+
+          <div class="search-section d-flex align-items-center gap-2">
+            <label for="stateSearch">Search</label>
+            <input id="stateSearch" type="search" class="pf-input pf-sm" [(ngModel)]="searchText"
+              [ngModelOptions]="{ standalone: true }" placeholder="Search states">
+          </div>
+        </div>
+
+        <p-table #stateTable [value]="filteredStates" [paginator]="true" [rows]="rows"
+          [loading]="loading" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+          [rowsPerPageOptions]="[5, 10, 25, 50]" paginatorPosition="bottom"
+          [paginatorDropdownAppendTo]="'body'" responsiveLayout="scroll">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th>State Name</th>
+              <th>State Code</th>
+              <th>Country</th>
+              <th>Capital</th>
+              <th>Status</th>
+              <th aria-label="Delete state"></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-state>
+            <tr>
+              <td>
+                <button type="button" class="state-name-link"
+                  (click)="edit(state); selectTab('details')"
+                  [attr.aria-label]="'Edit ' + state.stateName">
+                  {{ state.stateName }}
+                </button>
+              </td>
+              <td>{{ state.stateCode }}</td>
+              <td>{{ state.country }}</td>
+              <td>{{ state.capital }}</td>
+              <td>{{ state.status }}</td>
+              <td class="text-nowrap text-center">
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true"
+                  (onClick)="confirmDelete(state)" [ariaLabel]="'Delete ' + state.stateName">
+                </p-button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center">
+                {{ loading ? 'Loading states...' : 'No states found' }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <!-- ========== TAB 3: Import / Export ========== -->
+      <div [hidden]="activeTab !== 'import'">
+        <div class="import-row">
+          <label class="check">
+            <input type="checkbox" [(ngModel)]="replaceExisting" [ngModelOptions]="{ standalone: true }">
+            <span>Update matching records</span>
+          </label>
+
+          <input #stateImport type="file" accept=".xlsx,.xls" class="d-none" (change)="importStates($event)">
+
+          <button type="button" class="btn btn-sm btn-outline-primary"
+            (click)="stateImport.click()" [disabled]="importing">
+            <i class="pi pi-upload me-1"></i>{{ importing ? 'Importing...' : 'Import Excel' }}
+          </button>
+
+          <button type="button" class="btn btn-sm btn-outline-secondary"
+            (click)="downloadFailureLog()" [disabled]="!failures.length">
+            <i class="pi pi-file me-1"></i>Failure Log
+          </button>
+
+          <button type="button" class="btn btn-sm btn-outline-secondary"
+            (click)="exportAsXLSX()" [disabled]="!states.length">
+            <i class="pi pi-download me-1"></i>Export Excel
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<p-confirmDialog></p-confirmDialog>

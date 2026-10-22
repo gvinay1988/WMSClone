@@ -1,0 +1,148 @@
+<p-confirmDialog></p-confirmDialog>
+
+<div id="inBody" class="state-tax-page">
+  <form [formGroup]="stateTaxForm" (ngSubmit)="save()">
+    <div class="row g-3">
+      <div class="col-12 col-lg-6">
+        <section class="panel portlet">
+          <div class="formBox portlet-title">
+            <div class="panel-heading formTitle">
+              <h4>{{ 'STATE DETAILS' | translate }}</h4>
+            </div>
+            <div class="panel-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="stateCode">State Code <span class="red">*</span></label>
+                  <input id="stateCode" class="form-control" formControlName="stateCode"
+                    [class.is-invalid]="stateTaxForm.get('stateCode')?.invalid && stateTaxForm.get('stateCode')?.touched"
+                    placeholder="State Code">
+                  <small class="text-danger" *ngIf="stateTaxForm.get('stateCode')?.invalid && stateTaxForm.get('stateCode')?.touched">
+                    State code is required.
+                  </small>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="stateName">State Name <span class="red">*</span></label>
+                  <input id="stateName" class="form-control" formControlName="stateName"
+                    [class.is-invalid]="stateTaxForm.get('stateName')?.invalid && stateTaxForm.get('stateName')?.touched"
+                    placeholder="State Name">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="country">Country <span class="red">*</span></label>
+                  <input id="country" class="form-control" formControlName="country"
+                    [class.is-invalid]="stateTaxForm.get('country')?.invalid && stateTaxForm.get('country')?.touched"
+                    placeholder="Country">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="status">Status <span class="red">*</span></label>
+                  <select id="status" class="form-select" formControlName="status">
+                    <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-12 col-lg-6">
+        <section class="panel portlet">
+          <div class="formBox portlet-title">
+            <div class="panel-heading formTitle">
+              <h4>{{ 'TAX DETAILS' | translate }}</h4>
+            </div>
+            <div class="panel-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="taxName">Tax Name <span class="red">*</span></label>
+                  <input id="taxName" class="form-control" formControlName="taxName"
+                    [class.is-invalid]="stateTaxForm.get('taxName')?.invalid && stateTaxForm.get('taxName')?.touched"
+                    placeholder="Tax Name">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="taxType">Tax Type <span class="red">*</span></label>
+                  <select id="taxType" class="form-select" formControlName="taxType">
+                    <option *ngFor="let type of taxTypes" [value]="type">{{ type }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="taxRate">Tax Rate (%) <span class="red">*</span></label>
+                  <input id="taxRate" type="number" min="0" max="100" step="0.01" class="form-control"
+                    formControlName="taxRate"
+                    [class.is-invalid]="stateTaxForm.get('taxRate')?.invalid && stateTaxForm.get('taxRate')?.touched"
+                    placeholder="Tax Rate">
+                  <small class="text-danger" *ngIf="stateTaxForm.get('taxRate')?.invalid && stateTaxForm.get('taxRate')?.touched">
+                    Enter a rate from 0 to 100.
+                  </small>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="description">Description</label>
+                  <input id="description" class="form-control" formControlName="description"
+                    placeholder="Description">
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3 mb-3">
+      <button type="submit" class="btn btn-green" [disabled]="submitting">
+        {{ submitting ? 'Saving...' : editing ? 'Update' : 'Save' }}
+      </button>
+      <button type="button" class="btn btn-white" (click)="clear()">Clear</button>
+    </div>
+  </form>
+
+  <section class="panel portlet tableBackGround">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <h4 class="mb-0">{{ 'STATE & TAX LIST' | translate }}</h4>
+      <div class="table-search">
+        <input type="search" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }"
+          (input)="applyFilter()" placeholder="Search state and tax records">
+      </div>
+    </div>
+
+    <p-table [value]="filteredRecords" [paginator]="true" [rows]="rows"
+      [rowsPerPageOptions]="[5, 10, 25, 50]" [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [loading]="loading" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>State Code</th>
+          <th>State</th>
+          <th>Country</th>
+          <th>Tax Name</th>
+          <th>Tax Type</th>
+          <th>Rate (%)</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-record>
+        <tr>
+          <td>{{ record.stateCode }}</td>
+          <td>{{ record.stateName }}</td>
+          <td>{{ record.country }}</td>
+          <td>{{ record.taxName }}</td>
+          <td>{{ record.taxType }}</td>
+          <td>{{ record.taxRate }}%</td>
+          <td>{{ record.status }}</td>
+          <td class="text-nowrap">
+            <button type="button" class="btn btn-sm btn-outline-primary me-1"
+              (click)="edit(record)" aria-label="Edit state tax record">Edit</button>
+            <button type="button" class="btn btn-sm btn-outline-danger"
+              (click)="confirmDelete(record)" aria-label="Delete state tax record">Delete</button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center">
+            {{ loading ? 'Loading state and tax records...' : 'No state and tax records found' }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+</div>

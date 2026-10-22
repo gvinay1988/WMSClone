@@ -46,6 +46,18 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./Features/Master/supplier-master/supplier-master')
                 .then(m => m.SupplierMaster)
+          },
+          {
+            path: 'productMaster',
+            loadComponent: () =>
+              import('./Features/Master/product-master/product-master')
+                .then(m => m.ProductMaster)
+          },
+          {
+            path: 'statemaster',
+            loadComponent: () =>
+              import('./Features/Master/state-master/state-master')
+                .then(m => m.StateMaster)
           }
 
         ]

@@ -10,6 +10,9 @@ from database import get_connection
 from supplier import supplier_bp, initialize_supplier
 from userConfiguration import user_configuration_bp, initialize_user_configuration
 from parameter import parameter_bp, initialize_parameter
+from stateTax import state_tax_bp, initialize_state_tax
+from stateMaster import state_master_bp, initialize_state_master
+from product import product_master_bp, initialize_product_master
 
 app = Flask(__name__)
 
@@ -52,10 +55,16 @@ initialize_database()
 initialize_supplier()
 initialize_user_configuration()
 initialize_parameter()
+initialize_state_tax()
+initialize_state_master()
+initialize_product_master()
 
 app.register_blueprint(supplier_bp)
 app.register_blueprint(user_configuration_bp)
 app.register_blueprint(parameter_bp)
+app.register_blueprint(state_tax_bp)
+app.register_blueprint(state_master_bp)
+app.register_blueprint(product_master_bp)
 
 
 def create_access_token(email: str, role: str) -> str:
