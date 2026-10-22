@@ -7,6 +7,7 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { DeletePopUp } from '../../../Common/delete-pop-up/delete-pop-up';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 
@@ -23,7 +24,8 @@ import { DeletePopUp } from '../../../Common/delete-pop-up/delete-pop-up';
     ReactiveFormsModule,
     SelectModule,
     DialogModule,
-    DeletePopUp
+    DeletePopUp,
+    NgSelectModule
 
   ],
   exports: [
@@ -36,7 +38,8 @@ import { DeletePopUp } from '../../../Common/delete-pop-up/delete-pop-up';
     ReactiveFormsModule,
     SelectModule,
     DialogModule,
-    DeletePopUp
+    DeletePopUp,
+    NgSelectModule
 
   ],
 })
