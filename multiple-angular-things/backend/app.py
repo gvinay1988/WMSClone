@@ -23,10 +23,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "60"))
 CORS(
     app,
     resources={r"/*": {
-        "origins": ["http://localhost:4200", "http://127.0.0.1:4200"],
+        "origins": [
+            r"http://localhost:\d+",
+            r"http://127\.0\.0\.1:\d+"
+        ],
         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
     }},
+    supports_credentials=False
 )
 
 

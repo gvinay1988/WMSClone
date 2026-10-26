@@ -1,11 +1,44 @@
 <div class="product-master-page">
-  <p-confirmDialog></p-confirmDialog>
+  <p-confirmDialog styleClass="product-delete-confirm-dialog"></p-confirmDialog>
 
   <div class="panel">
     <form [formGroup]="productForm" (ngSubmit)="save()">
       <section aria-labelledby="product-attributes-heading">
-        <h2 id="product-attributes-heading" class="section-title">Product Attributes</h2>
-        <div class="form-grid">
+        <div class="form-panel-heading">
+          <h2 id="product-attributes-heading" class="section-title">Product Attributes</h2>
+          <div class="form-panel-actions">
+            <input #productImport type="file" accept=".xlsx" class="d-none"
+              (change)="importProducts($event)">
+            <button type="button" class="excel-icon-button" (click)="productImport.click()"
+              [disabled]="importing" aria-label="Import products from Excel"
+              title="Import Excel">
+              <i class="pi pi-upload" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="excel-icon-button" (click)="exportAsXLSX()"
+              [disabled]="!products.length" aria-label="Export products to Excel"
+              title="Export Excel">
+              <i class="pi pi-download" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="form-panel-toggle" (click)="toggleProductFields()"
+              [attr.aria-expanded]="productFieldsExpanded"
+              aria-controls="product-fields">
+              <i class="pi" [class.pi-chevron-down]="productFieldsExpanded"
+                [class.pi-chevron-right]="!productFieldsExpanded" aria-hidden="true"></i>
+              <span class="visually-hidden">
+                {{ productFieldsExpanded ? 'Hide product fields' : 'Show product fields' }}
+              </span>
+            </button>
+          </div>
+        </div>
+        <div id="product-fields" *ngIf="productFieldsExpanded">
+        <p-tabs value="details">
+          <p-tablist>
+            <p-tab value="details">Product Details</p-tab>
+            <p-tab value="categories">Additional Categories</p-tab>
+          </p-tablist>
+          <p-tabpanels>
+            <p-tabpanel value="details">
+              <div class="form-grid">
           <label for="productId">Product ID <span class="req">*</span></label>
           <div class="field">
             <input id="productId" type="text" class="pf-input" formControlName="id"
@@ -38,14 +71,11 @@
               placeholder="Product Description">
           </div>
 
-          <label for="category">Category <span class="req">*</span></label>
+          <label for="category">Category</label>
           <div class="field">
             <ng-select id="category" formControlName="category" [items]="categories"
               bindLabel="label" bindValue="value" placeholder="--Select--" appendTo="body">
             </ng-select>
-            <small class="err" *ngIf="productForm.controls.category.invalid && productForm.controls.category.touched">
-              Category is required.
-            </small>
           </div>
 
           <label for="hsnCode">HSN Code</label>
@@ -53,6 +83,25 @@
             <input id="hsnCode" type="text" class="pf-input" formControlName="hsnCode" placeholder="HSN Code">
           </div>
 
+          <label for="productImageFile">Product Image</label>
+          <div class="field image-box">
+            <input type="hidden" formControlName="productImage">
+            <div class="preview">
+              <img *ngIf="imagePreview" [src]="imagePreview" alt="Product image">
+              <span *ngIf="!imagePreview" class="placeholder"><i class="pi pi-image"></i></span>
+              <button *ngIf="imagePreview" type="button" class="remove-image-button"
+                (click)="removeImage(productImageInput)" [disabled]="submitting"
+                aria-label="Remove product image" title="Remove product image">
+                <i class="pi pi-times" aria-hidden="true"></i>
+              </button>
+            </div>
+            <input #productImageInput id="productImageFile" type="file" class="pf-input file" accept="image/*"
+              (change)="onFileChange($event)">
+          </div>
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="categories">
+              <div class="form-grid">
           <label for="category1">Category 1</label>
           <div class="field">
             <ng-select id="category1" formControlName="category1" [items]="categories"
@@ -73,36 +122,37 @@
               bindLabel="label" bindValue="value" placeholder="--Select--" appendTo="body">
             </ng-select>
           </div>
-
-          <label for="productImageFile">Product Image</label>
-          <div class="field image-box">
-            <input type="hidden" formControlName="productImage">
-            <div class="preview">
-              <img *ngIf="imagePreview" [src]="imagePreview" alt="Product image">
-              <span *ngIf="!imagePreview" class="placeholder"><i class="pi pi-image"></i></span>
-            </div>
-            <input id="productImageFile" type="file" class="pf-input file" accept="image/*"
-              (change)="onFileChange($event)" [attr.aria-required]="true">
-            <small class="err" *ngIf="productForm.controls.productImage.invalid && productForm.controls.productImage.touched">
-              Product image is required.
-            </small>
-          </div>
+              </div>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+        <div class="actions">
+          <button type="submit" class="btn btn-sm btn-primary"
+            [disabled]="submitting || !canSaveProduct">
+            {{ submitting ? 'Saving...' : editing ? 'Update Product' : 'Save Product' }}
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="clear()"
+            [disabled]="submitting">Clear</button>
+        </div>
         </div>
       </section>
-
-      <div class="actions">
-        <button type="submit" class="btn btn-sm btn-primary" [disabled]="submitting">
-          {{ submitting ? 'Saving...' : editing ? 'Update Product' : 'Save Product' }}
-        </button>
-        <button type="button" class="btn btn-sm btn-secondary" (click)="clear()"
-          [disabled]="submitting">Clear</button>
-      </div>
     </form>
   </div>
 
   <div class="products-list">
     <h2 class="section-title">Products List</h2>
-    <div class="table-toolbar d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div class="table-toolbar d-flex align-items-center mb-2 gap-2">
+      <div class="entries-section d-flex align-items-center gap-2">
+        <label for="productRows">Show entries</label>
+        <select id="productRows" class="pf-input pf-sm" [(ngModel)]="rows"
+          [ngModelOptions]="{ standalone: true }" (ngModelChange)="productTable.first = 0">
+          <option [ngValue]="2">2</option>
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </div>
       <div class="search-section d-flex align-items-center gap-2">
         <label for="productSearch">Search</label>
         <input id="productSearch" type="search" class="pf-input pf-sm" [(ngModel)]="searchText"
@@ -115,33 +165,35 @@
       responsiveLayout="scroll">
       <ng-template pTemplate="header">
         <tr>
-          <th>Image</th>
-          <th pSortableColumn="id">Product ID <p-sortIcon field="id"></p-sortIcon></th>
-          <th pSortableColumn="name">Product Name <p-sortIcon field="name"></p-sortIcon></th>
-          <th>Product</th>
-          <th>Description</th>
-          <th>Category</th>
-          <th>HSN Code</th>
-          <th>Category 1</th>
-          <th>Category 2</th>
-          <th>Category 3</th>
+          <th>S.No</th>
+          <th class="product-id-header" pSortableColumn="id">Product ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th class="product-name-header" pSortableColumn="name">Product Name <p-sortIcon field="name"></p-sortIcon></th>
+          <th pSortableColumn="productImage">Image <p-sortIcon field="productImage"></p-sortIcon></th>
+          <th pSortableColumn="product">Product <p-sortIcon field="product"></p-sortIcon></th>
+          <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+          <th pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
+          <th pSortableColumn="hsnCode">HSN Code <p-sortIcon field="hsnCode"></p-sortIcon></th>
+          <th pSortableColumn="category1">Category 1 <p-sortIcon field="category1"></p-sortIcon></th>
+          <th pSortableColumn="category2">Category 2 <p-sortIcon field="category2"></p-sortIcon></th>
+          <th pSortableColumn="category3">Category 3 <p-sortIcon field="category3"></p-sortIcon></th>
           <th aria-label="Product actions">Actions</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-product>
+      <ng-template pTemplate="body" let-product let-rowIndex="rowIndex">
         <tr>
+          <td>
+            <button type="button" class="product-serial-number"
+              (click)="edit(product)" [attr.aria-label]="'Edit ' + product.name">
+              {{ rowIndex + 1 }}
+            </button>
+          </td>
+          <td>{{ product.id }}</td>
+          <td>{{ product.name }}</td>
           <td>
             <img *ngIf="product.productImage" class="product-table-image"
               [src]="product.productImage" [alt]="product.name">
             <span *ngIf="!product.productImage">-</span>
           </td>
-          <td>
-            <button type="button" class="product-name-link"
-              (click)="edit(product)" [attr.aria-label]="'Edit ' + product.name">
-              {{ product.id }}
-            </button>
-          </td>
-          <td>{{ product.name }}</td>
           <td>{{ product.product || '-' }}</td>
           <td>{{ product.description || '-' }}</td>
           <td>{{ product.category || '-' }}</td>
@@ -150,10 +202,8 @@
           <td>{{ product.category2 || '-' }}</td>
           <td>{{ product.category3 || '-' }}</td>
           <td class="text-nowrap text-center">
-            <p-button icon="pi pi-pencil" severity="primary" [rounded]="true" [text]="true"
-              (onClick)="edit(product)" [ariaLabel]="'Edit ' + product.name">
-            </p-button>
-            <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true"
+            <p-button class="product-delete-button" icon="pi pi-trash" severity="danger"
+              [rounded]="true" [text]="true"
               (onClick)="confirmDelete(product)" [ariaLabel]="'Delete ' + product.name">
             </p-button>
           </td>
@@ -161,7 +211,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="11" class="text-center">
+          <td colspan="12" class="text-center">
             {{ loading ? 'Loading products...' : 'No products found' }}
           </td>
         </tr>
@@ -169,7 +219,12 @@
       <ng-template pTemplate="paginatorleft">
         <span class="product-entries-slot">
           Showing {{ productTable.totalRecords ? (productTable.first ?? 0) + 1 : 0 }}
-          of {{ productTable.totalRecords }} Entries
+          to {{ productTable.totalRecords
+            ? ((productTable.first ?? 0) + (productTable.rows ?? rows) < productTable.totalRecords
+              ? (productTable.first ?? 0) + (productTable.rows ?? rows)
+              : productTable.totalRecords)
+            : 0 }}
+          of {{ productTable.totalRecords }} records
         </span>
       </ng-template>
     </p-table>

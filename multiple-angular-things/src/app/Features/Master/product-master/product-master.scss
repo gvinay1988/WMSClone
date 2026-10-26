@@ -3,6 +3,7 @@ $border: #dcdfe3;
 $text: #495057;
 
 .product-master-page {
+  padding: 20px;
   color: $text;
 
   .panel,
@@ -21,6 +22,125 @@ $text: #495057;
     margin: 0 0 18px;
     font-size: 18px;
     font-weight: 500;
+  }
+
+  .form-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+
+    .section-title {
+      margin: 0;
+    }
+  }
+
+  .form-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .excel-icon-button {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 8px;
+    background: #f1f8f3;
+    color: #5a9c70;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: #e1f1e5;
+      color: #35784c;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #79bd91;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    i {
+      font-size: 15px;
+    }
+  }
+
+  .form-panel-toggle {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #79bd91;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background: #eef8f1;
+      color: #4d9d6a;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #79bd91;
+      outline-offset: 2px;
+    }
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  ::ng-deep .p-tabs,
+  ::ng-deep .p-tabpanels,
+  ::ng-deep .p-tabpanel {
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  ::ng-deep .p-tablist-tab-list {
+    border: 0 !important;
+    gap: 8px;
+  }
+
+  ::ng-deep .p-tab {
+    padding: 10px 16px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #111827 !important;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover:not([aria-selected='true']) {
+      background: #f3f4f6 !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #93c5fd;
+      outline-offset: 2px;
+    }
+  }
+
+  ::ng-deep .p-tab[aria-selected='true'] {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    font-weight: 600;
+  }
+
+  ::ng-deep .p-tabpanel {
+    padding: 20px 0 0 !important;
   }
 
   .form-grid {
@@ -103,6 +223,7 @@ $text: #495057;
   }
 
   .preview {
+    position: relative;
     display: flex;
     width: 245px;
     max-width: 100%;
@@ -125,6 +246,36 @@ $text: #495057;
     }
   }
 
+  .remove-image-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: #dc3545;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      background: #bb2d3b;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #842029;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+  }
+
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -134,11 +285,37 @@ $text: #495057;
 
   .table-toolbar {
     width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .entries-section,
+  .search-section {
+    flex-shrink: 0;
+  }
+
+  .search-section {
+    margin-left: auto;
   }
 
   .product-table-scroll {
     width: 100%;
     overflow-x: auto;
+  }
+
+  ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  ::ng-deep .p-datatable .p-datatable-thead > tr > th.product-id-header,
+  ::ng-deep .p-datatable .p-datatable-thead > tr > th.product-name-header {
+    color: #c62828 !important;
+  }
+
+  ::ng-deep .p-datatable .p-sortable-column .p-sortable-column-icon {
+    display: inline-flex;
+    margin-left: 4px;
+    vertical-align: middle;
   }
 
   ::ng-deep .product-table-scroll .p-datatable-table {
@@ -170,15 +347,28 @@ $text: #495057;
     height: 36px;
   }
 
-  .product-name-link {
+  .product-serial-number {
     padding: 0;
     border: 0;
     background: none;
-    color: #0d6efd;
+    color: #111;
     font: inherit;
-    text-align: left;
-    text-decoration: underline;
+    font-weight: 700;
     cursor: pointer;
+  }
+
+  .product-serial-number:focus-visible {
+    outline: 2px solid $accent;
+    outline-offset: 2px;
+  }
+
+  ::ng-deep .product-delete-button {
+    color: #e6a0b5 !important;
+
+    &:hover {
+      background: #fff0f5 !important;
+      color: #d87998 !important;
+    }
   }
 
   .product-table-image {
@@ -195,6 +385,8 @@ $text: #495057;
   }
 
   @media (max-width: 700px) {
+    padding: 12px;
+
     .panel,
     .products-list {
       padding: 16px;

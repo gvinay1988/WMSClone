@@ -1,10 +1,14 @@
+import io
 import math
 import os
+import zipfile
 from typing import Any
 
 import jwt
 import mysql.connector
 from flask import Blueprint, current_app, jsonify, request
+from openpyxl import load_workbook
+from openpyxl.utils.exceptions import InvalidFileException
 
 
 product_master_bp = Blueprint("product_master", __name__)
@@ -17,9 +21,6 @@ TEXT_FIELDS = {
     "description": 2000,
     "hsnType": 20,
     "hsnCode": 50,
-    "category1": 100,
-    "category2": 100,
-    "category3": 100,
     "configuration": 255,
     "dfsCode": 100,
     "type": 100,
@@ -43,6 +44,8 @@ PRODUCT_COLUMNS = (
     "width", "height", "weight", "mrp", "sellingPrice", "tax", "baseUnit",
     "salesUnit", "purchaseUnit", "minStock", "maxStock", "leadTime", "instructions",
 )
+MAX_PRODUCT_EXCEL_BYTES = 10 * 1024 * 1024
+MAX_PRODUCT_EXCEL_ROWS = 5000
 
 
 def get_connection():
@@ -90,7 +93,7 @@ def _authorize():
 
 def _normalize_product(payload: dict[str, Any]):
     values: dict[str, Any] = {}
-    for field, max_length in (("id", 100), ("name", 255), ("category", 100)):
+    for field, max_length in (("id", 100), ("name", 255)):
         value = payload.get(field)
         if not isinstance(value, str) or not value.strip():
             return None, f"{field} is required"
@@ -98,6 +101,17 @@ def _normalize_product(payload: dict[str, Any]):
         if len(value) > max_length:
             return None, f"{field} must be {max_length} characters or fewer"
         values[field] = value
+
+    category = payload.get("category")
+    if category is None or (isinstance(category, str) and not category.strip()):
+        values["category"] = None
+    elif not isinstance(category, str):
+        return None, "category must be a string"
+    else:
+        category = category.strip()
+        if len(category) > 100:
+            return None, "category must be 100 characters or fewer"
+        values["category"] = category
 
     for field, max_length in TEXT_FIELDS.items():
         value = payload.get(field, "")
@@ -110,15 +124,30 @@ def _normalize_product(payload: dict[str, Any]):
             return None, f"{field} must be {max_length} characters or fewer"
         values[field] = value
 
+    for field in ("category1", "category2", "category3"):
+        value = payload.get(field)
+        if value is None or (isinstance(value, str) and not value.strip()):
+            values[field] = None
+            continue
+        if not isinstance(value, str):
+            return None, f"{field} must be a string"
+        value = value.strip()
+        if len(value) > 100:
+            return None, f"{field} must be 100 characters or fewer"
+        values[field] = value
+
     image = payload.get("productImage", "")
-    if not isinstance(image, str) or not image.strip():
-        return None, "productImage is required"
-    image = image.strip()
-    if not image.startswith("data:image/"):
+    if image is None or (isinstance(image, str) and not image.strip()):
+        values["productImage"] = None
+    elif not isinstance(image, str):
         return None, "productImage must be a valid image"
-    if len(image) > 8 * 1024 * 1024:
-        return None, "Product image must be 8 MB or smaller"
-    values["productImage"] = image
+    else:
+        image = image.strip()
+        if not image.startswith("data:image/"):
+            return None, "productImage must be a valid image"
+        if len(image) > 8 * 1024 * 1024:
+            return None, "Product image must be 8 MB or smaller"
+        values["productImage"] = image
 
     for field in NUMERIC_FIELDS:
         value = payload.get(field)
@@ -154,12 +183,12 @@ def initialize_product_master():
                 name VARCHAR(255) NOT NULL,
                 product VARCHAR(255) NOT NULL DEFAULT '',
                 description VARCHAR(2000) NOT NULL DEFAULT '',
-                category VARCHAR(100) NOT NULL,
+                category VARCHAR(100) NULL,
                 hsnType VARCHAR(20) NOT NULL DEFAULT '',
                 hsnCode VARCHAR(50) NOT NULL DEFAULT '',
-                category1 VARCHAR(100) NOT NULL DEFAULT '',
-                category2 VARCHAR(100) NOT NULL DEFAULT '',
-                category3 VARCHAR(100) NOT NULL DEFAULT '',
+                category1 VARCHAR(100) NULL DEFAULT NULL,
+                category2 VARCHAR(100) NULL DEFAULT NULL,
+                category3 VARCHAR(100) NULL DEFAULT NULL,
                 configuration VARCHAR(255) NOT NULL DEFAULT '',
                 dfsCode VARCHAR(100) NOT NULL DEFAULT '',
                 `type` VARCHAR(100) NOT NULL DEFAULT '',
@@ -167,7 +196,7 @@ def initialize_product_master():
                 productType VARCHAR(100) NOT NULL DEFAULT '',
                 upcEan VARCHAR(100) NOT NULL DEFAULT '',
                 warehouse VARCHAR(100) NOT NULL DEFAULT '',
-                productImage LONGTEXT NOT NULL,
+                productImage LONGTEXT NULL,
                 length DECIMAL(14, 3),
                 width DECIMAL(14, 3),
                 height DECIMAL(14, 3),
@@ -188,6 +217,31 @@ def initialize_product_master():
             )
             """
         )
+        cursor.execute(
+            """
+            ALTER TABLE product_master
+                    MODIFY category VARCHAR(100) NULL,
+                    MODIFY category1 VARCHAR(100) NULL DEFAULT NULL,
+                    MODIFY category2 VARCHAR(100) NULL DEFAULT NULL,
+                    MODIFY category3 VARCHAR(100) NULL DEFAULT NULL,
+                    MODIFY productImage LONGTEXT NULL
+            """
+        )
+        cursor.execute(
+            """
+            UPDATE product_master
+            SET category = NULLIF(TRIM(category), ''),
+                    category1 = NULLIF(TRIM(category1), ''),
+                    category2 = NULLIF(TRIM(category2), ''),
+                    category3 = NULLIF(TRIM(category3), ''),
+                    productImage = NULLIF(TRIM(productImage), '')
+            WHERE category = ''
+                    OR category1 = ''
+                    OR category2 = ''
+                    OR category3 = ''
+                    OR productImage = ''
+            """
+        )
     finally:
         cursor.close()
         conn.close()
@@ -198,6 +252,54 @@ def _close(cursor, conn):
         cursor.close()
     if conn:
         conn.close()
+
+
+def _product_excel_headers(header_row):
+    aliases = {
+        "productid": "id",
+        "productname": "name",
+    }
+    column_by_header = {
+        "".join(character.lower() for character in column if character.isalnum()): column
+        for column in PRODUCT_COLUMNS
+    }
+    headers = {}
+    for index, value in enumerate(header_row):
+        if value is None:
+            continue
+        key = "".join(character.lower() for character in str(value) if character.isalnum())
+        if not key or key == "sno":
+            continue
+        column = aliases.get(key, column_by_header.get(key))
+        if column is None:
+            continue
+        if column in headers.values():
+            raise ValueError(f"Duplicate Excel column: {value}")
+        headers[index] = column
+
+    columns = set(headers.values())
+    if "id" not in columns or "name" not in columns:
+        raise ValueError("Excel headers must include Product ID and Product Name")
+    return headers
+
+
+def _product_excel_row(row, headers):
+    payload = {}
+    for index, column in headers.items():
+        value = row[index] if index < len(row) else None
+        if value is None or (isinstance(value, str) and not value.strip()):
+            payload[column] = None if column in NUMERIC_FIELDS else ""
+            continue
+        if column in NUMERIC_FIELDS:
+            if isinstance(value, bool):
+                return None, f"{column} must be a valid non-negative number"
+            try:
+                payload[column] = float(value) if isinstance(value, str) else value
+            except ValueError:
+                return None, f"{column} must be a valid non-negative number"
+        else:
+            payload[column] = str(value).strip()
+    return payload, None
 
 
 @product_master_bp.route(
@@ -294,6 +396,116 @@ def fetch_all_products():
         return respond(500, "Database error while fetching products", productList=[])
     finally:
         _close(cursor, conn)
+
+
+@product_master_bp.route(
+    "/productMaster/services/uploadProductsExcel",
+    methods=["POST", "OPTIONS"],
+)
+def upload_products_excel():
+    if request.method == "OPTIONS":
+        return "", 200
+
+    auth_error = _authorize()
+    if auth_error:
+        return respond(401, auth_error)
+
+    uploaded_file = request.files.get("file")
+    if uploaded_file is None or not uploaded_file.filename:
+        return respond(400, "An .xlsx file is required")
+    if not uploaded_file.filename.lower().endswith(".xlsx"):
+        return respond(400, "Only .xlsx files are supported")
+
+    workbook_bytes = uploaded_file.stream.read(MAX_PRODUCT_EXCEL_BYTES + 1)
+    if len(workbook_bytes) > MAX_PRODUCT_EXCEL_BYTES:
+        return respond(413, "Excel file must be 10 MB or smaller")
+
+    try:
+        workbook = load_workbook(io.BytesIO(workbook_bytes), read_only=True, data_only=True)
+        worksheet = workbook.active
+        if worksheet is None:
+            workbook.close()
+            return respond(400, "The Excel workbook has no worksheet")
+        if (worksheet.max_row or 0) > MAX_PRODUCT_EXCEL_ROWS + 1:
+            workbook.close()
+            return respond(400, f"Excel file cannot contain more than {MAX_PRODUCT_EXCEL_ROWS} product rows")
+        rows = worksheet.iter_rows(values_only=True)
+        header_row = next(rows, None)
+        if not header_row:
+            workbook.close()
+            return respond(400, "The Excel worksheet is empty")
+        try:
+            headers = _product_excel_headers(header_row)
+        except ValueError:
+            workbook.close()
+            raise
+        imported_count = 0
+        processed_row_count = 0
+        failures = []
+        conn = None
+        cursor = None
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            for row_number, row in enumerate(rows, start=2):
+                if not any(value is not None and str(value).strip() for value in row):
+                    continue
+                processed_row_count += 1
+
+                payload, row_error = _product_excel_row(row, headers)
+                if row_error:
+                    failures.append({"row": row_number, "reason": row_error})
+                    continue
+                values, validation_error = _normalize_product(payload)
+                if validation_error:
+                    failures.append({
+                        "row": row_number,
+                        "productId": payload.get("id"),
+                        "reason": validation_error,
+                    })
+                    continue
+
+                cursor.execute("SELECT id FROM product_master WHERE id = %s", (values["id"],))
+                exists = cursor.fetchone() is not None
+                if exists:
+                    update_columns = [
+                        column for column in PRODUCT_COLUMNS
+                        if column != "id" and column in headers.values()
+                    ]
+                    assignments = ", ".join(f"`{column}` = %s" for column in update_columns)
+                    cursor.execute(
+                        f"UPDATE product_master SET {assignments}, updatedAt = CURRENT_TIMESTAMP WHERE id = %s",
+                        tuple(values[column] for column in update_columns) + (values["id"],),
+                    )
+                else:
+                    columns = ", ".join(f"`{column}`" for column in PRODUCT_COLUMNS)
+                    placeholders = ", ".join(["%s"] * len(PRODUCT_COLUMNS))
+                    cursor.execute(
+                        f"INSERT INTO product_master ({columns}) VALUES ({placeholders})",
+                        tuple(values[column] for column in PRODUCT_COLUMNS),
+                    )
+                conn.commit()
+                imported_count += 1
+
+            if processed_row_count == 0:
+                return respond(400, "The Excel worksheet has no product rows")
+            return respond(
+                200,
+                "Product Excel upload processed",
+                importedCount=imported_count,
+                failureCount=len(failures),
+                failures=failures,
+            )
+        except mysql.connector.Error:
+            if conn:
+                conn.rollback()
+            current_app.logger.exception("Database error while uploading products from Excel")
+            return respond(500, "Database error while uploading products from Excel")
+        finally:
+            _close(cursor, conn)
+            workbook.close()
+    except (InvalidFileException, zipfile.BadZipFile, OSError, ValueError, KeyError) as error:
+        return respond(400, str(error) or "Could not read the Excel workbook")
 
 
 @product_master_bp.route(

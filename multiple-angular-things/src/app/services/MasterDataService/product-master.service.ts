@@ -8,12 +8,12 @@ export interface ProductRecord {
   name: string;
   product: string;
   description: string;
-  category: string;
+  category: string | null;
   hsnType: string;
   hsnCode: string;
-  category1: string;
-  category2: string;
-  category3: string;
+  category1: string | null;
+  category2: string | null;
+  category3: string | null;
   configuration: string;
   dfsCode: string;
   type: string;
@@ -21,7 +21,7 @@ export interface ProductRecord {
   productType: string;
   upcEan: string;
   warehouse: string;
-  productImage: string;
+  productImage: string | null;
   length: number | string | null;
   width: number | string | null;
   height: number | string | null;
@@ -42,6 +42,20 @@ export interface ProductMasterResponse {
   statusCode: number;
   statusMsg: string;
   productList?: ProductRecord[];
+}
+
+export interface ProductExcelImportFailure {
+  row: number;
+  productId?: string;
+  reason: string;
+}
+
+export interface ProductExcelUploadResponse {
+  statusCode: number;
+  statusMsg: string;
+  importedCount: number;
+  failureCount: number;
+  failures: ProductExcelImportFailure[];
 }
 
 type ProductNumericField =
@@ -88,6 +102,18 @@ export class ProductMasterService {
     return this.httpService.restCall(
       this.createRequest('productMaster/services/deleteProductMaster', { id })
     ) as Observable<ProductMutationResponse>;
+  }
+
+  uploadProductsExcel(file: File): Observable<ProductExcelUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    const request = new HttpReq();
+    request.type = this.restTypePost;
+    request.url = 'productMaster/services/uploadProductsExcel';
+    request.showLoader = true;
+    request.contentType = 'multipart/form-data';
+    request.body = formData;
+    return this.httpService.restCall(request) as Observable<ProductExcelUploadResponse>;
   }
 
   private createRequest(url: string, body: object): HttpReq {

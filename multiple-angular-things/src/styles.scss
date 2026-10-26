@@ -860,11 +860,138 @@ input:focus {
   align-items: center;
   justify-content: flex-start !important;
   flex-wrap: wrap;
+  gap: 0;
+}
+
+.p-datatable .p-datatable-table {
+  border: 1px solid #dcdfe3;
+  border-collapse: collapse;
+}
+
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr > td {
+  border: 1px solid #dcdfe3;
+  text-align: center;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  padding: 10px;
+}
+
+.p-paginator .p-paginator-pages {
+  display: flex;
+  gap: 0;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page {
+  display: inline-flex !important;
+  width: 2.5rem !important;
+  min-width: 2.5rem !important;
+  height: 2.5rem !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 6px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  font-size: 1rem !important;
+}
+
+.p-paginator .p-paginator-page-selected {
+  background-color: #fce4ec !important;
+  border-color: #f8bbd0 !important;
+  color: #c2185b !important;
+}
+
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last {
+  color: #c7cbd1 !important;
+  margin: 0 6px !important;
+  font-size: 1rem !important;
 }
 .p-dialog {
     background-color: yellow!important;
     color: black !important;
     padding: 1rem;
+}
+
+.p-dialog.product-delete-confirm-dialog {
+  width: min(420px, calc(100vw - 2rem));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #111827 !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+}
+
+.product-delete-confirm-dialog .p-dialog-header {
+  position: relative;
+  justify-content: center;
+  min-height: 64px;
+  padding: 1.5rem 3rem 0.75rem;
+  border: 0;
+  background: #fff;
+  color: #111827;
+}
+
+.product-delete-confirm-dialog .p-dialog-header-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.product-delete-confirm-dialog .p-dialog-content {
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+}
+
+.product-delete-confirm-dialog .p-confirmdialog-message {
+  justify-content: center;
+  width: 100%;
+  margin: 0;
+  color: #374151;
+  text-align: center;
+}
+
+.product-delete-confirm-dialog .p-dialog-footer {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem 1.5rem;
+  border: 0;
+  background: #fff;
+}
+
+.product-delete-confirm-dialog .p-confirmdialog-reject-button,
+.product-delete-confirm-dialog .p-confirmdialog-accept-button {
+  min-width: 88px;
+  padding: 0.45rem 1rem !important;
+  border-radius: 5px;
+  font-weight: 550;
+}
+
+.product-delete-confirm-dialog .product-confirm-yes {
+  border-color: #198754 !important;
+  background: #198754 !important;
+  color: #fff !important;
+}
+
+.product-delete-confirm-dialog .product-confirm-yes:hover {
+  border-color: #157347 !important;
+  background: #157347 !important;
+}
+
+.product-delete-confirm-dialog .product-confirm-no {
+  border: 1px solid #d1d5db !important;
+  background: #fff !important;
+  color: #374151 !important;
+}
+
+.product-delete-confirm-dialog .product-confirm-no:hover {
+  border-color: #9ca3af !important;
+  background: #f9fafb !important;
 }
 .p-button-label {
    padding: 1rem!important;
