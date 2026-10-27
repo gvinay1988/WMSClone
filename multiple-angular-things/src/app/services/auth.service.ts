@@ -3,14 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 export interface LoginPayload {
-  email: string;
+  userID: string;
   password: string;
 }
 
 export interface LoginResponse {
   token: string;
   user: {
-    email: string;
+    userID: string;
+    userIDName: string;
+    email?: string;
     role: string;
   };
 }
@@ -133,7 +135,8 @@ export class AuthService {
   // GET USER NAME
   // =========================
   getUserName(): string {
-    return this.getUser()?.email ?? 'Admin';
+    const user = this.getUser();
+    return user?.userIDName || user?.userID || user?.email || 'Admin';
   }
 
   // =========================

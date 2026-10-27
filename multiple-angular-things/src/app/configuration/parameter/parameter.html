@@ -8,14 +8,82 @@
       </div>
       <div class="panel-content" *ngIf="!collapsed">
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-12">
             <div class="form-group row">
               <label class="col-md-3 control-label">Country </label>
-              <div class="col-md-9">
+              <div class="col-md-6">
                 <tag-input [(ngModel)]="countryList" [ngModelOptions]="{ standalone: true }" displayBy="countryName"
                   [identifyBy]="'countryName'" placeholder="Enter country" secondaryPlaceholder="Enter country"
                   (onAdd)="saveParameter($event, 'country')" (onRemove)="openDeletePopup($event, 'country')">
                 </tag-input>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group row">
+              <label class="col-md-3 control-label">Category 1</label>
+              <div class="col-md-6">
+                <tag-input [(ngModel)]="categoryLists[1]" [ngModelOptions]="{ standalone: true }"
+                  displayBy="categoryName" [identifyBy]="'categoryName'" placeholder="Enter category 1"
+                  secondaryPlaceholder="Enter category 1" (onAdd)="saveParameter($event, 'category1')"
+                  (onRemove)="openDeletePopup($event, 'category1')">
+                </tag-input>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group row">
+              <label class="col-md-3 control-label">Category 2</label>
+              <div class="col-md-6">
+                <tag-input [(ngModel)]="categoryLists[2]" [ngModelOptions]="{ standalone: true }"
+                  displayBy="categoryName" [identifyBy]="'categoryName'" placeholder="Enter category 2"
+                  secondaryPlaceholder="Enter category 2" (onAdd)="saveParameter($event, 'category2')"
+                  (onRemove)="openDeletePopup($event, 'category2')">
+                </tag-input>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group row">
+              <label class="col-md-3 control-label">Category 3</label>
+              <div class="col-md-6">
+                <tag-input [(ngModel)]="categoryLists[3]" [ngModelOptions]="{ standalone: true }"
+                  displayBy="categoryName" [identifyBy]="'categoryName'" placeholder="Enter category 3"
+                  secondaryPlaceholder="Enter category 3" (onAdd)="saveParameter($event, 'category3')"
+                  (onRemove)="openDeletePopup($event, 'category3')">
+                </tag-input>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group row">
+              <label class="col-md-3 control-label" for="dashboard-home-text">Dashboard Home Text</label>
+              <div class="col-md-6">
+                <input id="dashboard-home-text" class="form-control" type="text"
+                  [(ngModel)]="dashboardText" [ngModelOptions]="{ standalone: true }"
+                  maxlength="500" placeholder="Enter dashboard text">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group row">
+              <label class="col-md-3 control-label" for="header-brand-image">Header Brand Image</label>
+              <div class="col-md-6">
+                <input id="header-brand-image" class="form-control" type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  (change)="onBrandImageSelected($event)">
+                <small class="form-text text-muted">PNG, JPEG, WEBP, or GIF; maximum size 2 MB.</small>
+                <img *ngIf="headerImage" class="brand-image-preview" [src]="headerImage" alt="Header brand preview">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group row">
+              <div class="col-md-6 offset-md-3">
+                <button class="btn btn-primary" type="button" [disabled]="brandingSaving"
+                  (click)="saveApplicationBranding()">
+                  {{ brandingSaving ? 'Saving...' : 'Save Home Text and Header Image' }}
+                </button>
               </div>
             </div>
           </div>
@@ -24,4 +92,5 @@
     </div>
   </div>
 </div>
-<app-delete-pop-up [(visible)]="deleteInfo" (onConfirm)="deleteCountry()"></app-delete-pop-up>
+<app-delete-pop-up [(visible)]="deleteInfo" (onConfirm)="deleteParameter()"
+  (onCancel)="cancelDelete()"></app-delete-pop-up>

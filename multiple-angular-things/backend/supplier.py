@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 import jwt
 import mysql.connector
@@ -79,11 +80,15 @@ def initialize_supplier_table():
                 address VARCHAR(500),
                 city VARCHAR(100),
                 pinCode VARCHAR(20),
+                supplierImage LONGTEXT NULL,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     ON UPDATE CURRENT_TIMESTAMP
             )
         """)
+        cursor.execute("SHOW COLUMNS FROM suppliers LIKE 'supplierImage'")
+        if cursor.fetchone() is None:
+            cursor.execute("ALTER TABLE suppliers ADD COLUMN supplierImage LONGTEXT NULL")
 
         conn.commit()
 
@@ -96,6 +101,62 @@ def initialize_supplier_table():
         if cursor:
             cursor.close()
 
+        if conn:
+            conn.close()
+
+
+@supplier_bp.route(
+    "/supplier/services/deleteSupplier",
+    methods=["POST", "OPTIONS"]
+)
+def delete_supplier():
+    if request.method == "OPTIONS":
+        return "", 200
+
+    try:
+        get_current_user()
+    except ValueError as exc:
+        return jsonify({
+            "success": False,
+            "detail": str(exc)
+        }), 401
+
+    payload = request.get_json(silent=True) or {}
+    supplier_id = payload.get("id")
+    if not isinstance(supplier_id, str) or not supplier_id.strip():
+        return jsonify({
+            "success": False,
+            "detail": "Supplier ID is required"
+        }), 400
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM suppliers WHERE id = %s", (supplier_id.strip(),))
+        if cursor.rowcount == 0:
+            return jsonify({
+                "success": False,
+                "detail": "Supplier not found"
+            }), 404
+
+        conn.commit()
+        return jsonify({
+            "success": True,
+            "statusCode": 200,
+            "statusMsg": "Supplier deleted successfully"
+        }), 200
+    except mysql.connector.Error as exc:
+        if conn:
+            conn.rollback()
+        return jsonify({
+            "success": False,
+            "detail": str(exc)
+        }), 500
+    finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
@@ -144,6 +205,22 @@ def save_or_update_supplier():
             "detail": "supplierName is required"
         }), 400
 
+    supplier_image = payload.get("supplierImage")
+    if supplier_image in (None, ""):
+        supplier_image = None
+    elif (
+        not isinstance(supplier_image, str)
+        or len(supplier_image) > 2_800_000
+        or not re.fullmatch(
+            r"data:image/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/]+={0,2}",
+            supplier_image,
+        )
+    ):
+        return jsonify({
+            "success": False,
+            "detail": "Upload a valid PNG, JPEG, WEBP, or GIF image under 2 MB"
+        }), 400
+
     conn = None
     cursor = None
 
@@ -182,6 +259,7 @@ def save_or_update_supplier():
                     address = %s,
                     city = %s,
                     pinCode = %s,
+                    supplierImage = COALESCE(%s, supplierImage),
                     updatedAt = CURRENT_TIMESTAMP
                 WHERE id = %s
                 """,
@@ -197,6 +275,7 @@ def save_or_update_supplier():
                     payload.get("address"),
                     payload.get("city"),
                     payload.get("pinCode"),
+                    supplier_image,
                     supplier_id
                 )
             )
@@ -231,11 +310,12 @@ def save_or_update_supplier():
                 panNumber,
                 address,
                 city,
-                pinCode
+                pinCode,
+                supplierImage
             )
             VALUES (
                 %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s
             )
             """,
             (
@@ -251,7 +331,8 @@ def save_or_update_supplier():
                 payload.get("panNumber"),
                 payload.get("address"),
                 payload.get("city"),
-                payload.get("pinCode")
+                payload.get("pinCode"),
+                supplier_image
             )
         )
 
@@ -340,6 +421,7 @@ def fetch_all_suppliers():
                 address,
                 city,
                 pinCode,
+                supplierImage,
                 createdAt,
                 updatedAt
             FROM suppliers

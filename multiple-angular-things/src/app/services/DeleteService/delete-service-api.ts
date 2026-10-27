@@ -22,4 +22,14 @@ deleteCountryData(entityData: any) {
   httpReq.body = entityData;
   return this.httpService.restCall(httpReq);
 }
+
+deleteCategoryData(entityData: any) {
+  const httpReq: HttpReq = new HttpReq();
+  httpReq.type = this.REST_TYPE_POST;
+  httpReq.url = 'parameter/service/deleteCategoryDetails';
+  httpReq.showLoader = true;
+  httpReq.contentType = 'applicationJSON';
+  httpReq.body = entityData;
+  return this.httpService.restCall(httpReq);
+}
 }

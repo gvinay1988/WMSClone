@@ -39,89 +39,62 @@
           <p-tabpanels>
             <p-tabpanel value="details">
               <div class="form-grid">
-          <label for="productId">Product ID <span class="req">*</span></label>
-          <div class="field">
-            <input id="productId" type="text" class="pf-input" formControlName="id"
-              placeholder="Product ID" maxlength="100"
-              [class.is-invalid]="productForm.controls.id.invalid && productForm.controls.id.touched">
-            <small class="err" *ngIf="productForm.controls.id.invalid && productForm.controls.id.touched">
-              Product ID is required.
-            </small>
-          </div>
-
-          <label for="productName">Product Name <span class="req">*</span></label>
-          <div class="field">
-            <input id="productName" type="text" class="pf-input" formControlName="name"
-              placeholder="Product Name" maxlength="255"
-              [class.is-invalid]="productForm.controls.name.invalid && productForm.controls.name.touched">
-            <small class="err" *ngIf="productForm.controls.name.invalid && productForm.controls.name.touched">
-              Product name is required.
-            </small>
-          </div>
-
-          <label for="product">Product</label>
-          <div class="field">
-            <input id="product" type="text" class="pf-input" formControlName="product"
-              placeholder="Product">
-          </div>
-
-          <label for="description">Product Description</label>
-          <div class="field">
-            <input id="description" type="text" class="pf-input" formControlName="description"
-              placeholder="Product Description">
-          </div>
-
-          <label for="category">Category</label>
-          <div class="field">
-            <ng-select id="category" formControlName="category" [items]="categories"
-              bindLabel="label" bindValue="value" placeholder="--Select--" appendTo="body">
-            </ng-select>
-          </div>
-
-          <label for="hsnCode">HSN Code</label>
-          <div class="field">
-            <input id="hsnCode" type="text" class="pf-input" formControlName="hsnCode" placeholder="HSN Code">
-          </div>
-
-          <label for="productImageFile">Product Image</label>
-          <div class="field image-box">
-            <input type="hidden" formControlName="productImage">
-            <div class="preview">
-              <img *ngIf="imagePreview" [src]="imagePreview" alt="Product image">
-              <span *ngIf="!imagePreview" class="placeholder"><i class="pi pi-image"></i></span>
-              <button *ngIf="imagePreview" type="button" class="remove-image-button"
-                (click)="removeImage(productImageInput)" [disabled]="submitting"
-                aria-label="Remove product image" title="Remove product image">
-                <i class="pi pi-times" aria-hidden="true"></i>
-              </button>
-            </div>
-            <input #productImageInput id="productImageFile" type="file" class="pf-input file" accept="image/*"
-              (change)="onFileChange($event)">
-          </div>
+                <ng-container *ngFor="let field of detailFields">
+                  <label [for]="field.id">
+                    {{ field.label }}<span *ngIf="field.required" class="req"> *</span>
+                  </label>
+                  <div class="field" [ngSwitch]="field.type">
+                    <ng-container *ngSwitchCase="'text'">
+                      <input [id]="field.id" type="text" class="pf-input"
+                        [formControlName]="field.key" [placeholder]="field.placeholder || ''"
+                        [attr.maxlength]="field.maxLength"
+                        [class.is-invalid]="productForm.controls[field.key].invalid
+                          && productForm.controls[field.key].touched">
+                      <small class="err" *ngIf="field.required
+                        && productForm.controls[field.key].invalid
+                        && productForm.controls[field.key].touched">
+                        {{ field.errorText }}
+                      </small>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'select'">
+                      <ng-select [id]="field.id" [formControlName]="field.key"
+                        [items]="field.options || []" bindLabel="label" bindValue="value"
+                        [placeholder]="field.placeholder || '--Select--'" appendTo="body">
+                      </ng-select>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'image'">
+                      <input type="hidden" [formControlName]="field.key">
+                      <div class="image-box">
+                        <div class="preview">
+                          <img *ngIf="imagePreview" [src]="imagePreview" alt="Product image">
+                          <span *ngIf="!imagePreview" class="placeholder">
+                            <i class="pi pi-image" aria-hidden="true"></i>
+                          </span>
+                          <button *ngIf="imagePreview" type="button" class="remove-image-button"
+                            (click)="removeImage(productImageInput)" [disabled]="submitting"
+                            aria-label="Remove product image" title="Remove product image">
+                            <i class="pi pi-times" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <input #productImageInput [id]="field.id" type="file"
+                          class="pf-input file" accept="image/*" (change)="onFileChange($event)">
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
               </div>
             </p-tabpanel>
             <p-tabpanel value="categories">
               <div class="form-grid">
-          <label for="category1">Category 1</label>
-          <div class="field">
-            <ng-select id="category1" formControlName="category1" [items]="categories"
-              bindLabel="label" bindValue="value" placeholder="--Select--" appendTo="body">
-            </ng-select>
-          </div>
-
-          <label for="category2">Category 2</label>
-          <div class="field">
-            <ng-select id="category2" formControlName="category2" [items]="categories"
-              bindLabel="label" bindValue="value" placeholder="--Select--" appendTo="body">
-            </ng-select>
-          </div>
-
-          <label for="category3">Category 3</label>
-          <div class="field">
-            <ng-select id="category3" formControlName="category3" [items]="categories"
-              bindLabel="label" bindValue="value" placeholder="--Select--" appendTo="body">
-            </ng-select>
-          </div>
+                <ng-container *ngFor="let field of categoryFields">
+                  <label [for]="field.id">{{ field.label }}</label>
+                  <div class="field">
+                    <ng-select [id]="field.id" [formControlName]="field.key"
+                      [items]="field.options || []" bindLabel="label" bindValue="value"
+                      [placeholder]="field.placeholder || '--Select--'" appendTo="body">
+                    </ng-select>
+                  </div>
+                </ng-container>
               </div>
             </p-tabpanel>
           </p-tabpanels>
@@ -166,16 +139,10 @@
       <ng-template pTemplate="header">
         <tr>
           <th>S.No</th>
-          <th class="product-id-header" pSortableColumn="id">Product ID <p-sortIcon field="id"></p-sortIcon></th>
-          <th class="product-name-header" pSortableColumn="name">Product Name <p-sortIcon field="name"></p-sortIcon></th>
-          <th pSortableColumn="productImage">Image <p-sortIcon field="productImage"></p-sortIcon></th>
-          <th pSortableColumn="product">Product <p-sortIcon field="product"></p-sortIcon></th>
-          <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
-          <th pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
-          <th pSortableColumn="hsnCode">HSN Code <p-sortIcon field="hsnCode"></p-sortIcon></th>
-          <th pSortableColumn="category1">Category 1 <p-sortIcon field="category1"></p-sortIcon></th>
-          <th pSortableColumn="category2">Category 2 <p-sortIcon field="category2"></p-sortIcon></th>
-          <th pSortableColumn="category3">Category 3 <p-sortIcon field="category3"></p-sortIcon></th>
+          <th *ngFor="let column of tableColumns" [ngClass]="column.headerClass"
+            [pSortableColumn]="column.field">
+            {{ column.label }}<p-sortIcon [field]="column.field"></p-sortIcon>
+          </th>
           <th aria-label="Product actions">Actions</th>
         </tr>
       </ng-template>
@@ -187,20 +154,18 @@
               {{ rowIndex + 1 }}
             </button>
           </td>
-          <td>{{ product.id }}</td>
-          <td>{{ product.name }}</td>
-          <td>
-            <img *ngIf="product.productImage" class="product-table-image"
-              [src]="product.productImage" [alt]="product.name">
-            <span *ngIf="!product.productImage">-</span>
+          <td *ngFor="let column of tableColumns">
+            <ng-container [ngSwitch]="column.type">
+              <ng-container *ngSwitchCase="'image'">
+                <img *ngIf="getProductImage(product, column.field) as image"
+                  class="product-table-image" [src]="image" [alt]="product.name">
+                <span *ngIf="!getProductImage(product, column.field)">-</span>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                {{ getProductCellValue(product, column.field) }}
+              </ng-container>
+            </ng-container>
           </td>
-          <td>{{ product.product || '-' }}</td>
-          <td>{{ product.description || '-' }}</td>
-          <td>{{ product.category || '-' }}</td>
-          <td>{{ product.hsnCode || '-' }}</td>
-          <td>{{ product.category1 || '-' }}</td>
-          <td>{{ product.category2 || '-' }}</td>
-          <td>{{ product.category3 || '-' }}</td>
           <td class="text-nowrap text-center">
             <p-button class="product-delete-button" icon="pi pi-trash" severity="danger"
               [rounded]="true" [text]="true"
@@ -211,7 +176,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="12" class="text-center">
+          <td [attr.colspan]="tableColumns.length + 2" class="text-center">
             {{ loading ? 'Loading products...' : 'No products found' }}
           </td>
         </tr>

@@ -1,14 +1,10 @@
-import io
 import math
 import os
-import zipfile
 from typing import Any
 
 import jwt
 import mysql.connector
 from flask import Blueprint, current_app, jsonify, request
-from openpyxl import load_workbook
-from openpyxl.utils.exceptions import InvalidFileException
 
 
 product_master_bp = Blueprint("product_master", __name__)
@@ -44,7 +40,6 @@ PRODUCT_COLUMNS = (
     "width", "height", "weight", "mrp", "sellingPrice", "tax", "baseUnit",
     "salesUnit", "purchaseUnit", "minStock", "maxStock", "leadTime", "instructions",
 )
-MAX_PRODUCT_EXCEL_BYTES = 10 * 1024 * 1024
 MAX_PRODUCT_EXCEL_ROWS = 5000
 
 
@@ -254,8 +249,12 @@ def _close(cursor, conn):
         conn.close()
 
 
-def _product_excel_headers(header_row):
+def _product_json_row(payload):
+    if not isinstance(payload, dict):
+        return None, "Product row must be an object"
+
     aliases = {
+        "product": "product",
         "productid": "id",
         "productname": "name",
     }
@@ -263,43 +262,38 @@ def _product_excel_headers(header_row):
         "".join(character.lower() for character in column if character.isalnum()): column
         for column in PRODUCT_COLUMNS
     }
-    headers = {}
-    for index, value in enumerate(header_row):
-        if value is None:
+    normalized = {}
+    for header, value in payload.items():
+        if not isinstance(header, str):
             continue
-        key = "".join(character.lower() for character in str(value) if character.isalnum())
+        key = "".join(character.lower() for character in header if character.isalnum())
         if not key or key == "sno":
             continue
         column = aliases.get(key, column_by_header.get(key))
         if column is None:
             continue
-        if column in headers.values():
-            raise ValueError(f"Duplicate Excel column: {value}")
-        headers[index] = column
+        normalized[column] = value
 
-    columns = set(headers.values())
-    if "id" not in columns or "name" not in columns:
-        raise ValueError("Excel headers must include Product ID and Product Name")
-    return headers
-
-
-def _product_excel_row(row, headers):
-    payload = {}
-    for index, column in headers.items():
-        value = row[index] if index < len(row) else None
+    for column in NUMERIC_FIELDS:
+        value = normalized.get(column)
         if value is None or (isinstance(value, str) and not value.strip()):
-            payload[column] = None if column in NUMERIC_FIELDS else ""
+            normalized[column] = None
             continue
-        if column in NUMERIC_FIELDS:
-            if isinstance(value, bool):
-                return None, f"{column} must be a valid non-negative number"
+        if isinstance(value, bool):
+            return None, f"{column} must be a number"
+        if isinstance(value, str):
             try:
-                payload[column] = float(value) if isinstance(value, str) else value
+                normalized[column] = float(value)
             except ValueError:
-                return None, f"{column} must be a valid non-negative number"
-        else:
-            payload[column] = str(value).strip()
-    return payload, None
+                return None, f"{column} must be a number"
+    for column in PRODUCT_COLUMNS:
+        if column in NUMERIC_FIELDS:
+            continue
+        value = normalized.get(column)
+        if value is not None and not isinstance(value, str):
+            normalized[column] = str(value).strip()
+
+    return normalized, None
 
 
 @product_master_bp.route(
@@ -410,102 +404,74 @@ def upload_products_excel():
     if auth_error:
         return respond(401, auth_error)
 
-    uploaded_file = request.files.get("file")
-    if uploaded_file is None or not uploaded_file.filename:
-        return respond(400, "An .xlsx file is required")
-    if not uploaded_file.filename.lower().endswith(".xlsx"):
-        return respond(400, "Only .xlsx files are supported")
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict) or not isinstance(payload.get("products"), list):
+        return respond(400, "Request body must contain a products array")
 
-    workbook_bytes = uploaded_file.stream.read(MAX_PRODUCT_EXCEL_BYTES + 1)
-    if len(workbook_bytes) > MAX_PRODUCT_EXCEL_BYTES:
-        return respond(413, "Excel file must be 10 MB or smaller")
+    product_rows = payload["products"]
+    if not product_rows:
+        return respond(400, "The request contains no product rows")
+    if len(product_rows) > MAX_PRODUCT_EXCEL_ROWS:
+        return respond(400, f"Request cannot contain more than {MAX_PRODUCT_EXCEL_ROWS} product rows")
 
+    imported_count = 0
+    failures = []
+    conn = None
+    cursor = None
     try:
-        workbook = load_workbook(io.BytesIO(workbook_bytes), read_only=True, data_only=True)
-        worksheet = workbook.active
-        if worksheet is None:
-            workbook.close()
-            return respond(400, "The Excel workbook has no worksheet")
-        if (worksheet.max_row or 0) > MAX_PRODUCT_EXCEL_ROWS + 1:
-            workbook.close()
-            return respond(400, f"Excel file cannot contain more than {MAX_PRODUCT_EXCEL_ROWS} product rows")
-        rows = worksheet.iter_rows(values_only=True)
-        header_row = next(rows, None)
-        if not header_row:
-            workbook.close()
-            return respond(400, "The Excel worksheet is empty")
-        try:
-            headers = _product_excel_headers(header_row)
-        except ValueError:
-            workbook.close()
-            raise
-        imported_count = 0
-        processed_row_count = 0
-        failures = []
-        conn = None
-        cursor = None
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
-            for row_number, row in enumerate(rows, start=2):
-                if not any(value is not None and str(value).strip() for value in row):
-                    continue
-                processed_row_count += 1
+        conn = get_connection()
+        cursor = conn.cursor()
+        for row_number, row in enumerate(product_rows, start=2):
+            product, row_error = _product_json_row(row)
+            if row_error:
+                failures.append({"row": row_number, "reason": row_error})
+                continue
 
-                payload, row_error = _product_excel_row(row, headers)
-                if row_error:
-                    failures.append({"row": row_number, "reason": row_error})
-                    continue
-                values, validation_error = _normalize_product(payload)
-                if validation_error:
-                    failures.append({
-                        "row": row_number,
-                        "productId": payload.get("id"),
-                        "reason": validation_error,
-                    })
-                    continue
+            values, validation_error = _normalize_product(product)
+            if validation_error:
+                failures.append({
+                    "row": row_number,
+                    "productId": product.get("id"),
+                    "reason": validation_error,
+                })
+                continue
 
-                cursor.execute("SELECT id FROM product_master WHERE id = %s", (values["id"],))
-                exists = cursor.fetchone() is not None
-                if exists:
-                    update_columns = [
-                        column for column in PRODUCT_COLUMNS
-                        if column != "id" and column in headers.values()
-                    ]
-                    assignments = ", ".join(f"`{column}` = %s" for column in update_columns)
-                    cursor.execute(
-                        f"UPDATE product_master SET {assignments}, updatedAt = CURRENT_TIMESTAMP WHERE id = %s",
-                        tuple(values[column] for column in update_columns) + (values["id"],),
-                    )
-                else:
-                    columns = ", ".join(f"`{column}`" for column in PRODUCT_COLUMNS)
-                    placeholders = ", ".join(["%s"] * len(PRODUCT_COLUMNS))
-                    cursor.execute(
-                        f"INSERT INTO product_master ({columns}) VALUES ({placeholders})",
-                        tuple(values[column] for column in PRODUCT_COLUMNS),
-                    )
-                conn.commit()
-                imported_count += 1
+            cursor.execute("SELECT id FROM product_master WHERE id = %s", (values["id"],))
+            exists = cursor.fetchone() is not None
+            if exists:
+                update_columns = [
+                    column for column in PRODUCT_COLUMNS
+                    if column != "id" and column in product
+                ]
+                assignments = ", ".join(f"`{column}` = %s" for column in update_columns)
+                cursor.execute(
+                    f"UPDATE product_master SET {assignments}, updatedAt = CURRENT_TIMESTAMP WHERE id = %s",
+                    tuple(values[column] for column in update_columns) + (values["id"],),
+                )
+            else:
+                columns = ", ".join(f"`{column}`" for column in PRODUCT_COLUMNS)
+                placeholders = ", ".join(["%s"] * len(PRODUCT_COLUMNS))
+                cursor.execute(
+                    f"INSERT INTO product_master ({columns}) VALUES ({placeholders})",
+                    tuple(values[column] for column in PRODUCT_COLUMNS),
+                )
+            conn.commit()
+            imported_count += 1
 
-            if processed_row_count == 0:
-                return respond(400, "The Excel worksheet has no product rows")
-            return respond(
-                200,
-                "Product Excel upload processed",
-                importedCount=imported_count,
-                failureCount=len(failures),
-                failures=failures,
-            )
-        except mysql.connector.Error:
-            if conn:
-                conn.rollback()
-            current_app.logger.exception("Database error while uploading products from Excel")
-            return respond(500, "Database error while uploading products from Excel")
-        finally:
-            _close(cursor, conn)
-            workbook.close()
-    except (InvalidFileException, zipfile.BadZipFile, OSError, ValueError, KeyError) as error:
-        return respond(400, str(error) or "Could not read the Excel workbook")
+        return respond(
+            200,
+            "Product Excel upload processed",
+            importedCount=imported_count,
+            failureCount=len(failures),
+            failures=failures,
+        )
+    except mysql.connector.Error:
+        if conn:
+            conn.rollback()
+        current_app.logger.exception("Database error while uploading product rows")
+        return respond(500, "Database error while uploading product rows")
+    finally:
+        _close(cursor, conn)
 
 
 @product_master_bp.route(

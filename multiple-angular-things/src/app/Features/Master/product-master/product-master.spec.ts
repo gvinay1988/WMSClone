@@ -54,10 +54,19 @@ describe('ProductMaster', () => {
   beforeEach(async () => {
     productService = jasmine.createSpyObj<ProductMasterService>(
       'ProductMasterService',
-      ['findAllProducts', 'saveProduct', 'deleteProduct']
+      ['findAllProducts', 'saveProduct', 'deleteProduct', 'uploadProductsExcel']
     );
     productService.findAllProducts.and.returnValue(
       of({ statusCode: 200, statusMsg: 'Products fetched successfully', productList: [] })
+    );
+    productService.uploadProductsExcel.and.returnValue(
+      of({
+        statusCode: 200,
+        statusMsg: 'Product Excel upload processed',
+        importedCount: 1,
+        failureCount: 0,
+        failures: [],
+      })
     );
 
     await TestBed.configureTestingModule({
@@ -86,27 +95,50 @@ describe('ProductMaster', () => {
     ]);
   });
 
-  it('exports every product field with headers accepted by the Excel upload parser', async () => {
+  it('exports product fields with headers accepted by the Excel upload parser', () => {
     const excelService = TestBed.inject(ExcelService);
-    const exportSpy = spyOn(excelService, 'exportAsExcelFileWithHeaderColors')
-      .and.returnValue(Promise.resolve());
+    const exportSpy = spyOn(excelService, 'exportAsExcelFile');
     component.products = [createProductRecord()];
 
-    await component.exportAsXLSX();
+    component.exportAsXLSX();
 
     const [rows, fileName] = exportSpy.calls.mostRecent().args;
-    expect(fileName).toBe('Product-Master');
+    expect(fileName).toBe('Product Data');
     expect(Object.keys(rows[0])).toEqual([
-      'S.No', 'Product ID', 'Product Name', 'Product', 'Description', 'Category',
-      'HSN Type', 'HSN Code', 'Category 1', 'Category 2', 'Category 3',
-      'Configuration', 'DFS Code', 'Type', 'Product Class', 'Product Type',
-      'UPC/EAN', 'Warehouse', 'Product Image', 'Length', 'Width', 'Height',
-      'Weight', 'MRP', 'Selling Price', 'Tax', 'Base Unit', 'Sales Unit',
-      'Purchase Unit', 'Min Stock', 'Max Stock', 'Lead Time', 'Instructions',
+      'Product ID', 'Name', 'Product', 'Type', 'Product Type', 'Category',
+      'Base Unit', 'Purchase Unit', 'Sales Unit', 'Selling Price', 'MRP', 'Tax',
+      'HSN Code', 'HSN Type', 'DFS Code', 'UPC/EAN', 'Warehouse', 'Min Stock',
+      'Max Stock', 'Weight', 'Length', 'Width', 'Height', 'Configuration',
+      'Description', 'Instructions',
     ]);
+    expect(rows[0].Name).toBe('Product 1');
     expect(rows[0]['HSN Type']).toBe('GST');
     expect(rows[0]['Selling Price']).toBe(90);
     expect(rows[0].Instructions).toBe('Handle with care');
+  });
+
+  it('parses the workbook and uploads its product rows as JSON', async () => {
+    const excelService = TestBed.inject(ExcelService);
+    spyOn(excelService, 'generateJsonUsingExcel').and.returnValue(Promise.resolve([{
+      'Product ID': 'SKU-1',
+      Name: 'Product 1',
+      'Selling Price': 19.5,
+      'S.No': 1,
+    }]));
+    const input = document.createElement('input');
+    input.type = 'file';
+    const file = new File(['workbook'], 'Product-Master.xlsx');
+    Object.defineProperty(input, 'files', { value: [file] });
+    const event = new Event('change');
+    Object.defineProperty(event, 'target', { value: input });
+
+    await component.importProducts(event);
+
+    expect(productService.uploadProductsExcel).toHaveBeenCalledOnceWith({
+      products: [{ id: 'SKU-1', name: 'Product 1', sellingPrice: 19.5 }],
+    });
+    expect(input.value).toBe('');
+    expect(productService.findAllProducts).toHaveBeenCalledTimes(2);
   });
 
   it('should show the image in the third table column and edit from the product ID', () => {

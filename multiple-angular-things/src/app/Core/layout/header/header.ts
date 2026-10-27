@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { ApplicationBrandingService } from '../../../services/MasterDataService/application-branding.service';
 
 @Component({
   selector: 'app-header',
@@ -15,11 +16,20 @@ import { CommonModule } from '@angular/common';
 export class Header {
   username = 'Vinay';
   isDropdownOpen = false;
+  headerImage: string | null = null;
   @Output() toggle = new EventEmitter<void>();
   constructor(
     private readonly router: Router,
-    private readonly authService: AuthService
-  ) { }
+    private readonly authService: AuthService,
+    private readonly brandingService: ApplicationBrandingService,
+    private readonly cdr: ChangeDetectorRef
+  ) {
+    this.brandingService.branding$.subscribe(settings => {
+      this.headerImage = settings.headerImage;
+      this.cdr.markForCheck();
+    });
+    this.brandingService.load();
+  }
   toggleDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
   }

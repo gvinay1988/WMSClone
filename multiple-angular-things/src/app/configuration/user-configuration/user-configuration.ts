@@ -25,6 +25,7 @@ export class UserConfiguration {
   showImage = true;
   imagePreview: string | null = null;
   selectedImage: File | null = null;
+  showPassword = false;
   totalLength = 8;
   minLower = 1;
   minNumbers = 1;
@@ -194,6 +195,7 @@ export class UserConfiguration {
     this.selectedImage = null;
     this.isReadMode = false;
     this.userIDName = '';
+    this.showPassword = false;
   }
 
   shouldShowErrors(controlName: string, form: FormGroup): boolean {
@@ -256,7 +258,11 @@ export class UserConfiguration {
   }
 
   editUser(user: any): void {
+    this.isReadMode = true;
+    this.userIDName = user.userIDName || '';
     this.userConfigForm.patchValue(user);
+    this.userConfigForm.get('password')?.setValue('');
+    this.showPassword = false;
 
     if (user.userImage) {
       this.imagePreview = this.getImageSrc(user.userImage);

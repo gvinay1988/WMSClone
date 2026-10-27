@@ -73,13 +73,7 @@ export class StateMaster implements OnInit {
       status: ['Active', Validators.required],
     });
   }
-activeTab: 'details' | 'list' | 'import' = 'details';
 collapsed = false;
-
-selectTab(tab: 'details' | 'list' | 'import'): void {
-  this.activeTab = tab;
-  this.collapsed = false;
-}
 
 toggleCollapse(): void {
   this.collapsed = !this.collapsed;
@@ -174,6 +168,7 @@ toggleCollapse(): void {
   edit(state: StateRecord): void {
     this.stateForm.patchValue(state);
     this.editing = true;
+    this.collapsed = false;
   }
 
   confirmDelete(state: StateRecord): void {

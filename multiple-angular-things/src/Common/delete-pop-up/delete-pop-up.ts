@@ -11,10 +11,12 @@ export class DeletePopUp {
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() onConfirm = new EventEmitter<void>();
+  @Output() onCancel = new EventEmitter<void>();
 
   cancelDelete(): void {
     this.visible = false;
     this.visibleChange.emit(false);
+    this.onCancel.emit();
   }
 
   confirmDelete(): void {

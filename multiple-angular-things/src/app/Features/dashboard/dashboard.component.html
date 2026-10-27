@@ -2,6 +2,13 @@
 
   <div class="background-overlay"></div>
 
+  <aside class="dashboard-branding" *ngIf="dashboardText || headerImage">
+    <img *ngIf="headerImage" class="dashboard-branding-logo" [src]="headerImage" alt="Company logo">
+    <p *ngIf="dashboardText" class="dashboard-home-text" [style.font-size.px]="dashboardTextFontSize">
+      {{ dashboardText }}
+    </p>
+  </aside>
+
   <header class="top-bar">
 
     <div class="top-left">

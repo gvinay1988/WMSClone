@@ -6,33 +6,41 @@ import { HttpService } from '../../Features/Auth/http-service';
   providedIn: 'root',
 })
 export class ParameterService {
-  
-  
-      REST_TYPE_GET: any = 'GET';
-      REST_TYPE_POST: any = 'POST';
-      REST_TYPE_PUT: any = 'PUT';
-      REST_TYPE_DELETE: any = 'DELETE';
-    
-      constructor(private httpService: HttpService) { } 
-    
+  private readonly restTypePost = 'POST';
 
   saveCountryParameterData(entityData: any) {
-    const httpReq: HttpReq = new HttpReq();
-    httpReq.type = this.REST_TYPE_POST;
-    httpReq.url = 'parameter/service/saveCountryDetails';
+    return this.createRequest('parameter/service/saveCountryDetails', entityData);
+  }
+
+  findALLCountryList() {
+    return this.createRequest('parameter/service/getCountryDetails', {});
+  }
+
+  saveCategoryParameterData(entityData: any) {
+    return this.createRequest('parameter/service/saveCategoryDetails', entityData);
+  }
+
+  findCategoryList(categoryNumber: number) {
+    return this.createRequest('parameter/service/getCategoryDetails', { categoryNumber });
+  }
+
+  getApplicationBranding() {
+    return this.createRequest('parameter/service/getApplicationBranding', {});
+  }
+
+  saveApplicationBranding(settings: { dashboardText: string; headerImage: string | null }) {
+    return this.createRequest('parameter/service/saveApplicationBranding', settings);
+  }
+
+  private createRequest(url: string, body: object) {
+    const httpReq = new HttpReq();
+    httpReq.type = this.restTypePost;
+    httpReq.url = url;
     httpReq.showLoader = true;
     httpReq.contentType = 'applicationJSON';
-    httpReq.body = entityData;
+    httpReq.body = body;
     return this.httpService.restCall(httpReq);
   }
-    findALLCountryList() {
-      const httpReq: HttpReq = new HttpReq();
-      httpReq.type = this.REST_TYPE_POST; 
-      httpReq.url = 'parameter/service/getCountryDetails';
-      httpReq.showLoader = true;
-      httpReq.contentType = 'applicationJSON';
-       httpReq.body = {};
-      return this.httpService.restCall(httpReq); 
-    }
-     
-    }
+
+  constructor(private readonly httpService: HttpService) {}
+}

@@ -1,0 +1,240 @@
+.product-category-group-page {
+  padding: 10px;
+}
+
+.category-group-panel,
+.category-group-list-panel {
+  padding: 22px;
+  border: 1px solid #dcdfe3;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.category-group-list-panel {
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.category-group-heading {
+  margin-bottom: 18px;
+}
+
+.category-group-title {
+  margin: 0;
+  color: #495057;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.category-group-panel .form-label {
+  margin-bottom: 6px;
+  color: #495057;
+  font-size: 13px;
+}
+
+.category-group-panel .form-control {
+  border-color: #dcdfe3;
+  border-radius: 6px;
+}
+
+.category-group-panel .form-control:focus {
+  border-color: #1fc8c8;
+  box-shadow: 0 0 0 2px rgba(31, 200, 200, 0.15);
+}
+
+.category-group-panel ::ng-deep .ng-select .ng-select-container {
+  width: 100%;
+  min-height: 38px;
+  border-color: #dcdfe3;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.category-group-panel ::ng-deep .ng-select.ng-select-focused .ng-select-container {
+  border-color: #1fc8c8;
+  box-shadow: 0 0 0 2px rgba(31, 200, 200, 0.15);
+}
+
+.category-group-panel ::ng-deep .ng-select .ng-value {
+  border-radius: 4px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.category-group-panel ::ng-deep .ng-select .ng-value-icon:hover {
+  background: #dbeafe;
+}
+
+.category-group-panel ::ng-deep .ng-dropdown-panel {
+  z-index: 1100;
+}
+
+.category-group-panel ::ng-deep .ng-dropdown-panel .ng-option {
+  font-size: 13px;
+}
+
+.category-group-panel ::ng-deep .ng-dropdown-panel .ng-option.ng-option-marked {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.category-group-panel ::ng-deep .ng-select .ng-select-container:hover {
+  border-color: #b7c0c9;
+}
+
+.category-group-error {
+  display: block;
+  margin-top: 4px;
+  color: #dc3545;
+  font-size: 11px;
+}
+
+.category-group-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.category-group-session-note {
+  margin: 8px 0 14px;
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.category-group-table-toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.category-group-entries {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-group-entries label {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.category-group-entries select {
+  width: 75px;
+  height: 36px;
+  font-size: 12px;
+}
+
+.category-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 2px 5px 2px 0;
+  padding: 3px 4px 3px 8px;
+  border: 1px solid #d8e6f5;
+  border-radius: 14px;
+  background: #f3f8fd;
+  color: #355b82;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.remove-category-button {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #6c8298;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.remove-category-button:hover {
+  background: #e4edf7;
+  color: #b42318;
+}
+
+.remove-category-button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.category-group-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #dcdfe3;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .category-group-table-scroll .p-datatable-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .category-group-table-scroll .p-datatable-thead > tr > th {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+:host ::ng-deep .category-group-table-scroll .p-datatable-tbody > tr > td {
+  vertical-align: middle;
+}
+
+:host ::ng-deep .category-group-table-scroll .category-group-paginator {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.category-group-record-count {
+  margin-right: auto;
+  font-size: 12px;
+}
+
+.category-group-action-button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.category-group-action-button.edit {
+  color: #3976b8;
+}
+
+.category-group-action-button.edit:hover {
+  background: #edf5ff;
+}
+
+.category-group-action-button.delete {
+  color: #d87998;
+}
+
+.category-group-action-button.delete:hover {
+  background: #fff0f5;
+}
+
+.category-group-action-button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+@media (max-width: 576px) {
+  .category-group-panel,
+  .category-group-list-panel {
+    padding: 16px;
+  }
+}

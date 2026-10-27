@@ -54,6 +54,12 @@ export const routes: Routes = [
                 .then(m => m.ProductMaster)
           },
           {
+            path: 'productCategoryGroup',
+            loadComponent: () =>
+              import('./Features/Master/product-category-group/product-category-group')
+                .then(m => m.ProductCategoryGroup)
+          },
+          {
             path: 'statemaster',
             loadComponent: () =>
               import('./Features/Master/state-master/state-master')

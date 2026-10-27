@@ -1,181 +1,181 @@
+<p-confirmDialog></p-confirmDialog>
+
 <div id="inBody">
-  <div class="commonResponsivepanel">
-    <fieldset class="border rounded-2 p-3 pt-2" [formGroup]="supplierForm">
-      <legend class="float-none w-auto px-2 fs-6 fw-normal">
-        Supplier Details
-      </legend>
-      <div class="row g-3">
-        <!-- COLUMN 1 -->
-        <div class="col-md-4">
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label"> Supplier Code <span class="text-danger">*</span> </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm"
-                [class.is-invalid]="supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched"
-                formControlName="supplierCode" placeholder="Supplier Code">
+  <section class="supplier-form-panel" [formGroup]="supplierForm">
+    <div class="supplier-form-heading">
+      <h2 class="supplier-form-title">Supplier Details</h2>
+      <button type="button" class="supplier-form-toggle" (click)="toggleSupplierFields()"
+        [attr.aria-expanded]="supplierFieldsExpanded" aria-controls="supplier-fields">
+        <i class="pi" [class.pi-chevron-down]="supplierFieldsExpanded"
+          [class.pi-chevron-right]="!supplierFieldsExpanded" aria-hidden="true"></i>
+        <span class="visually-hidden">
+          {{ supplierFieldsExpanded ? 'Hide supplier fields' : 'Show supplier fields' }}
+        </span>
+      </button>
+    </div>
+    <div id="supplier-fields" *ngIf="supplierFieldsExpanded">
+      <p-tabs [(value)]="activeTab">
+        <p-tablist>
+          <p-tab value="details">Supplier Details</p-tab>
+          <p-tab value="additional">Additional Details</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+          <p-tabpanel value="details">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="row align-items-center mb-3">
+                  <label class="col-5 col-form-label" for="supplierCode">
+                    Supplier Code <span class="text-danger">*</span>
+                  </label>
+                  <div class="col-7">
+                    <input id="supplierCode" type="text" class="form-control form-control-sm"
+                      [class.is-invalid]="supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched"
+                      formControlName="supplierCode" placeholder="Supplier Code" [readonly]="isEditingSupplier">
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <label class="col-5 col-form-label" for="supplierName">
+                    Supplier Name <span class="text-danger">*</span>
+                  </label>
+                  <div class="col-7">
+                    <input id="supplierName" type="text" class="form-control form-control-sm"
+                      [class.is-invalid]="supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched"
+                      formControlName="supplierName" placeholder="Supplier Name">
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <label class="col-5 col-form-label" for="supplierImageFile">
+                    Supplier Image <span class="text-danger">*</span>
+                  </label>
+                  <div class="col-7">
+                    <div class="supplier-image-field">
+                      <div class="supplier-image-preview">
+                        <img *ngIf="supplierImagePreview" [src]="supplierImagePreview" alt="Supplier image preview">
+                        <i *ngIf="!supplierImagePreview" class="pi pi-image" aria-hidden="true"></i>
+                      </div>
+                      <div class="supplier-image-input">
+                        <input #supplierImageInput id="supplierImageFile" type="file"
+                          class="form-control form-control-sm" accept="image/png,image/jpeg,image/webp,image/gif"
+                          (change)="onSupplierImageSelected($event)">
+                        <small class="text-muted">PNG, JPEG, WEBP, or GIF; max 2 MB.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="row align-items-center mb-3">
+                  <label class="col-5 col-form-label" for="supplierEmail">Email</label>
+                  <div class="col-7">
+                    <input id="supplierEmail" type="email" class="form-control form-control-sm"
+                      formControlName="email" placeholder="Email">
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <label class="col-5 col-form-label" for="supplierPhone">Phone</label>
+                  <div class="col-7">
+                    <input id="supplierPhone" type="text" class="form-control form-control-sm"
+                      formControlName="phone" placeholder="Phone Number">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="row align-items-center mb-3">
+                  <label class="col-5 col-form-label" for="supplierPan">PAN Number</label>
+                  <div class="col-7">
+                    <input id="supplierPan" type="text" class="form-control form-control-sm"
+                      formControlName="panNumber" placeholder="PAN Number">
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <label class="col-5 col-form-label" for="supplierAddress">Address</label>
+                  <div class="col-7">
+                    <input id="supplierAddress" type="text" class="form-control form-control-sm"
+                      formControlName="address" placeholder="Address">
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          </p-tabpanel>
 
-          <!-- Supplier Name -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              Supplier Name <span class="text-danger">*</span>
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm"
-                [class.is-invalid]="supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched"
-                formControlName="supplierName" placeholder="Supplier Name">
+          <p-tabpanel value="additional">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="row align-items-center mb-3">
+                  <label class="col-5 col-form-label" for="supplierType">Supplier Type</label>
+                  <div class="col-7">
+                    <input id="supplierType" type="text" class="form-control form-control-sm"
+                      formControlName="supplierType" placeholder="Supplier Type">
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <label class="col-5 col-form-label" for="contactPerson">Contact Person</label>
+                  <div class="col-7">
+                    <input id="contactPerson" type="text" class="form-control form-control-sm"
+                      formControlName="contactPerson" placeholder="Contact Person">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="row align-items-center mb-3">
+                  <label class="col-5 col-form-label" for="supplierMobile">Mobile</label>
+                  <div class="col-7">
+                    <input id="supplierMobile" type="text" class="form-control form-control-sm"
+                      formControlName="mobile" placeholder="Mobile Number">
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <label class="col-5 col-form-label" for="supplierGst">GST Number</label>
+                  <div class="col-7">
+                    <input id="supplierGst" type="text" class="form-control form-control-sm"
+                      formControlName="gstNumber" placeholder="GST Number">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="row align-items-center mb-3">
+                  <label class="col-5 col-form-label" for="supplierCity">City</label>
+                  <div class="col-7">
+                    <input id="supplierCity" type="text" class="form-control form-control-sm"
+                      formControlName="city" placeholder="City">
+                  </div>
+                </div>
+                <div class="row align-items-center">
+                  <label class="col-5 col-form-label" for="supplierPinCode">Pin Code</label>
+                  <div class="col-7">
+                    <input id="supplierPinCode" type="text" class="form-control form-control-sm"
+                      formControlName="pinCode" placeholder="Pin Code">
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
 
-          <!-- Supplier Type -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              Supplier Type
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="supplierType"
-                placeholder="Supplier Type">
-            </div>
-          </div>
-
-          <!-- Contact Person -->
-          <div class="row align-items-center">
-            <label class="col-5 col-form-label">
-              Contact Person
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="contactPerson"
-                placeholder="Contact Person">
-            </div>
-          </div>
-
-        </div>
-
-
-        <!-- COLUMN 2 -->
-        <div class="col-md-4">
-
-          <!-- Email -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              Email
-            </label>
-            <div class="col-7">
-              <input type="email" class="form-control form-control-sm" formControlName="email" placeholder="Email">
-            </div>
-          </div>
-
-          <!-- Phone -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              Phone
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="phone"
-                placeholder="Phone Number">
-            </div>
-          </div>
-
-          <!-- Mobile -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              Mobile
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="mobile"
-                placeholder="Mobile Number">
-            </div>
-          </div>
-
-          <!-- GST Number -->
-          <div class="row align-items-center">
-            <label class="col-5 col-form-label">
-              GST Number
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="gstNumber"
-                placeholder="GST Number">
-            </div>
-          </div>
-
-        </div>
-
-
-        <!-- COLUMN 3 -->
-        <div class="col-md-4">
-          <!-- PAN Number -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              PAN Number
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="panNumber"
-                placeholder="PAN Number">
-            </div>
-          </div>
-
-          <!-- Address -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              Address
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="address" placeholder="Address">
-            </div>
-          </div>
-
-          <!-- City -->
-          <div class="row align-items-center mb-3">
-            <label class="col-5 col-form-label">
-              City
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="city" placeholder="City">
-            </div>
-          </div>
-
-          <!-- Pin Code -->
-          <div class="row align-items-center">
-            <label class="col-5 col-form-label">
-              Pin Code
-            </label>
-            <div class="col-7">
-              <input type="text" class="form-control form-control-sm" formControlName="pinCode" placeholder="Pin Code">
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- BUTTONS -->
       <div class="d-flex justify-content-end gap-2 mt-3">
-        <button type="button" class="btn btn-sm btn-primary" (click)="saveSupplier()"
+        <button type="button" class="btn btn-sm btn-primary" (click)="saveSupplier(supplierImageInput)"
           [disabled]="supplierForm.invalid || submitting()">
           <span *ngIf="submitting()">Saving...</span>
-          <span *ngIf="!submitting()">Save Supplier</span>
+          <span *ngIf="!submitting()">{{ isEditingSupplier ? 'Update Supplier' : 'Save Supplier' }}</span>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" (click)="clearSupplier()">
-          Clear
-        </button>
+        <button type="button" class="btn btn-sm btn-secondary"
+          (click)="clearSupplier(supplierImageInput)">Clear</button>
       </div>
+    </div>
+  </section>
 
-    </fieldset>
-
-  </div>
-
-
-  <!-- Suppliers Table -->
-  <div class="commonResponsivepanel">
-    <div class="mt-4">
-      <h5>Suppliers List</h5>
-      <div class="table-toolbar d-flex justify-content-between align-items-center mb-2">
+  <section class="supplier-list-panel">
+      <h2 class="supplier-list-title">Suppliers List</h2>
+      <div class="table-toolbar d-flex align-items-center mb-2 gap-2">
         <div class="entries-section d-flex align-items-center gap-2">
-          <label for="entries">Show Entries</label>
-          <select id="entries" class="form-select" style="width: 75px; font-size: 12px;" [(ngModel)]="rows"
-            (ngModelChange)="supplierTable.first = 0">
+          <label for="entries">Show entries</label>
+          <select id="entries" class="form-select" [(ngModel)]="rows"
+            [ngModelOptions]="{ standalone: true }" (ngModelChange)="supplierTable.first = 0">
             <option [ngValue]="2">2</option>
             <option [ngValue]="5">5</option>
             <option [ngValue]="10">10</option>
@@ -183,73 +183,90 @@
             <option [ngValue]="50">50</option>
           </select>
         </div>
-
         <div class="search-section d-flex align-items-center gap-2">
           <label for="search">Search</label>
-          <input id="search" type="text" pInputText placeholder="Search suppliers..." [(ngModel)]="searchValue"
-            (input)="supplierTable.filterGlobal(searchValue, 'contains')" style="width: 220px; font-size: 12px;" />
+          <input id="search" type="text" class="supplier-search-input" pInputText placeholder="Search suppliers..."
+            [(ngModel)]="searchValue" [ngModelOptions]="{ standalone: true }"
+            (input)="supplierTable.filterGlobal(searchValue, 'contains')">
         </div>
       </div>
 
-      
-      <p-table #supplierTable [value]="suppliers" [paginator]="true" [rows]="rows"
-        [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+      <div class="supplier-table-scroll">
+      <p-table #supplierTable class="supplier-table" [value]="suppliers" [paginator]="true"
+        [rows]="rows" [loading]="loading()" paginatorPosition="bottom"
+        paginatorStyleClass="supplier-paginator" responsiveLayout="scroll">
         <ng-template pTemplate="header">
-        <tr class="list table-header">
-          <th pSortableColumn="supplierCode">
-            Supplier Code
-            <p-sortIcon field="supplierCode"></p-sortIcon>
-          </th>
-          <th pSortableColumn="supplierName">
-            Supplier Name
-            <p-sortIcon field="supplierName"></p-sortIcon>
-          </th>
-          <th>Supplier Type</th>
-          <th>Contact Person</th>
-          <th>Email</th>
-          <th>Mobile</th>
-          <th>City</th>
-          <th>Actions</th>
-        </tr>
+          <tr class="list table-header">
+            <th class="serial-column">S.No</th>
+            <th class="supplier-image-header">Image</th>
+            <th pSortableColumn="supplierCode">
+              Supplier Code
+              <p-sortIcon field="supplierCode"></p-sortIcon>
+            </th>
+            <th pSortableColumn="supplierName">
+              Supplier Name
+              <p-sortIcon field="supplierName"></p-sortIcon>
+            </th>
+            <th>Supplier Type</th>
+            <th>Contact Person</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>City</th>
+            <th aria-label="Delete supplier">Actions</th>
+          </tr>
         </ng-template>
 
-        <ng-template pTemplate="body" let-supplier>
+        <ng-template pTemplate="body" let-supplier let-rowIndex="rowIndex">
           <tr>
-            <td>{{ supplier.supplierCode }}</td>
+            <td class="serial-column">{{ supplierTable.first + rowIndex + 1 }}</td>
+            <td class="supplier-image-cell">
+              <img *ngIf="supplier.supplierImage" class="supplier-table-image"
+                [src]="supplier.supplierImage" [alt]="supplier.supplierName + ' image'">
+              <img *ngIf="!supplier.supplierImage" class="supplier-table-image supplier-demo-image"
+              [src]="getSupplierDemoImage(supplier.supplierCode)"
+              [alt]="supplier.supplierName + ' demo image'">
+            </td>
+            <td>
+              <button type="button" class="supplier-code-edit"
+                (click)="editSupplier(supplier)"
+                [attr.aria-label]="'Edit supplier ' + supplier.supplierCode">
+                {{ supplier.supplierCode }}
+              </button>
+            </td>
             <td>{{ supplier.supplierName }}</td>
             <td>{{ supplier.supplierType || '-' }}</td>
             <td>{{ supplier.contactPerson || '-' }}</td>
             <td>{{ supplier.email || '-' }}</td>
             <td>{{ supplier.mobile || '-' }}</td>
             <td>{{ supplier.city || '-' }}</td>
-            <td>
-              <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm"
-                pTooltip="Delete" tooltipPosition="top">
-              </button>
+            <td class="text-nowrap text-center">
+              <p-button class="supplier-delete-button" icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true"
+                (onClick)="confirmDelete(supplier)" [ariaLabel]="'Delete ' + supplier.supplierName">
+              </p-button>
             </td>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="8" class="text-center">
+            <td colspan="10" class="text-center">
               {{ loading() ? 'Loading suppliers...' : 'No suppliers found' }}
             </td>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="paginatorleft">
-          <span class="table-count">
-
+          <span class="supplier-record-count">
+            Showing {{ supplierTable.totalRecords ? (supplierTable.first ?? 0) + 1 : 0 }}
+            to {{ supplierTable.totalRecords
+              ? ((supplierTable.first ?? 0) + (supplierTable.rows ?? rows) < supplierTable.totalRecords
+                ? (supplierTable.first ?? 0) + (supplierTable.rows ?? rows)
+                : supplierTable.totalRecords)
+              : 0 }}
+            of {{ supplierTable.totalRecords }} records
           </span>
         </ng-template>
-
-        <ng-template pTemplate="paginatorright">
-          <span></span>
-        </ng-template>
       </p-table>
-    </div>
-  </div>
-
-
+      </div>
+  </section>
 </div>

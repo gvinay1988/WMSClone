@@ -18,17 +18,17 @@ describe('ProductMasterService', () => {
     service = new ProductMasterService(httpService);
   });
 
-  it('uploads the selected workbook as multipart form data to the Product Master API', () => {
-    const file = new File(['workbook'], 'Product-Master.xlsx');
+  it('uploads parsed product rows as JSON to the Product Master API', () => {
+    const payload = {
+      products: [{ id: 'SKU-1', name: 'Product 1', sellingPrice: 19.5 }],
+    };
 
-    service.uploadProductsExcel(file).subscribe();
+    service.uploadProductsExcel(payload).subscribe();
 
     const request = httpService.restCall.calls.mostRecent().args[0];
     expect(request.url).toBe('productMaster/services/uploadProductsExcel');
     expect(request.type).toBe('POST');
-    expect(request.contentType).toBe('multipart/form-data');
-    const uploadedFile = (request.body as FormData).get('file') as File;
-    expect(uploadedFile.name).toBe(file.name);
-    expect(uploadedFile.size).toBe(file.size);
+    expect(request.contentType).toBe('applicationJSON');
+    expect(request.body).toEqual(payload);
   });
 });

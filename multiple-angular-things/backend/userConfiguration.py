@@ -169,10 +169,13 @@ def save_or_update_user_configuration():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            "SELECT id FROM user_configurations WHERE userID = %s",
+            "SELECT id, password FROM user_configurations WHERE userID = %s",
             (user_id,),
         )
         existing_user = cursor.fetchone()
+
+        if not existing_user and not payload.get("password"):
+            return respond(400, "Password is required for a new user")
 
         if existing_user:
             user_configuration_id = existing_user["id"]
@@ -184,7 +187,7 @@ def save_or_update_user_configuration():
                     firstName = %s,
                     lastName = %s,
                     userIDName = %s,
-                    password = %s,
+                    password = COALESCE(NULLIF(%s, ''), password),
                     rolesList = %s,
                     businessUnit = %s,
                     usersCreationLimit = %s,

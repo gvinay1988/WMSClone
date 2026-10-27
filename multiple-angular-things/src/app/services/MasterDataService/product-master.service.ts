@@ -58,6 +58,10 @@ export interface ProductExcelUploadResponse {
   failures: ProductExcelImportFailure[];
 }
 
+export interface ProductExcelUploadPayload {
+  products: Array<Record<string, string | number | null>>;
+}
+
 type ProductNumericField =
   | 'length'
   | 'width'
@@ -104,17 +108,11 @@ export class ProductMasterService {
     ) as Observable<ProductMutationResponse>;
   }
 
-  uploadProductsExcel(file: File): Observable<ProductExcelUploadResponse> {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    const request = new HttpReq();
-    request.type = this.restTypePost;
-    request.url = 'productMaster/services/uploadProductsExcel';
-    request.showLoader = true;
-    request.contentType = 'multipart/form-data';
-    request.body = formData;
-    return this.httpService.restCall(request) as Observable<ProductExcelUploadResponse>;
-  }
+uploadProductsExcel(payload: ProductExcelUploadPayload): Observable<ProductExcelUploadResponse> {
+  return this.httpService.restCall(
+    this.createRequest('productMaster/services/uploadProductsExcel', payload)
+  ) as Observable<ProductExcelUploadResponse>;
+}
 
   private createRequest(url: string, body: object): HttpReq {
     const request = new HttpReq();

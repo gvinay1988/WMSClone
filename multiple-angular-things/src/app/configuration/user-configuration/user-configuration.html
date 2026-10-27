@@ -69,6 +69,7 @@
                           placeholder="{{'User ID' | translate}}"
                           [ngClass]="{'valiError': shouldShowErrors('userID', userConfigForm), 'valiSucess': shouldShowSuccess('userID')}"
                           class="form-control"
+                          [readonly]="isReadMode"
                           type="text">
                       </div>
                     </div>
@@ -81,7 +82,7 @@
                           name="userIDName"
                           formControlName="userIDName"
                           type="text"
-                          [readonly]="userIDName"
+                          [readonly]="isReadMode || !!userIDName"
                           class="form-control">
                       </div>
                     </div>
@@ -89,12 +90,23 @@
                     <div class="form-group row">
                       <label class="col-sm-5 col-form-label">{{'Password' | translate}}<i class="red">*</i></label>
                       <div class="col-sm-7">
-                        <input
-                          type="password"
-                          class="form-control"
-                          formControlName="password"
-                          placeholder="Enter password"
-                          required>
+                        <div class="input-group">
+                          <input
+                            [type]="showPassword ? 'text' : 'password'"
+                            class="form-control"
+                            formControlName="password"
+                            placeholder="Enter password"
+                            required>
+                          <button
+                            class="btn btn-outline-secondary"
+                            type="button"
+                            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+                            [attr.aria-pressed]="showPassword"
+                            (click)="showPassword = !showPassword">
+                            <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                              aria-hidden="true"></i>
+                          </button>
+                        </div>
                         <small class="password-hint">
                           @if(totalLength){
                             <span [ngClass]="isValid('totalLength') ? 'valid' : 'invalid'">
@@ -489,8 +501,8 @@
           <ng-template pTemplate="body" let-user let-i="rowIndex">
             <tr>
               <td>{{i + 1}}</td>
-              <td (click)="editUser(user)" class="clickable">{{user.userID}}</td>
-              <td>{{user.userIDName}}</td>
+              <td>{{user.userID}}</td>
+              <td (click)="editUser(user)" class="clickable">{{user.userIDName}}</td>
               <td>
                 <img
                   *ngIf="user.userImage"

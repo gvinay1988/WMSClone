@@ -20,4 +20,13 @@ describe('DeletePopUp', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should emit a cancel event when deletion is canceled', () => {
+    const cancelSpy = spyOn(component.onCancel, 'emit');
+
+    component.cancelDelete();
+
+    expect(component.visible).toBeFalse();
+    expect(cancelSpy).toHaveBeenCalled();
+  });
 });

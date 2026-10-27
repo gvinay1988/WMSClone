@@ -12,8 +12,8 @@ import { AuthService } from '../../../services/auth.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  readonly email = signal('admin@example.com');
-  readonly password = signal('password123');
+  readonly userID = signal('');
+  readonly password = signal('');
   readonly rememberMe = signal(false);
   readonly isSubmitting = signal(false);
   readonly loginError = signal('');
@@ -26,7 +26,7 @@ export class LoginComponent {
   onSubmit(): void {
     this.isSubmitting.set(true);
     this.loginError.set('');
-    this.authService.login({ email: this.email(), password: this.password() }).subscribe({
+    this.authService.login({ userID: this.userID().trim(), password: this.password() }).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);},
       error: () => {

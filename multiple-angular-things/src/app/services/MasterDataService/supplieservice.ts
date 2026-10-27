@@ -32,9 +32,18 @@ findALLSuppliers(entityData: any) {
    httpReq.body = entityData;
   return this.httpService.restCall(httpReq); 
 }
+
+deleteSupplier(id: string) {
+   const httpReq: HttpReq = new HttpReq();
+   httpReq.type = this.REST_TYPE_POST;
+   httpReq.url = 'supplier/services/deleteSupplier';
+   httpReq.showLoader = true;
+   httpReq.contentType = 'applicationJSON';
+   httpReq.body = { id };
+   return this.httpService.restCall(httpReq);
+}
  
 }
-
 
 
 

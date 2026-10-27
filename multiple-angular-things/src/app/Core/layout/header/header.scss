@@ -5,6 +5,76 @@
   z-index: 1050;
 }
 
+.header-brand-image {
+  display: block;
+  max-width: 160px;
+  max-height: 42px;
+  object-fit: contain;
+}
+
+.custom-navbar .nav-icon,
+.custom-navbar .menu-icon {
+  font-size: 15px;
+}
+
+.custom-navbar .icon-client {
+  color: #3878c7;
+}
+
+.custom-navbar .icon-inbound {
+  color: #26a269;
+}
+
+.custom-navbar .icon-outbound {
+  color: #e58b32;
+}
+
+.custom-navbar .icon-more {
+  color: #64748b;
+}
+
+.custom-navbar .icon-masters {
+  color: #805ad5;
+}
+
+.custom-navbar .icon-supplier,
+.custom-navbar .icon-product {
+  color: #3976b8;
+}
+
+.custom-navbar .icon-state {
+  color: #198754;
+}
+
+.custom-navbar .icon-category {
+  color: #8a63c7;
+}
+
+.custom-navbar .icon-settings,
+.custom-navbar .icon-configuration {
+  color: #64748b;
+}
+
+.custom-navbar .icon-parameter {
+  color: #d18a24;
+}
+
+.custom-navbar .icon-users {
+  color: #168b9a;
+}
+
+.custom-navbar .icon-help {
+  color: #2b9c9c;
+}
+
+.custom-navbar .icon-logout {
+  color: #dc3545;
+}
+
+.custom-navbar .dropdown-item:hover .icon-logout {
+  color: #b02a37;
+}
+
 .custom-navbar .nav-link {
   font-size: 12px;
   font-weight: 500;

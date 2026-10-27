@@ -14,35 +14,29 @@ export class HttpService {
     API_ENDPOINT = environment.apiUrl;
     constructor(private http: HttpClient) { }
     
-    postMethod(httpReq: HttpReq): Observable<any> {
+  postMethod(httpReq: HttpReq): Observable<any> {
   const url = environment.apiUrl + (httpReq.url || '');
-  let headers: HttpHeaders | undefined;
+  let headers: HttpHeaders;
+
   if (httpReq.contentType === 'multipart/form-data') {
     headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.getAccessToken()}`
+      Authorization: `Bearer ${this.getAccessToken()}`
     });
   } else if (httpReq.contentType === 'formEncoded') {
     headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.getAccessToken()}`,
+      Authorization: `Bearer ${this.getAccessToken()}`,
       'Content-Type': this.CONTENT_APPLICATION_URLENCODED
     });
-
   } else {
     headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.getAccessToken()}`,
+      Authorization: `Bearer ${this.getAccessToken()}`,
       'Content-Type': this.CONTENT_APPLICATION_JSON
     });
   }
-  
-  
-  return this.http.post(url,httpReq.body,{ headers }).pipe(map((response: any) => {
-      return response;
-    }),
-    catchError((error) => {
 
-      return throwError(() => error);
-    })
-
+  return this.http.post(url, httpReq.body, { headers }).pipe(
+    map((response: any) => response),
+    catchError(error => throwError(() => error))
   );
 }
     restCall(httpReq: HttpReq): Observable<any> {

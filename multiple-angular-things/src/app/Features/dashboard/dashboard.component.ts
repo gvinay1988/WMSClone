@@ -1,9 +1,10 @@
-import {Component,OnInit,OnDestroy} from '@angular/core';
+import {Component,OnInit,OnDestroy,ChangeDetectorRef} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {  interval, Subscription} from 'rxjs';
 import { RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { ApplicationBrandingService } from '../../services/MasterDataService/application-branding.service';
 
 
 interface Task {
@@ -30,7 +31,7 @@ interface UpcomingTask {
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent  implements OnInit, OnDestroy { 
+export class DashboardComponent  implements OnInit, OnDestroy {
  
   /* =========================
      USER
@@ -48,6 +49,7 @@ export class DashboardComponent  implements OnInit, OnDestroy {
   greeting = '';
 
   private clockSubscription?: Subscription;
+  private brandingSubscription?: Subscription;
 
 
   /* =========================
@@ -64,6 +66,18 @@ export class DashboardComponent  implements OnInit, OnDestroy {
   ========================= */
 
   focus = '';
+  dashboardText = '';
+  headerImage: string | null = null;
+
+  get dashboardTextFontSize(): number {
+    const excessCharacters = Math.max(0, this.dashboardText.trim().length - 80);
+    return Math.max(14, Math.min(24, 24 - excessCharacters * 0.025));
+  }
+
+  constructor(
+    private readonly brandingService: ApplicationBrandingService,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
 
 
   /* =========================
@@ -95,6 +109,12 @@ export class DashboardComponent  implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.loadData();
+    this.brandingSubscription = this.brandingService.branding$.subscribe(settings => {
+      this.dashboardText = settings.dashboardText;
+      this.headerImage = settings.headerImage;
+      this.cdr.markForCheck();
+    });
+    this.brandingService.load();
 
     this.getGreeting();
  
@@ -216,6 +236,7 @@ getGreeting() {
   ngOnDestroy(): void {
 
     this.clockSubscription?.unsubscribe();
+    this.brandingSubscription?.unsubscribe();
   }
   upcomingTasks: UpcomingTask[] = [
   {

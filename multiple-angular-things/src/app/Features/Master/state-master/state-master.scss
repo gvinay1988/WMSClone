@@ -2,241 +2,262 @@
   padding: 10px;
 }
 
-.state-master-page fieldset {
+.state-excel-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.state-replace-option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: #495057;
+  font-size: 12px;
+}
+
+.state-replace-option input {
+  margin: 0;
+}
+
+.state-excel-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.state-excel-button,
+.state-form-toggle {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #3976b8;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.state-excel-button:hover:not(:disabled),
+.state-form-toggle:hover {
+  background: #edf5ff;
+  color: #245b96;
+}
+
+.state-excel-button:focus-visible,
+.state-form-toggle:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.state-excel-button:disabled {
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.state-form-panel,
+.state-list-panel {
+  padding: 22px;
+  border: 1px solid #dcdfe3;
+  border-radius: 10px;
   background: #fff;
 }
 
-.state-master-page legend {
-  font-size: 0.875rem;
+.state-list-panel {
+  margin-top: 20px;
+  overflow: hidden;
 }
 
-.state-master-page ng-select {
+.state-form-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.state-panel-title {
+  margin: 0 0 18px;
+  color: #495057;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.state-form-heading .state-panel-title {
+  margin: 0;
+}
+
+.state-form-toggle {
+  color: #79bd91;
+}
+
+.state-form-toggle:hover {
+  background: #eef8f1;
+  color: #4d9d6a;
+}
+
+.state-form-panel .col-form-label {
+  font-size: 13px;
+}
+
+.state-form-panel .form-control,
+.state-form-panel .form-select {
+  border-color: #dcdfe3;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.state-form-panel .form-control:focus,
+.state-form-panel .form-select:focus {
+  border-color: #1fc8c8;
+  box-shadow: 0 0 0 2px rgba(31, 200, 200, 0.15);
+}
+
+.state-form-panel ng-select {
   display: block;
 }
 
-.state-master-page ng-select.is-invalid ::ng-deep .ng-select-container {
+.state-form-panel ng-select.is-invalid ::ng-deep .ng-select-container {
   border-color: #dc3545;
 }
 
+.state-error {
+  display: block;
+  margin-top: 4px;
+  color: #dc3545;
+  font-size: 11px;
+}
+
 .table-toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
   width: 100%;
+}
+
+.entries-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.entries-section label,
+.search-section label {
+  margin: 0;
+  font-size: 12px;
 }
 
 .entries-section select {
   width: 75px;
   height: 36px;
+  font-size: 12px;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .search-section input {
   width: 220px;
+  height: 36px;
+  border: 1px solid #dcdfe3;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: none;
+  font-size: 12px;
+  text-align: center;
+}
+
+.search-section input:focus {
+  border-color: #1fc8c8;
+  box-shadow: 0 0 0 2px rgba(31, 200, 200, 0.15);
+}
+
+.state-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #dcdfe3;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+}
+
+:host ::ng-deep .state-table-scroll .p-datatable-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .state-table-scroll .p-datatable-thead > tr > th {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+:host ::ng-deep .state-table-scroll .p-datatable-tbody > tr > td {
+  vertical-align: middle;
+}
+
+:host ::ng-deep .state-table-scroll .p-paginator {
+  justify-content: flex-end;
+}
+
+.state-record-count {
+  margin-right: auto;
+  font-size: 12px;
 }
 
 .state-name-link {
   padding: 0;
   border: 0;
-  background: none;
-  color: #0d6efd;
+  background: transparent;
+  color: #3976b8;
   font: inherit;
+  font-weight: 600;
   text-align: left;
-  text-decoration: underline;
   cursor: pointer;
 }
 
 .state-name-link:hover {
-  color: #0a58ca;
+  color: #245b96;
+  text-decoration: underline;
+}
+
+.state-name-link:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .state-excel-toolbar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .state-form-panel,
+  .state-list-panel {
+    padding: 16px;
+  }
 }
 
 @media (max-width: 576px) {
+  .table-toolbar {
+    flex-wrap: wrap;
+  }
+
   .entries-section,
   .search-section,
   .search-section input {
     width: 100%;
-  }
-}
-
-$accent: #1fc8c8;
-$border: #dcdfe3;
-$text: #495057;
-
-.state-master-page {
-  .panel {
-    background: #fff;
-    border: 1px solid $border;
-    border-radius: 10px;
-    padding: 0 22px 22px;
-    color: $text;
-  }
-
-  /* ---------- Tab bar ---------- */
-  .tab-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .tab-list {
-    display: flex;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    overflow-x: auto;
-  }
-
-  .tab {
-    padding: 22px 20px 18px;
-    cursor: pointer;
-    font-size: 15px;
-    white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
-
-    &:hover {
-      color: $accent;
-    }
-
-    &.active {
-      color: $accent;
-      border-bottom-color: $accent;
-    }
-  }
-
-  .collapse-btn {
-    background: none;
-    border: 0;
-    cursor: pointer;
-    color: $accent;
-    font-size: 14px;
-    padding: 8px;
-    border-radius: 50%;
-
-    &:hover {
-      background: rgba($accent, 0.1);
-    }
-  }
-
-  .tab-body {
-    padding-top: 30px;
-  }
-
-  /* ---------- Form grid: label | field | label | field | label | field ---------- */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 170px 1fr 170px 1fr 170px 1fr;
-    gap: 14px 16px;
-    align-items: start;
-
-    label {
-      padding-top: 10px;
-      font-size: 15px;
-      margin: 0;
-    }
-
-    .req {
-      color: #e53935;
-      margin-left: 2px;
-    }
-  }
-
-  .pf-input {
-    width: 100%;
-    height: 40px;
-    padding: 0 14px;
-    border: 1px solid $border;
-    border-radius: 6px;
-    font-size: 15px;
-    background: #fff;
-    box-sizing: border-box;
-
-    &:focus {
-      outline: none;
-      border-color: $accent;
-      box-shadow: 0 0 0 2px rgba($accent, 0.15);
-    }
-
-    &.is-invalid {
-      border-color: #e53935;
-    }
-
-    &.pf-sm {
-      height: 34px;
-      width: auto;
-      min-width: 90px;
-    }
-  }
-
-  .err {
-    display: block;
-    margin-top: 4px;
-    color: #e53935;
-    font-size: 12px;
-  }
-
-  /* ng-select to match the inputs */
-  ::ng-deep .ng-select .ng-select-container {
-    min-height: 40px;
-    border-radius: 6px;
-    border-color: $border;
-  }
-
-  .actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 24px;
-  }
-
-  /* ---------- List tab ---------- */
-  .table-toolbar label {
-    margin: 0;
-    font-size: 14px;
-  }
-
-  .state-name-link {
-    background: none;
-    border: 0;
-    padding: 0;
-    color: $accent;
-    cursor: pointer;
-    text-align: left;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  /* ---------- Import / Export tab ---------- */
-  .import-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-
-    .check {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0;
-      font-size: 15px;
-      cursor: pointer;
-    }
-  }
-
-  /* ---------- Responsive ---------- */
-  @media (max-width: 1100px) {
-    .form-grid {
-      grid-template-columns: 150px 1fr 150px 1fr;
-    }
-  }
-
-  @media (max-width: 700px) {
-    .form-grid {
-      grid-template-columns: 1fr;
-
-      label {
-        padding-top: 0;
-      }
-    }
   }
 }

@@ -1,40 +1,326 @@
 .table-toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
+  gap: 8px;
   width: 100%;
+}
+
+.supplier-list-panel {
+  margin-top: 20px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid #dcdfe3;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.supplier-list-title {
+  margin: 0 0 18px;
+  color: #495057;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .entries-section {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .entries-section label {
   margin: 0;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .entries-section select {
   width: 75px;
   height: 36px;
+  font-size: 12px;
 }
 
 .search-section {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .search-section label {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .search-section input {
-  width: 250px;
+  width: 220px;
   height: 36px;
+  font-size: 12px;
+}
+
+.search-section .supplier-search-input {
+  border: 1px solid #dcdfe3 !important;
+  border-radius: 10px !important;
+  background: #fff;
+  box-shadow: none;
+  text-align: center;
+}
+
+.search-section .supplier-search-input:focus {
+  border-color: #1fc8c8 !important;
+  box-shadow: 0 0 0 2px rgba(31, 200, 200, 0.15);
+  outline: 0;
+}
+
+.supplier-form-panel {
+  padding: 22px;
+  border: 1px solid #dcdfe3;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.supplier-form-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.supplier-form-title {
+  margin: 0;
+  color: #495057;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.supplier-form-toggle {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #79bd91;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.supplier-form-toggle:hover {
+  background: #eef8f1;
+  color: #4d9d6a;
+}
+
+.supplier-form-toggle:focus-visible {
+  outline: 2px solid #79bd91;
+  outline-offset: 2px;
+}
+
+.supplier-image-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.supplier-image-preview {
+  display: flex;
+  width: 76px;
+  height: 68px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #dcdfe3;
+  border-radius: 7px;
+  color: #adb5bd;
+  font-size: 20px;
+  flex-shrink: 0;
+  background: #f8fafc;
+}
+
+.supplier-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.supplier-image-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.supplier-image-input input {
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.supplier-image-input small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+:host ::ng-deep .p-tabs,
+:host ::ng-deep .p-tabpanels,
+:host ::ng-deep .p-tabpanel {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+:host ::ng-deep .p-tablist-tab-list {
+  border: 0 !important;
+  gap: 8px;
+}
+
+:host ::ng-deep .p-tab {
+  padding: 10px 16px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #111827 !important;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+:host ::ng-deep .p-tab:hover:not([aria-selected='true']) {
+  background: #f3f4f6 !important;
+}
+
+:host ::ng-deep .p-tab[aria-selected='true'] {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-tab:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+:host ::ng-deep .p-tabpanel {
+  padding: 20px 0 0 !important;
+}
+
+.serial-column {
+  width: 70px;
+  text-align: center;
+}
+
+:host ::ng-deep .supplier-table .supplier-image-header,
+:host ::ng-deep .supplier-table .supplier-image-cell {
+  width: 82px !important;
+  min-width: 82px !important;
+  max-width: 82px !important;
+  text-align: center;
+}
+
+:host ::ng-deep .supplier-table .p-datatable-tbody > tr > td {
+  vertical-align: middle;
+}
+
+.supplier-table-image {
+  display: block;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #f8fafc;
+}
+
+.supplier-demo-image {
+  border: 1px solid #e8edf2;
+}
+
+.supplier-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #dcdfe3;
+  border-bottom: 0;
+  border-radius: 10px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+:host ::ng-deep .supplier-table .p-datatable-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .supplier-paginator {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end !important;
+}
+
+:host ::ng-deep .supplier-paginator .supplier-record-count {
+  margin-right: auto;
+}
+
+:host ::ng-deep .supplier-table .p-datatable-thead > tr > th {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+:host ::ng-deep .supplier-table .p-sortable-column .p-sortable-column-icon {
+  display: inline-flex;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+:host ::ng-deep .supplier-delete-button {
+  color: #e6a0b5 !important;
+}
+
+:host ::ng-deep .supplier-delete-button:hover {
+  background: #fff0f5 !important;
+  color: #d87998 !important;
+}
+
+.supplier-code-edit {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #3976b8;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.supplier-code-edit:hover {
+  color: #245b96;
+  text-decoration: underline;
+}
+
+.supplier-code-edit:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+@media (max-width: 576px) {
+  .supplier-list-panel {
+    padding: 16px;
+  }
+
+  .table-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .entries-section,
+  .search-section,
+  .search-section input {
+    width: 100%;
+  }
+
+  :host ::ng-deep .supplier-paginator {
+    flex-wrap: wrap;
+    justify-content: flex-end !important;
+  }
 }

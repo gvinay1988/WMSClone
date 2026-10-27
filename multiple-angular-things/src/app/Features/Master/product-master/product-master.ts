@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -10,24 +10,19 @@ import { CommonmoduleimportModule } from '../../../commonSharedService/commonmod
 import {
   ProductMasterService,
   ProductExcelImportFailure,
+  ProductExcelUploadPayload,
   ProductRecord,
   ProductSavePayload,
 } from '../../../services/MasterDataService/product-master.service';
 import { ExcelService } from '../../../services/MasterDataService/excel-service';
-import { Constants } from '../../../../Constant/constantFiles';
-
-interface ProductFormControls {
-  id: FormControl<string>;
-  name: FormControl<string>;
-  product: FormControl<string>;
-  description: FormControl<string>;
-  category: FormControl<string>;
-  hsnCode: FormControl<string>;
-  category1: FormControl<string>;
-  category2: FormControl<string>;
-  category3: FormControl<string>;
-  productImage: FormControl<string>;
-}
+import {
+  PRODUCT_CATEGORIES,
+  PRODUCT_CATEGORY_FIELDS,
+  PRODUCT_DETAIL_FIELDS,
+  PRODUCT_TABLE_COLUMNS,
+  ProductFormControls,
+  ProductTableFieldKey,
+} from './product-master.config';
 
 @Component({
   selector: 'app-product-master',
@@ -38,15 +33,10 @@ interface ProductFormControls {
   styleUrl: './product-master.scss',
 })
 export class ProductMaster implements OnInit {
-  readonly categories = [
-    { label: 'Category A', value: 'a' },
-    { label: 'Category B', value: 'b' },
-    { label: 'Electronics', value: 'electronics' },
-    { label: 'Office Supplies', value: 'office-supplies' },
-    { label: 'Furniture', value: 'furniture' },
-    { label: 'Consumables', value: 'consumables' },
-    { label: 'Raw Materials', value: 'raw-materials' },
-  ];
+  readonly categories = PRODUCT_CATEGORIES;
+  readonly detailFields = PRODUCT_DETAIL_FIELDS;
+  readonly categoryFields = PRODUCT_CATEGORY_FIELDS;
+  readonly tableColumns = PRODUCT_TABLE_COLUMNS;
   productForm: FormGroup<ProductFormControls>;
   products: ProductRecord[] = [];
   imagePreview: string | null = null;
@@ -140,207 +130,115 @@ export class ProductMaster implements OnInit {
 
     return arr;
   }
- globalPayload: any;
-replaceExisting: boolean = false;
-failureRecords: any[] = [];
-missingParams: string = '';
-isShowOrHideError: boolean = false;
+  async importProducts(event: Event): Promise<void> {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement) || !input.files?.length) {
+      return;
+    }
 
-private setting = {
-  element: {
-    dynamicDownload: null as unknown as HTMLElement
-  }
-};
+    this.importing = true;
+    this.importFailures = [];
 
-importProducts = async (event: any) => {
-  if (event.target.files && event.target.files[0]) {
-    this.isShowOrHideError = false;
-    this.missingParams = '';
-    this.failureRecords = [];
-
-    await this.excelService.generateJsonUsingExcel(event);
-
-    setTimeout(() => {
-      let jsonData = this.excelService.getJsonData();
-
-      if (jsonData && jsonData.length > 0) {
-        event.target.value = '';
-        jsonData = this.convertProductExcelHeaders(jsonData);
-
-        const missingParamsArray = this.mandatoryCheck(jsonData);
-
-        if (missingParamsArray.length > 1) {
-          this.failureRecords = missingParamsArray;
-          this.missingParams = missingParamsArray.join(', ');
-          this.toastr.error('Please download log file to fill mandatory fields');
-          this.fetchProducts();
-          return;
-        }
-
-     const reqData = this.excelService.generateInnerObjs(
-  jsonData,
-  Constants.PRODUCT_INNER_OBJS
-);
-       
-
-        const objects = reqData.map((obj: any) => ({
-          ...obj,
-          length: obj.length !== undefined ? Number(obj.length) : null,
-          width: obj.width !== undefined ? Number(obj.width) : null,
-          height: obj.height !== undefined ? Number(obj.height) : null,
-        }));
-
-        this.globalPayload = {
-          objects,
-          replacement: this.replaceExisting
-        };
-        this.productService.uploadProductsExcel(this.globalPayload).subscribe({
-          next: (res: any) => {
-            const productDataMap = res?.data?.productDataMap;
-
-            if (res?.status === '0' && productDataMap) {
-              const failures = productDataMap.failureList || [];
-              const duplicates = productDataMap.duplicateList || [];
-              const successes = productDataMap.successList || [];
-
-              this.failureRecords = [...failures, ...duplicates];
-
-              if (failures.length > 0 && successes.length > 0) {
-                this.toastr.error('Partially failed in uploading. Please download the log for reasons.');
-              } else if (failures.length > 0) {
-                this.toastr.error('Failed in uploading. Please download the log for reasons.');
-              } else if (duplicates.length > 0) {
-                this.toastr.error('Duplicates present in the Excel. Please download the log file.');
-              } else {
-                this.toastr.success('Uploaded successfully');
-                this.failureRecords = [];
-              }
-
-              this.fetchProducts();
-            } else {
-              this.toastr.error('Failed in uploading');
-            this.fetchProducts();
-            }
-          },
-          error: (error: any) => {
-            console.error('Product Excel upload error:', error);
-            this.toastr.error('Failed in uploading');
-          }
-        });
-      } else {
-        event.target.value = '';
-        this.toastr.error('The Excel file contains no data.');
+    try {
+      const rows = await this.excelService.generateJsonUsingExcel(event);
+      if (rows.length === 0) {
+        this.toastr.warning('The Excel file contains no product rows.', 'Import');
+        return;
       }
-    }, 500);
-  }
-};
 
-convertProductExcelHeaders(jsonData: any[]) {
-  const productHeaderMap: Record<string, string> = {
-    'Product ID': 'id',
-    'Name': 'name',
-    'Product': 'product',
-    'Type': 'type',
-    'Product Type': 'productType',
-    'Category': 'category',
-    'Base Unit': 'baseUnit',
-    'Purchase Unit': 'purchaseUnit',
-    'Sales Unit': 'salesUnit',
-    'Selling Price': 'sellingPrice',
-    'MRP': 'mrp',
-    'Tax': 'tax',
-    'HSN Code': 'hsnCode',
-    'HSN Type': 'hsnType',
-    'DFS Code': 'dfsCode',
-    'UPC/EAN': 'upcEan',
-    'Warehouse': 'warehouse',
-    'Min Stock': 'minStock',
-    'Max Stock': 'maxStock',
-    'Weight': 'weight',
-    'Length': 'length',
-    'Width': 'width',
-    'Height': 'height',
-    'Configuration': 'configuration',
-    'Description': 'description',
-    'Instructions': 'instructions'
-  };
-
-  return jsonData.map((record: any) => {
-    const newObj: any = {};
-    Object.keys(record).forEach((key: string) => {
-      newObj[productHeaderMap[key] || key] = record[key];
-    });
-    return newObj;
-  });
-}
-
-mandatoryCheck(data: any[]) {
-  const missingParamsArray = [
-    'Please refer below to enter mandatory fields for each row in the Excel sheet:\n'
-  ];
-
-  if (data?.length > 0) {
-    data.forEach((record: any, index: number) => {
-      const requiredParams = Constants.UPLOAD_MANDAT_FIELDS[record.type] || [];
-      const missingParams = requiredParams.filter(
-        (param: string) => !record[param]
+      const payload: ProductExcelUploadPayload = {
+        products: rows.map(row => this.mapExcelProductRow(row)),
+      };
+      const response = await firstValueFrom(
+        this.productService.uploadProductsExcel(payload)
       );
 
-      if (missingParams.length > 0) {
-        missingParamsArray.push(
-          `Row No. ${index + 1} - ${missingParams.join(', ')}\n`
+      if (response.statusCode !== 200) {
+        this.toastr.error(response.statusMsg || 'Could not import products.', 'Import');
+        return;
+      }
+
+      this.importFailures = response.failures ?? [];
+      if (this.importFailures.length > 0) {
+        this.toastr.warning(
+          `Imported ${response.importedCount} product(s); ${this.importFailures.length} row(s) failed.`,
+          'Import'
+        );
+      } else {
+        this.toastr.success(
+          `${response.importedCount} product(s) imported successfully.`,
+          'Import'
         );
       }
-    });
+
+      this.fetchProducts();
+    } catch (error) {
+      this.toastr.error(
+        this.getErrorMessage(error, 'Could not upload the selected workbook.'),
+        'Import'
+      );
+    } finally {
+      this.importing = false;
+      input.value = '';
+      this.cdRef.detectChanges();
+    }
   }
 
-  return missingParamsArray;
-}
+  private mapExcelProductRow(row: Record<string, unknown>): Record<string, string | number | null> {
+    const fieldByHeader: Record<string, string> = {
+      id: 'id',
+      productid: 'id',
+      name: 'name',
+      productname: 'name',
+      product: 'product',
+      description: 'description',
+      category: 'category',
+      hsntype: 'hsnType',
+      hsncode: 'hsnCode',
+      category1: 'category1',
+      category2: 'category2',
+      category3: 'category3',
+      configuration: 'configuration',
+      dfscode: 'dfsCode',
+      type: 'type',
+      productclass: 'productClass',
+      producttype: 'productType',
+      upcean: 'upcEan',
+      warehouse: 'warehouse',
+      productimage: 'productImage',
+      length: 'length',
+      width: 'width',
+      height: 'height',
+      weight: 'weight',
+      mrp: 'mrp',
+      sellingprice: 'sellingPrice',
+      tax: 'tax',
+      baseunit: 'baseUnit',
+      salesunit: 'salesUnit',
+      purchaseunit: 'purchaseUnit',
+      minstock: 'minStock',
+      maxstock: 'maxStock',
+      leadtime: 'leadTime',
+      instructions: 'instructions',
+    };
+    const product: Record<string, string | number | null> = {};
 
-openImportConfirm() {
-  this.replaceExisting = false;
- // this.ngxSmartModalService.getModal('importConfirmPopup').open();
-}
+    for (const [header, value] of Object.entries(row)) {
+      const normalizedHeader = header.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const field = fieldByHeader[normalizedHeader];
+      if (!field) {
+        continue;
+      }
 
-getFile() {
-  
-    document.getElementById('upfile')?.click();
- 
-}
+      product[field] = value === null || value === undefined || value === ''
+        ? null
+        : typeof value === 'string' || typeof value === 'number'
+          ? value
+          : String(value);
+    }
 
-dyanmicDownloadByHtmlTag(arg: { fileName: string; text: string }) {
-  if (!this.setting.element.dynamicDownload) {
-    this.setting.element.dynamicDownload = document.createElement('a');
+    return product;
   }
-
-  const element = this.setting.element.dynamicDownload;
-  const fileType = arg.fileName.includes('.json') ? 'text/json' : 'text/plain';
-
-  element.setAttribute(
-    'href',
-    `data:${fileType};charset=utf-8,${encodeURIComponent(arg.text)}`
-  );
-  element.setAttribute('download', arg.fileName);
-  element.dispatchEvent(new MouseEvent('click'));
-}
-
-downloadLogFile() {
-  if (this.missingParams) {
-    this.dyanmicDownloadByHtmlTag({
-      fileName: 'Product Mandatory Fields Missing.txt',
-      text: 'Please add missing fields:\n' + this.missingParams.replace(/,/g, '\n')
-    });
-  } else if (this.failureRecords?.length) {
-    this.dyanmicDownloadByHtmlTag({
-      fileName: 'Product Upload Error Reasons.txt',
-      text: 'Please check the errors:\n' + this.failureRecords
-        .map((record: any) =>
-          typeof record === 'string' ? record : JSON.stringify(record)
-        )
-        .join('\n')
-    });
-  }
-}
 
 
   save(): void {
@@ -418,6 +316,18 @@ downloadLogFile() {
         product.hsnCode, product.category1, product.category2, product.category3,
       ].some(value => String(value ?? '').toLowerCase().includes(search))
     );
+  }
+
+  getProductCellValue(product: ProductRecord, field: ProductTableFieldKey): string {
+    const value = product[field];
+    return value === null || value === undefined || value === ''
+      ? '-'
+      : String(value);
+  }
+
+  getProductImage(product: ProductRecord, field: ProductTableFieldKey): string | null {
+    const value = product[field];
+    return typeof value === 'string' && value ? value : null;
   }
 
   edit(product: ProductRecord): void {

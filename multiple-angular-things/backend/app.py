@@ -13,6 +13,10 @@ from parameter import parameter_bp, initialize_parameter
 from stateTax import state_tax_bp, initialize_state_tax
 from stateMaster import state_master_bp, initialize_state_master
 from product import product_master_bp, initialize_product_master
+from productCategoryGroup import (
+    product_category_group_bp,
+    initialize_product_category_group,
+)
 
 app = Flask(__name__)
 
@@ -62,6 +66,7 @@ initialize_parameter()
 initialize_state_tax()
 initialize_state_master()
 initialize_product_master()
+initialize_product_category_group()
 
 app.register_blueprint(supplier_bp)
 app.register_blueprint(user_configuration_bp)
@@ -69,11 +74,12 @@ app.register_blueprint(parameter_bp)
 app.register_blueprint(state_tax_bp)
 app.register_blueprint(state_master_bp)
 app.register_blueprint(product_master_bp)
+app.register_blueprint(product_category_group_bp)
 
 
-def create_access_token(email: str, role: str) -> str:
+def create_access_token(subject: str, role: str) -> str:
     payload = {
-        "sub": email,
+        "sub": subject,
         "role": role,
         "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     }
@@ -99,27 +105,62 @@ def token_required(f):
 @app.post("/auth/login")
 def login():
     payload = request.get_json(silent=True) or {}
-    email = payload.get("email")
+    user_id = (payload.get("userID") or "").strip()
     password = payload.get("password")
 
-    if not email or not password:
-        return jsonify({"detail": "Email and password are required"}), 400
+    if not user_id or not password:
+        return jsonify({"detail": "User ID and password are required"}), 400
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute(
-            "SELECT email, role FROM users WHERE email = %s AND password = %s",
-            (email, password),
+            """
+            SELECT userID, userIDName, email, password, rolesList, status
+            FROM user_configurations
+            WHERE userID = %s
+            """,
+            (user_id,),
         )
         user = cursor.fetchone()
-        if not user:
-            return jsonify({"detail": "Invalid email or password"}), 401
 
-        token = create_access_token(user["email"], user["role"])
+        if user:
+            if user["password"] != password:
+                return jsonify({"detail": "Invalid User ID or password"}), 401
+            if (user.get("status") or "Active").strip().lower() != "active":
+                return jsonify({"detail": "This user account is inactive"}), 403
+
+            role = user.get("rolesList") or "user"
+            token = create_access_token(user["userID"], role)
+            return jsonify({
+                "token": token,
+                "user": {
+                    "userID": user["userID"],
+                    "userIDName": user["userIDName"],
+                    "email": user["email"],
+                    "role": role,
+                },
+                "message": "Login successful",
+            }), 200
+
+        # Keep the seeded administrator login working for existing deployments.
+        cursor.execute(
+            "SELECT email, role FROM users WHERE email = %s AND password = %s",
+            (user_id, password),
+        )
+        admin = cursor.fetchone()
+        if not admin:
+            return jsonify({"detail": "Invalid User ID or password"}), 401
+
+        token = create_access_token(admin["email"], admin["role"])
         return jsonify({
             "token": token,
-            "user": {"email": user["email"], "role": user["role"]},
+            "user": {
+                "userID": admin["email"],
+                "userIDName": admin["email"],
+                "email": admin["email"],
+                "role": admin["role"],
+            },
             "message": "Login successful",
         }), 200
     finally:

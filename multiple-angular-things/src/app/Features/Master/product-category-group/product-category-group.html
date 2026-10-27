@@ -1,0 +1,168 @@
+<div class="product-category-group-page">
+  <section class="category-group-panel" [formGroup]="groupForm">
+    <div class="category-group-heading">
+      <h2 class="category-group-title">
+        {{ editingGroupId === null ? 'Product Category Group' : 'Edit Product Category Group' }}
+      </h2>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="groupName" class="form-label">Group Name <span class="text-danger">*</span></label>
+        <input id="groupName" type="text" class="form-control form-control-sm"
+          formControlName="groupName" maxlength="100" placeholder="Product Category Group Name"
+          [class.is-invalid]="groupForm.get('groupName')?.invalid && groupForm.get('groupName')?.touched">
+        <small class="category-group-error"
+          *ngIf="groupForm.get('groupName')?.invalid && groupForm.get('groupName')?.touched">
+          Enter a group name (100 characters max).
+        </small>
+      </div>
+
+      <div class="col-md-6">
+        <label for="category1" class="form-label">Parameter Category 1</label>
+        <ng-select id="category1" formControlName="category1" [items]="category1Options"
+          bindLabel="categoryName" bindValue="categoryName" [multiple]="true" [closeOnSelect]="false"
+          [searchable]="true" [clearable]="true" [hideSelected]="true"
+          placeholder="Select Category 1 values">
+        </ng-select>
+      </div>
+
+      <div class="col-md-6">
+        <label for="category2" class="form-label">Parameter Category 2</label>
+        <ng-select id="category2" formControlName="category2" [items]="category2Options"
+          bindLabel="categoryName" bindValue="categoryName" [multiple]="true" [closeOnSelect]="false"
+          [searchable]="true" [clearable]="true" [hideSelected]="true"
+          placeholder="Select Category 2 values">
+        </ng-select>
+      </div>
+
+      <div class="col-md-6">
+        <label for="category3" class="form-label">Parameter Category 3</label>
+        <ng-select id="category3" formControlName="category3" [items]="category3Options"
+          bindLabel="categoryName" bindValue="categoryName" [multiple]="true" [closeOnSelect]="false"
+          [searchable]="true" [clearable]="true" [hideSelected]="true"
+          placeholder="Select Category 3 values">
+        </ng-select>
+      </div>
+    </div>
+
+    <div class="category-group-actions">
+      <button type="button" class="btn btn-sm btn-primary" (click)="saveGroup()" [disabled]="saving">
+        {{ editingGroupId === null ? 'Save Group' : 'Update Group' }}
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="clearForm()">Clear</button>
+    </div>
+  </section>
+
+  <section class="category-group-list-panel">
+    <h2 class="category-group-title">Product Category Groups</h2>
+    <p class="category-group-session-note">
+      Remove an individual category with its × button. The group delete button removes the group and all its categories.
+    </p>
+
+    <div class="category-group-table-toolbar">
+      <div class="category-group-entries">
+        <label for="categoryGroupRows">Show entries</label>
+        <select id="categoryGroupRows" class="form-select"
+          [(ngModel)]="rows" [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="groupTable.first = 0">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="category-group-table-scroll">
+      <p-table #groupTable [value]="groups" [paginator]="true" [rows]="rows"
+        paginatorPosition="bottom" paginatorStyleClass="category-group-paginator"
+        responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Group Name</th>
+            <th>Product Category 1</th>
+            <th>Product Category 2</th>
+            <th>Product Category 3</th>
+            <th aria-label="Group actions">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-group>
+          <tr>
+            <td>{{ group.groupName }}</td>
+            <td>
+              <ng-container *ngIf="group.category1.length; else noCategory1">
+                <span *ngFor="let category of group.category1" class="category-value">
+                  <span>{{ category }}</span>
+                  <button type="button" class="remove-category-button"
+                    (click)="removeGroupCategory(group, 1, category)"
+                    [attr.aria-label]="'Remove Category 1 ' + category + ' from ' + group.groupName"
+                    [title]="'Remove ' + category">
+                    <i class="pi pi-times" aria-hidden="true"></i>
+                  </button>
+                </span>
+              </ng-container>
+              <ng-template #noCategory1>-</ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="group.category2.length; else noCategory2">
+                <span *ngFor="let category of group.category2" class="category-value">
+                  <span>{{ category }}</span>
+                  <button type="button" class="remove-category-button"
+                    (click)="removeGroupCategory(group, 2, category)"
+                    [attr.aria-label]="'Remove Category 2 ' + category + ' from ' + group.groupName"
+                    [title]="'Remove ' + category">
+                    <i class="pi pi-times" aria-hidden="true"></i>
+                  </button>
+                </span>
+              </ng-container>
+              <ng-template #noCategory2>-</ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="group.category3.length; else noCategory3">
+                <span *ngFor="let category of group.category3" class="category-value">
+                  <span>{{ category }}</span>
+                  <button type="button" class="remove-category-button"
+                    (click)="removeGroupCategory(group, 3, category)"
+                    [attr.aria-label]="'Remove Category 3 ' + category + ' from ' + group.groupName"
+                    [title]="'Remove ' + category">
+                    <i class="pi pi-times" aria-hidden="true"></i>
+                  </button>
+                </span>
+              </ng-container>
+              <ng-template #noCategory3>-</ng-template>
+            </td>
+            <td class="text-nowrap text-center">
+              <button type="button" class="category-group-action-button edit"
+                (click)="editGroup(group)" [attr.aria-label]="'Edit ' + group.groupName"
+                title="Edit group">
+                <i class="pi pi-pencil" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="category-group-action-button delete"
+                (click)="removeGroup(group.id)" [attr.aria-label]="'Remove ' + group.groupName"
+                [title]="'Delete ' + group.groupName + ' and all categories'">
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center">No product category groups have been saved.</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="category-group-record-count">
+            Showing {{ groupTable.totalRecords ? (groupTable.first ?? 0) + 1 : 0 }}
+            to {{ groupTable.totalRecords
+              ? ((groupTable.first ?? 0) + (groupTable.rows ?? rows) < groupTable.totalRecords
+                ? (groupTable.first ?? 0) + (groupTable.rows ?? rows)
+                : groupTable.totalRecords)
+              : 0 }}
+            of {{ groupTable.totalRecords }} records
+          </span>
+        </ng-template>
+      </p-table>
+    </div>
+  </section>
+</div>
