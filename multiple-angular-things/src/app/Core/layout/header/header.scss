@@ -1,7 +1,11 @@
 .custom-navbar {
   height: 58px;
   min-height: 58px;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1050;
 }
 

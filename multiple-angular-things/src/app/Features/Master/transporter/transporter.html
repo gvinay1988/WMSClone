@@ -1,4 +1,52 @@
-<div id="inBody" class="commonResponsivepanel">
-  <h1>Transporter Master</h1>
-  <p>Transporter management is not available yet.</p>
+<div class="transporter-master-page">
+  <p-confirmDialog></p-confirmDialog>
+
+  <section class="transporter-panel">
+    <div class="panel-heading">
+      <h2>{{ editing ? 'Edit Transporter' : 'Transporter Details' }}</h2>
+    </div>
+
+    <form [formGroup]="transporterForm" (ngSubmit)="save()" class="transporter-form">
+      <div class="form-field"><label for="transporterCode">Transporter Code *</label><input id="transporterCode" formControlName="transporterCode" maxlength="20" placeholder="Transporter code"></div>
+      <div class="form-field"><label for="transporterName">Transporter Name *</label><input id="transporterName" formControlName="transporterName" maxlength="100" placeholder="Transporter name"></div>
+      <div class="form-field"><label for="contactPerson">Contact Person</label><input id="contactPerson" formControlName="contactPerson" maxlength="100" placeholder="Contact person"></div>
+      <div class="form-field"><label for="email">Email</label><input id="email" type="email" formControlName="email" maxlength="100" placeholder="Email"></div>
+      <div class="form-field"><label for="phone">Phone</label><input id="phone" formControlName="phone" maxlength="30" placeholder="Phone"></div>
+      <div class="form-field"><label for="city">City</label><input id="city" formControlName="city" maxlength="100" placeholder="City"></div>
+      <div class="form-field"><label for="status">Status *</label><select id="status" formControlName="status"><option>Active</option><option>Inactive</option></select></div>
+      <div class="form-actions">
+        <button type="button" class="clear-button" (click)="clear()">Clear</button>
+        <button type="submit" class="save-button" [disabled]="saving">{{ saving ? 'Saving...' : editing ? 'Update Transporter' : 'Save Transporter' }}</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="transporter-panel transporter-list-panel">
+    <div class="panel-heading list-heading"><h2>Transporters</h2></div>
+    <div class="table-toolbar">
+      <div class="entries-section">
+        <label for="transporterRows">Show entries</label>
+        <select id="transporterRows" [(ngModel)]="rows" [ngModelOptions]="{ standalone: true }">
+          <option [ngValue]="5">5</option><option [ngValue]="25">25</option><option [ngValue]="50">50</option>
+        </select>
+      </div>
+      <div class="search-box"><i class="pi pi-search" aria-hidden="true"></i><input type="search" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" placeholder="Search transporters"></div>
+    </div>
+    <p-table #transporterTable [value]="filteredTransporters" [paginator]="true" [rows]="rows" [showCurrentPageReport]="false" [loading]="loading" responsiveLayout="scroll">
+      <ng-template pTemplate="header"><tr><th class="serial-number-column">S.No.</th><th>Code</th><th>Name</th><th>Contact Person</th><th>Email</th><th>Phone</th><th>City</th><th>Status</th><th>Actions</th></tr></ng-template>
+      <ng-template pTemplate="body" let-transporter let-rowIndex="rowIndex">
+        <tr>
+          <td class="serial-number-column">{{ rowIndex + 1 }}</td>
+          <td><button type="button" class="record-link" (click)="edit(transporter)">{{ transporter.transporterCode }}</button></td>
+          <td>{{ transporter.transporterName }}</td><td>{{ transporter.contactPerson || '—' }}</td><td>{{ transporter.email || '—' }}</td><td>{{ transporter.phone || '—' }}</td><td>{{ transporter.city || '—' }}</td>
+          <td><span class="status" [class.inactive]="transporter.status === 'Inactive'">{{ transporter.status }}</span></td>
+          <td><p-button class="transporter-delete-button" icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" (onClick)="confirmDelete(transporter)" ariaLabel="Delete transporter"></p-button></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage"><tr><td colspan="9" class="empty-message">No transporters found.</td></tr></ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span>Showing {{ transporterTable.totalRecords ? (transporterTable.first ?? 0) + 1 : 0 }} to {{ transporterTable.totalRecords ? ((transporterTable.first ?? 0) + (transporterTable.rows ?? rows) < transporterTable.totalRecords ? (transporterTable.first ?? 0) + (transporterTable.rows ?? rows) : transporterTable.totalRecords) : 0 }} of {{ transporterTable.totalRecords }} entries</span>
+      </ng-template>
+    </p-table>
+  </section>
 </div>

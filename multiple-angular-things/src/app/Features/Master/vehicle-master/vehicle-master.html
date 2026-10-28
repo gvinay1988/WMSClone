@@ -1,0 +1,108 @@
+<div class="vehicle-master-page">
+  <p-confirmDialog></p-confirmDialog>
+
+  <section class="vehicle-panel">
+    <div class="panel-heading">
+      <h2>{{ editing ? 'Edit Vehicle' : 'Vehicle Details' }}</h2>
+    </div>
+
+    <form [formGroup]="vehicleForm" (ngSubmit)="save()" class="vehicle-form">
+      <div class="form-field">
+        <label for="vehicleCode">Vehicle Code *</label>
+        <input id="vehicleCode" type="text" formControlName="vehicleCode" maxlength="20" placeholder="Vehicle code">
+      </div>
+      <div class="form-field">
+        <label for="vehicleName">Vehicle Name *</label>
+        <input id="vehicleName" type="text" formControlName="vehicleName" maxlength="100" placeholder="Vehicle name">
+      </div>
+      <div class="form-field">
+        <label for="vehicleType">Vehicle Type *</label>
+        <select id="vehicleType" formControlName="vehicleType">
+          <option value="">-- Select Type --</option>
+          <option>Truck</option><option>Trailer</option><option>Van</option>
+          <option>Container Truck</option><option>Forklift</option><option>Pickup</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="registrationNumber">Registration Number *</label>
+        <input id="registrationNumber" type="text" formControlName="registrationNumber" maxlength="30" placeholder="Registration number">
+      </div>
+      <div class="form-field">
+        <label for="capacity">Capacity</label>
+        <input id="capacity" type="number" min="0" formControlName="capacity" placeholder="Capacity">
+      </div>
+      <div class="form-field">
+        <label for="status">Status *</label>
+        <select id="status" formControlName="status">
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="clear-button" (click)="clear()">Clear</button>
+        <button type="submit" class="save-button" [disabled]="saving">
+          {{ saving ? 'Saving...' : editing ? 'Update Vehicle' : 'Save Vehicle' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="vehicle-panel vehicle-list-panel">
+    <div class="panel-heading list-heading">
+      <h2>Vehicles</h2>
+    </div>
+
+    <div class="table-toolbar">
+      <div class="entries-section">
+        <label for="vehicleRows">Show entries</label>
+        <select id="vehicleRows" [(ngModel)]="rows" [ngModelOptions]="{ standalone: true }">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </div>
+      <div class="search-box">
+        <i class="pi pi-search" aria-hidden="true"></i>
+        <input type="search" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" placeholder="Search vehicles">
+      </div>
+    </div>
+
+    <p-table #vehicleTable [value]="filteredVehicles" [paginator]="true" [rows]="rows"
+      [showCurrentPageReport]="false"
+      [loading]="loading" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="serial-number-column">S.No.</th>
+          <th>Vehicle Code</th><th>Vehicle Name</th><th>Type</th>
+          <th>Registration Number</th><th>Capacity</th><th>Status</th><th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-vehicle let-rowIndex="rowIndex">
+        <tr>
+          <td class="serial-number-column">{{ rowIndex + 1 }}</td>
+          <td><button type="button" class="record-link" (click)="edit(vehicle)">{{ vehicle.vehicleCode }}</button></td>
+          <td>{{ vehicle.vehicleName }}</td><td>{{ vehicle.vehicleType }}</td>
+          <td>{{ vehicle.registrationNumber }}</td><td>{{ vehicle.capacity ?? '—' }}</td>
+          <td><span class="status" [class.inactive]="vehicle.status === 'Inactive'">{{ vehicle.status }}</span></td>
+          <td>
+            <p-button class="vehicle-delete-button" icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" (onClick)="confirmDelete(vehicle)" ariaLabel="Delete vehicle"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="8" class="empty-message">No vehicles found.</td></tr>
+      </ng-template>
+      <ng-template pTemplate="paginatorleft">
+        <span>
+          Showing {{ vehicleTable.totalRecords ? (vehicleTable.first ?? 0) + 1 : 0 }}
+          to {{ vehicleTable.totalRecords
+            ? ((vehicleTable.first ?? 0) + (vehicleTable.rows ?? rows) < vehicleTable.totalRecords
+              ? (vehicleTable.first ?? 0) + (vehicleTable.rows ?? rows)
+              : vehicleTable.totalRecords)
+            : 0 }}
+          of {{ vehicleTable.totalRecords }} entries
+        </span>
+      </ng-template>
+    </p-table>
+  </section>
+</div>

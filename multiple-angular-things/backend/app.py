@@ -13,6 +13,9 @@ from parameter import parameter_bp, initialize_parameter
 from stateTax import state_tax_bp, initialize_state_tax
 from stateMaster import state_master_bp, initialize_state_master
 from product import product_master_bp, initialize_product_master
+from productBySupplier import product_by_supplier_bp, initialize_product_by_supplier
+from vehicle import vehicle_master_bp, initialize_vehicle_master
+from transporter import transporter_master_bp, initialize_transporter_master
 from productCategoryGroup import (
     product_category_group_bp,
     initialize_product_category_group,
@@ -66,6 +69,9 @@ initialize_parameter()
 initialize_state_tax()
 initialize_state_master()
 initialize_product_master()
+initialize_product_by_supplier()
+initialize_vehicle_master()
+initialize_transporter_master()
 initialize_product_category_group()
 
 app.register_blueprint(supplier_bp)
@@ -74,6 +80,9 @@ app.register_blueprint(parameter_bp)
 app.register_blueprint(state_tax_bp)
 app.register_blueprint(state_master_bp)
 app.register_blueprint(product_master_bp)
+app.register_blueprint(product_by_supplier_bp)
+app.register_blueprint(vehicle_master_bp)
+app.register_blueprint(transporter_master_bp)
 app.register_blueprint(product_category_group_bp)
 
 

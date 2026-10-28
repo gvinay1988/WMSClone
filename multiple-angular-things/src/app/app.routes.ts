@@ -54,6 +54,24 @@ export const routes: Routes = [
                 .then(m => m.ProductMaster)
           },
           {
+            path: 'vehicle',
+            loadComponent: () =>
+              import('./Features/Master/vehicle-master/vehicle-master')
+                .then(m => m.VehicleMaster)
+          },
+          {
+            path: 'transporter',
+            loadComponent: () =>
+              import('./Features/Master/transporter/transporter')
+                .then(m => m.Transporter)
+          },
+          {
+            path: 'productBySupplier',
+            loadComponent: () =>
+              import('./Features/Master/product-by-supplier/product-by-supplier')
+                .then(m => m.ProductBySupplier)
+          },
+          {
             path: 'productCategoryGroup',
             loadComponent: () =>
               import('./Features/Master/product-category-group/product-category-group')

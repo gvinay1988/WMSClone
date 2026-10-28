@@ -1,0 +1,97 @@
+<div class="product-by-supplier-page">
+  <div class="page-heading">
+    <h1>Product by Supplier</h1>
+    <p>Select a supplier and product to create an assignment.</p>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">Loading supplier and product details...</div>
+
+  <div class="workspace" *ngIf="!loading">
+    <section class="panel supplier-panel" aria-labelledby="suppliers-heading">
+      <div class="panel-heading">
+        <div>
+          <h2 id="suppliers-heading">Suppliers</h2>
+          <span>Supplier details</span>
+        </div>
+        <i class="pi pi-building" aria-hidden="true"></i>
+      </div>
+
+      <div class="form-grid">
+        <div class="field field-full">
+          <label for="supplierId">Supplier ID <span class="required">*</span></label>
+          <select id="supplierId" [(ngModel)]="selectedSupplierId" (ngModelChange)="onSupplierChange()">
+            <option value="">-- Select Supplier ID --</option>
+            <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+              {{ supplier.supplierCode }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="supplierName">Supplier Name</label>
+          <input id="supplierName" [value]="selectedSupplier?.supplierName || ''" readonly>
+        </div>
+
+        <div class="field">
+          <label for="supplierCode">Supplier Code</label>
+          <input id="supplierCode" [value]="selectedSupplier?.supplierCode || ''" readonly>
+        </div>
+
+        <div class="field field-full">
+          <label for="supplierType">Supplier Type</label>
+          <input id="supplierType" [value]="selectedSupplier?.supplierType || ''" readonly>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel product-panel" aria-labelledby="product-details-heading">
+      <div class="panel-heading">
+        <div>
+          <h2 id="product-details-heading">Product Details</h2>
+          <span>Product details</span>
+        </div>
+        <i class="pi pi-box" aria-hidden="true"></i>
+      </div>
+
+      <div class="form-grid">
+        <div class="field field-full">
+          <label for="productId">Product ID <span class="required">*</span></label>
+          <select id="productId" [(ngModel)]="selectedProductId" (ngModelChange)="onProductChange()">
+            <option value="">-- Select Product ID --</option>
+            <option *ngFor="let product of products" [value]="product.id">
+              {{ product.id }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="productName">Product Name</label>
+          <input id="productName" [value]="selectedProduct?.name || ''" readonly>
+        </div>
+
+        <div class="field">
+          <label for="productCategory">Category</label>
+          <input id="productCategory" [value]="selectedProduct?.category || ''" readonly>
+        </div>
+
+        <div class="field">
+          <label for="hsnCode">HSN Code</label>
+          <input id="hsnCode" [value]="selectedProduct?.hsnCode || ''" readonly>
+        </div>
+
+        <div class="field field-full">
+          <label for="productDescription">Product Description</label>
+          <textarea id="productDescription" [value]="selectedProduct?.description || ''" rows="2" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="save-button" (click)="saveAssignment()"
+          [disabled]="saving || !selectedSupplier || !selectedProduct">
+          <i class="pi pi-save" aria-hidden="true"></i>
+          {{ saving ? 'Saving...' : 'Save Product Assignment' }}
+        </button>
+      </div>
+    </section>
+  </div>
+</div>
