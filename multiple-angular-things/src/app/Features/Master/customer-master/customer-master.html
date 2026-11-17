@@ -1,0 +1,247 @@
+<div class="customer-master-page">
+  <div class="page-heading">
+    <h1>Customer Master</h1>
+    <p>Create a customer and maintain one or more customer addresses.</p>
+  </div>
+
+  <form [formGroup]="customerForm">
+    <div class="workspace">
+      <section class="panel customer-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Customer Details</h2>
+            <span>Enter the customer information</span>
+          </div>
+          <i class="pi pi-user" aria-hidden="true"></i>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="customerId">Customer ID <span class="required">*</span></label>
+            <input id="customerId" type="text" formControlName="customerId" placeholder="Customer ID" (blur)="customerForm.patchValue({
+                customerIdName: (customerForm.get('customerId')?.value || '') + ' - ' +
+                  (customerForm.get('customerName')?.value || '')
+              })">
+          </div>
+
+          <div class="field">
+            <label for="customerName">Customer Name <span class="required">*</span></label>
+            <input id="customerName" type="text" formControlName="customerName" placeholder="Customer name" (blur)="customerForm.patchValue({
+                customerIdName: (customerForm.get('customerId')?.value || '') + ' - ' +
+                  (customerForm.get('customerName')?.value || '')
+              })">
+          </div>
+
+          <div class="field">
+            <label for="customerIdName">Customer ID - Name</label>
+            <input id="customerIdName" type="text" formControlName="customerIdName" placeholder="Customer ID - Name"
+              readonly>
+          </div>
+
+          <div class="field">
+            <label for="customerType">Customer Type <span class="required">*</span></label>
+            <ng-select id="customerType" formControlName="customerType" [clearable]="false"
+              placeholder="Select customer type" [items]="['OEM', 'Regular', 'PTemperory']">
+            </ng-select>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel address-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Customer Addtable</h2>
+            <span>Add address details for this customer</span>
+          </div>
+          <i class="pi pi-map-marker" aria-hidden="true"></i>
+        </div>
+        <div class="address-actions">
+          <button pButton type="button" label="Add Address" icon="pi pi-plus" class="btn btn-sm btn-primary"
+            (click)="addCustomerAddress()">
+          </button>
+        </div>
+        <div class="table-toolbar d-flex align-items-center mb-2 gap-2">
+          <div class="entries-section d-flex align-items-center gap-2">
+            <label for="addressRows">Show entries</label>
+            <select id="addressRows" class="table-input table-input-sm" [(ngModel)]="addressRows"
+              [ngModelOptions]="{ standalone: true }" (ngModelChange)="addressTable.first = 0">
+              <option [ngValue]="2">2</option>
+              <option [ngValue]="5">5</option>
+              <option [ngValue]="10">10</option>
+              <option [ngValue]="25">25</option>
+              <option [ngValue]="50">50</option>
+            </select>
+          </div>
+        </div>
+        <div class="address-table-scroll" formArrayName="addresses">
+          <p-table #addressTable class="address-table" [value]="addressesArray.controls"
+            [paginator]="true" [rows]="addressRows" paginatorPosition="bottom"
+            paginatorStyleClass="customer-table-paginator" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>City</th>
+                <th>Town</th>
+                <th>District</th>
+                <th>State</th>
+                <th>Postal Code</th>
+                <th>Landmark</th>
+                <th>Nearby Address</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-address>
+              <tr [formGroupName]="addressesArray.controls.indexOf(address)">
+                <td><input class="form-control" type="text" formControlName="city" aria-label="City"></td>
+                <td><input class="form-control" type="text" formControlName="town" aria-label="Town"></td>
+                <td><input class="form-control" type="text" formControlName="district" aria-label="District"></td>
+                <td><input class="form-control" type="text" formControlName="state" aria-label="State"></td>
+                <td><input class="form-control" type="text" formControlName="postalCode" aria-label="Postal Code"></td>
+                <td><input class="form-control" type="text" formControlName="landmark" aria-label="Landmark"></td>
+                <td><input class="form-control" type="text" formControlName="nearbyAddress" aria-label="Nearby Address">
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="7" class="empty-message">
+                  No address rows available.
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="paginatorleft">
+              <span class="customer-entries-slot">
+                Showing {{ addressTable.totalRecords ? (addressTable.first ?? 0) + 1 : 0 }}
+                to {{ addressTable.totalRecords
+                  ? ((addressTable.first ?? 0) + (addressTable.rows ?? addressRows) < addressTable.totalRecords
+                    ? (addressTable.first ?? 0) + (addressTable.rows ?? addressRows)
+                    : addressTable.totalRecords)
+                  : 0 }}
+                of {{ addressTable.totalRecords }} records
+              </span>
+            </ng-template>
+          </p-table>
+        </div>
+
+      </section>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-sm btn-primary" (click)="saveCustomer()">Save</button>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="clearForm()">Clear</button>
+    </div>
+  </form>
+
+  <section class="panel customer-list-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Customer Details</h2>
+        <span>Customer details and address fields</span>
+      </div>
+      <i class="pi pi-list" aria-hidden="true"></i>
+    </div>
+
+
+
+    <div class="table-toolbar d-flex align-items-center mb-2 gap-2">
+      <div class="entries-section d-flex align-items-center gap-2">
+        <label for="customerRows">Show entries</label>
+        <select id="customerRows" class="table-input table-input-sm" [(ngModel)]="customerRows"
+          [ngModelOptions]="{ standalone: true }" (ngModelChange)="customerTable.first = 0">
+          <option [ngValue]="2">2</option>
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </div>
+      <div class="search-section d-flex align-items-center gap-2">
+        <label for="customerSearch">Search</label>
+        <input id="customerSearch" type="search" class="table-input table-input-sm"
+          [(ngModel)]="customerSearchText" [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="customerTable.first = 0" placeholder="Search customers">
+      </div>
+    </div>
+
+    <div class="address-table-scroll">
+      <p-table #customerTable class="address-table" [value]="filteredCustomers" [paginator]="true"
+        [rows]="customerRows" paginatorPosition="bottom" paginatorStyleClass="customer-table-paginator"
+        responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>S.No</th>
+            <th>Customer ID</th>
+            <th>Customer Name</th>
+            <th>Customer ID - Name</th>
+            <th>Customer Type</th>
+            <th>City</th>
+            <th>Town</th>
+            <th>District</th>
+            <th>State</th>
+            <th>Postal Code</th>
+            <th>Landmark</th>
+            <th>Nearby Address</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-customer let-rowIndex="rowIndex">
+          <ng-container *ngFor="let address of customer.addresses?.length ? customer.addresses : [null]; let i = index">
+            <tr>
+              <td *ngIf="i === 0" [attr.rowspan]="customer.addresses?.length || 1">
+                <button type="button" class="customer-serial-number"
+                  (click)="edit(customer)" [attr.aria-label]="'Edit ' + customer.customerName">
+                  {{ (customerTable.first ?? 0) + rowIndex + 1 }}
+                </button>
+              </td>
+              <td *ngIf="i === 0" [attr.rowspan]="customer.addresses?.length || 1">
+                {{ customer.customerID || '—' }}
+              </td>
+
+              <td *ngIf="i === 0" [attr.rowspan]="customer.addresses?.length || 1">
+                {{ customer.customerName || '—' }}
+              </td>
+
+              <td *ngIf="i === 0" [attr.rowspan]="customer.addresses?.length || 1">
+                {{ customer.customerIDName || '—' }}
+              </td>
+
+              <td *ngIf="i === 0" [attr.rowspan]="customer.addresses?.length || 1">
+                {{ customer.customerType || '—' }}
+              </td>
+
+              <td>{{ address?.city || '—' }}</td>
+              <td>{{ address?.town || '—' }}</td>
+              <td>{{ address?.district || '—' }}</td>
+              <td>{{ address?.state || '—' }}</td>
+              <td>{{ address?.postalCode || '—' }}</td>
+              <td>{{ address?.landmark || '—' }}</td>
+              <td>{{ address?.nearbyAddress || '—' }}</td>
+              <td *ngIf="i === 0" [attr.rowspan]="customer.addresses?.length || 1" class="text-nowrap text-center">
+                <p-button class="customer-delete-button" icon="pi pi-trash" severity="danger"
+                  [rounded]="true" [text]="true"
+                  (onClick)="confirmDelete(customer)" [ariaLabel]="'Delete ' + customer.customerName">
+                </p-button>
+            </tr>
+
+          </ng-container>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="13" class="empty-message">
+              {{ customerList.length ? 'No customers match your search' : 'No customers found' }}
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="customer-entries-slot">
+            Showing {{ customerTable.totalRecords ? (customerTable.first ?? 0) + 1 : 0 }}
+            to {{ customerTable.totalRecords
+              ? ((customerTable.first ?? 0) + (customerTable.rows ?? customerRows) < customerTable.totalRecords
+                ? (customerTable.first ?? 0) + (customerTable.rows ?? customerRows)
+                : customerTable.totalRecords)
+              : 0 }}
+            of {{ customerTable.totalRecords }} records
+          </span>
+        </ng-template>
+      </p-table>
+    </div>
+  </section>
+</div>

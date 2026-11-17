@@ -48,6 +48,12 @@ export const routes: Routes = [
                 .then(m => m.SupplierMaster)
           },
           {
+            path: 'customer',
+            loadComponent: () =>
+              import('./Features/Master/customer-master/customer-master')
+                .then(m => m.CustomerMaster)
+          },
+          {
             path: 'productMaster',
             loadComponent: () =>
               import('./Features/Master/product-master/product-master')
@@ -82,6 +88,24 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./Features/Master/state-master/state-master')
                 .then(m => m.StateMaster)
+          },
+          {
+            path: 'warehouse',
+            loadComponent: () =>
+              import('./Features/Master/warehouse-master/warehouse-master')
+                .then(m => m.WarehouseMaster)
+          },
+          {
+            path: 'organization',
+            loadComponent: () =>
+              import('./Features/Master/organization-master/organization-master')
+                .then(m => m.OrganizationMaster)
+          },
+           {
+            path: 'vehicleByTransporter',
+            loadComponent: () =>
+              import('./Features/Master/vehicle-by-transporter/vehicle-by-transporter')
+                .then(m => m.VehicleByTransporter)
           }
 
         ]

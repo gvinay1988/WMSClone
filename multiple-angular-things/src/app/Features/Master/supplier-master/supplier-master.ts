@@ -55,6 +55,7 @@ export class SupplierMaster implements OnInit {
     this.supplierForm = this.fb.group({
       supplierCode: ['', Validators.required],
       supplierName: ['', Validators.required],
+      supplierIDName: [''], 
       supplierType: [''],
       contactPerson: [''],
       email: [''],
@@ -68,7 +69,12 @@ export class SupplierMaster implements OnInit {
       supplierImage: [null]
     });
   }
-
+ mergeSupplieIDName() {
+    const supplierCode = this.supplierForm.get('supplierCode')?.value || '';
+    const supplierName = this.supplierForm.get('supplierName')?.value || '';
+    const mergedValue = `${supplierCode} - ${supplierName}`;
+    this.supplierForm.patchValue({ supplierIDName: mergedValue });
+  }
   saveSupplier(supplierImageInput: HTMLInputElement) {
     if (this.supplierForm.invalid) {
       this.supplierForm.markAllAsTouched();
@@ -92,10 +98,7 @@ export class SupplierMaster implements OnInit {
       }
     });
   }
-
   fetchAllSuppliers() {
-    this.loading.set(true);
-
     this.supplierService.findALLSuppliers({}).subscribe({
       next: (response: any) => {
         if (response?.statusCode === 200) {

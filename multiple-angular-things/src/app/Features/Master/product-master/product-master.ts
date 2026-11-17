@@ -61,7 +61,7 @@ export class ProductMaster implements OnInit {
     this.productForm = this.fb.group<ProductFormControls>({
       id: this.fb.nonNullable.control('', [Validators.required, Validators.pattern(/\S/)]),
       name: this.fb.nonNullable.control('', [Validators.required, Validators.pattern(/\S/)]),
-      product: this.fb.nonNullable.control(''),
+      productIDName: this.fb.nonNullable.control(''),
       description: this.fb.nonNullable.control(''),
       category: this.fb.nonNullable.control(''),
       hsnCode: this.fb.nonNullable.control(''),
@@ -86,160 +86,7 @@ export class ProductMaster implements OnInit {
       && this.productForm.controls.name.value.trim()
     );
   }
-
-
-  exportAsXLSX() {
-    const data = this.exportTypeMethod(this.products);
-    this.excelService.exportAsExcelFile(data, 'Product Data');
-  }
-
-  exportTypeMethod(data: any[]) {
-    const arr: any[] = [];
-    if (data && data.length > 0) {
-      data.forEach(k => {
-        arr.push({
-          'Product ID': k.id ?? null,
-          'Name': k.name ?? null,
-          'Product': k.product ?? null,
-          'Type': k.type ?? null,
-          'Product Type': k.productType ?? null,
-          'Category': k.category ?? null,
-          'Base Unit': k.baseUnit ?? null,
-          'Purchase Unit': k.purchaseUnit ?? null,
-          'Sales Unit': k.salesUnit ?? null,
-          'Selling Price': k.sellingPrice ?? null,
-          'MRP': k.mrp ?? null,
-          'Tax': k.tax ?? null,
-          'HSN Code': k.hsnCode ?? null,
-          'HSN Type': k.hsnType ?? null,
-          'DFS Code': k.dfsCode ?? null,
-          'UPC/EAN': k.upcEan ?? null,
-          'Warehouse': k.warehouse ?? null,
-          'Min Stock': k.minStock ?? null,
-          'Max Stock': k.maxStock ?? null,
-          'Weight': k.weight ?? null,
-          'Length': k.length ?? null,
-          'Width': k.width ?? null,
-          'Height': k.height ?? null,
-          'Configuration': k.configuration ?? null,
-          'Description': k.description ?? null,
-          'Instructions': k.instructions ?? null
-        });
-      });
-    }
-
-    return arr;
-  }
-  async importProducts(event: Event): Promise<void> {
-    const input = event.target;
-    if (!(input instanceof HTMLInputElement) || !input.files?.length) {
-      return;
-    }
-
-    this.importing = true;
-    this.importFailures = [];
-
-    try {
-      const rows = await this.excelService.generateJsonUsingExcel(event);
-      if (rows.length === 0) {
-        this.toastr.warning('The Excel file contains no product rows.', 'Import');
-        return;
-      }
-
-      const payload: ProductExcelUploadPayload = {
-        products: rows.map(row => this.mapExcelProductRow(row)),
-      };
-      const response = await firstValueFrom(
-        this.productService.uploadProductsExcel(payload)
-      );
-
-      if (response.statusCode !== 200) {
-        this.toastr.error(response.statusMsg || 'Could not import products.', 'Import');
-        return;
-      }
-
-      this.importFailures = response.failures ?? [];
-      if (this.importFailures.length > 0) {
-        this.toastr.warning(
-          `Imported ${response.importedCount} product(s); ${this.importFailures.length} row(s) failed.`,
-          'Import'
-        );
-      } else {
-        this.toastr.success(
-          `${response.importedCount} product(s) imported successfully.`,
-          'Import'
-        );
-      }
-
-      this.fetchProducts();
-    } catch (error) {
-      this.toastr.error(
-        this.getErrorMessage(error, 'Could not upload the selected workbook.'),
-        'Import'
-      );
-    } finally {
-      this.importing = false;
-      input.value = '';
-      this.cdRef.detectChanges();
-    }
-  }
-
-  private mapExcelProductRow(row: Record<string, unknown>): Record<string, string | number | null> {
-    const fieldByHeader: Record<string, string> = {
-      id: 'id',
-      productid: 'id',
-      name: 'name',
-      productname: 'name',
-      product: 'product',
-      description: 'description',
-      category: 'category',
-      hsntype: 'hsnType',
-      hsncode: 'hsnCode',
-      category1: 'category1',
-      category2: 'category2',
-      category3: 'category3',
-      configuration: 'configuration',
-      dfscode: 'dfsCode',
-      type: 'type',
-      productclass: 'productClass',
-      producttype: 'productType',
-      upcean: 'upcEan',
-      warehouse: 'warehouse',
-      productimage: 'productImage',
-      length: 'length',
-      width: 'width',
-      height: 'height',
-      weight: 'weight',
-      mrp: 'mrp',
-      sellingprice: 'sellingPrice',
-      tax: 'tax',
-      baseunit: 'baseUnit',
-      salesunit: 'salesUnit',
-      purchaseunit: 'purchaseUnit',
-      minstock: 'minStock',
-      maxstock: 'maxStock',
-      leadtime: 'leadTime',
-      instructions: 'instructions',
-    };
-    const product: Record<string, string | number | null> = {};
-
-    for (const [header, value] of Object.entries(row)) {
-      const normalizedHeader = header.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const field = fieldByHeader[normalizedHeader];
-      if (!field) {
-        continue;
-      }
-
-      product[field] = value === null || value === undefined || value === ''
-        ? null
-        : typeof value === 'string' || typeof value === 'number'
-          ? value
-          : String(value);
-    }
-
-    return product;
-  }
-
+ 
 
   save(): void {
     if (this.productForm.invalid) {
@@ -304,15 +151,27 @@ export class ProductMaster implements OnInit {
     });
   }
 
+onInputChange(fieldKey: keyof ProductFormControls, value: string): void {
+  const updatedValue = value.trimStart();
+  this.productForm.controls[fieldKey].setValue(updatedValue);
+  if (fieldKey === 'id' || fieldKey === 'name') {
+    const productId = this.productForm.controls.id.value.trim();
+    const productName = this.productForm.controls.name.value.trim();
+    this.productForm.controls.productIDName.setValue(
+      productId && productName ? `${productId}:${productName}` : ''
+    );
+  }
+}
   get filteredProducts(): ProductRecord[] {
     const search = this.searchText.trim().toLowerCase();
     if (!search) {
       return this.products;
     }
 
+
     return this.products.filter(product =>
       [
-        product.id, product.name, product.product, product.description, product.category,
+        product.id, product.name, product.productIDName, product.description, product.category,
         product.hsnCode, product.category1, product.category2, product.category3,
       ].some(value => String(value ?? '').toLowerCase().includes(search))
     );
@@ -334,7 +193,7 @@ export class ProductMaster implements OnInit {
     this.productForm.reset({
       id: product.id,
       name: product.name,
-      product: product.product || '',
+      productIDName: product.productIDName || '',
       description: product.description || '',
       category: product.category || '',
       hsnCode: product.hsnCode || '',

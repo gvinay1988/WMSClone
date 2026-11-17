@@ -4,9 +4,9 @@ import { HttpReq } from '../../Entities/app.entity';
 import { HttpService } from '../../Features/Auth/http-service';
 
 export interface ProductRecord {
+  productIDName: string;
   id: string;
   name: string;
-  product: string;
   description: string;
   category: string | null;
   hsnType: string;

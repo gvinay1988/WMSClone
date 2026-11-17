@@ -50,9 +50,8 @@ export class ProductBySupplierService {
     return this.httpService.restCall(this.request('productBySupplier/services/fetchSupplierProducts', { supplierId })) as Observable<SupplierProductsResponse>;
   }
 
-  saveSupplierProducts(supplierId: string, productIds: string[]): Observable<ProductBySupplierMutationResponse> {
-    return this.httpService.restCall(this.request('productBySupplier/services/saveSupplierProducts', { supplierId, productIds })) as Observable<ProductBySupplierMutationResponse>;
-  }
+  saveSupplierProducts(formData:any): Observable<ProductBySupplierMutationResponse> {
+    return this.httpService.restCall(this.request('productBySupplier/services/saveSupplierProducts', formData)) as Observable<ProductBySupplierMutationResponse>;}
 
   private request(url: string, body: object): HttpReq {
     const request = new HttpReq();

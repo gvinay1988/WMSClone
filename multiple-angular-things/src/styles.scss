@@ -878,6 +878,11 @@ input:focus {
   padding: 10px;
 }
 
+table td,
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 10px;
+}
+
 .p-paginator .p-paginator-pages {
   display: flex;
   gap: 0;

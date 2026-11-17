@@ -1,3 +1,4 @@
+
 import os
 import re
 import uuid
@@ -9,7 +10,6 @@ from flask import Blueprint, jsonify, request
 
 
 supplier_bp = Blueprint("supplier", __name__)
-
 
 SECRET_KEY = os.getenv("JWT_SECRET", "dev-secret-key")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
@@ -27,7 +27,6 @@ def get_connection():
 
 
 def get_current_user() -> str:
-
     authorization = request.headers.get("Authorization", "")
 
     if not authorization.startswith("Bearer "):
@@ -39,13 +38,11 @@ def get_current_user() -> str:
         raise ValueError("Missing bearer token")
 
     try:
-
         payload: dict[str, Any] = jwt.decode(
             token,
             SECRET_KEY,
             algorithms=[ALGORITHM]
         )
-
         return payload.get("sub", "")
 
     except jwt.ExpiredSignatureError:
@@ -56,12 +53,10 @@ def get_current_user() -> str:
 
 
 def initialize_supplier_table():
-
     conn = None
     cursor = None
 
     try:
-
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -69,6 +64,7 @@ def initialize_supplier_table():
             CREATE TABLE IF NOT EXISTS suppliers (
                 id CHAR(36) PRIMARY KEY,
                 supplierCode VARCHAR(100) NOT NULL UNIQUE,
+                supplierIDName VARCHAR(255) NULL,
                 supplierName VARCHAR(255) NOT NULL,
                 supplierType VARCHAR(100),
                 contactPerson VARCHAR(255),
@@ -86,18 +82,29 @@ def initialize_supplier_table():
                     ON UPDATE CURRENT_TIMESTAMP
             )
         """)
+
         cursor.execute("SHOW COLUMNS FROM suppliers LIKE 'supplierImage'")
+
         if cursor.fetchone() is None:
-            cursor.execute("ALTER TABLE suppliers ADD COLUMN supplierImage LONGTEXT NULL")
+            cursor.execute("""
+                ALTER TABLE suppliers
+                ADD COLUMN supplierImage LONGTEXT NULL
+            """)
+
+        cursor.execute("SHOW COLUMNS FROM suppliers LIKE 'supplierIDName'")
+
+        if cursor.fetchone() is None:
+            cursor.execute("""
+                ALTER TABLE suppliers
+                ADD COLUMN supplierIDName VARCHAR(255) NULL
+            """)
 
         conn.commit()
 
     except Exception as exc:
-
         print("Error creating suppliers table:", exc)
 
     finally:
-
         if cursor:
             cursor.close()
 
@@ -105,16 +112,49 @@ def initialize_supplier_table():
             conn.close()
 
 
+def initialize_supplier():
+    initialize_supplier_table()
+
+
+def build_supplier_response(
+    supplier_id,
+    supplier_code,
+    supplier_name,
+    supplier_id_name,
+    payload,
+    supplier_image
+):
+    return {
+        "id": supplier_id,
+        "supplierCode": supplier_code,
+        "supplierName": supplier_name,
+        "supplierIDName": supplier_id_name,
+        "supplierType": payload.get("supplierType"),
+        "contactPerson": payload.get("contactPerson"),
+        "email": payload.get("email"),
+        "phone": payload.get("phone"),
+        "mobile": payload.get("mobile"),
+        "gstNumber": payload.get("gstNumber"),
+        "panNumber": payload.get("panNumber"),
+        "address": payload.get("address"),
+        "city": payload.get("city"),
+        "pinCode": payload.get("pinCode"),
+        "supplierImage": supplier_image
+    }
+
+
 @supplier_bp.route(
     "/supplier/services/deleteSupplier",
     methods=["POST", "OPTIONS"]
 )
 def delete_supplier():
+
     if request.method == "OPTIONS":
         return "", 200
 
     try:
         get_current_user()
+
     except ValueError as exc:
         return jsonify({
             "success": False,
@@ -123,6 +163,7 @@ def delete_supplier():
 
     payload = request.get_json(silent=True) or {}
     supplier_id = payload.get("id")
+
     if not isinstance(supplier_id, str) or not supplier_id.strip():
         return jsonify({
             "success": False,
@@ -131,10 +172,16 @@ def delete_supplier():
 
     conn = None
     cursor = None
+
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM suppliers WHERE id = %s", (supplier_id.strip(),))
+
+        cursor.execute(
+            "DELETE FROM suppliers WHERE id = %s",
+            (supplier_id.strip(),)
+        )
+
         if cursor.rowcount == 0:
             return jsonify({
                 "success": False,
@@ -142,27 +189,29 @@ def delete_supplier():
             }), 404
 
         conn.commit()
+
         return jsonify({
             "success": True,
             "statusCode": 200,
             "statusMsg": "Supplier deleted successfully"
         }), 200
+
     except mysql.connector.Error as exc:
+
         if conn:
             conn.rollback()
+
         return jsonify({
             "success": False,
             "detail": str(exc)
         }), 500
+
     finally:
         if cursor:
             cursor.close()
+
         if conn:
             conn.close()
-
-
-def initialize_supplier():
-    initialize_supplier_table()
 
 
 @supplier_bp.route(
@@ -176,6 +225,7 @@ def save_or_update_supplier():
 
     try:
         get_current_user()
+
     except ValueError as exc:
         return jsonify({
             "success": False,
@@ -192,6 +242,7 @@ def save_or_update_supplier():
 
     supplier_code = payload.get("supplierCode")
     supplier_name = payload.get("supplierName")
+    supplier_id_name = payload.get("supplierIDName")
 
     if not supplier_code:
         return jsonify({
@@ -206,14 +257,16 @@ def save_or_update_supplier():
         }), 400
 
     supplier_image = payload.get("supplierImage")
+
     if supplier_image in (None, ""):
         supplier_image = None
+
     elif (
         not isinstance(supplier_image, str)
         or len(supplier_image) > 2_800_000
         or not re.fullmatch(
             r"data:image/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/]+={0,2}",
-            supplier_image,
+            supplier_image
         )
     ):
         return jsonify({
@@ -225,7 +278,6 @@ def save_or_update_supplier():
     cursor = None
 
     try:
-
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
@@ -249,6 +301,7 @@ def save_or_update_supplier():
                 UPDATE suppliers
                 SET
                     supplierName = %s,
+                    supplierIDName = %s,
                     supplierType = %s,
                     contactPerson = %s,
                     email = %s,
@@ -265,6 +318,7 @@ def save_or_update_supplier():
                 """,
                 (
                     supplier_name,
+                    supplier_id_name,
                     payload.get("supplierType"),
                     payload.get("contactPerson"),
                     payload.get("email"),
@@ -282,15 +336,20 @@ def save_or_update_supplier():
 
             conn.commit()
 
+            supplier_response = build_supplier_response(
+                supplier_id,
+                supplier_code,
+                supplier_name,
+                supplier_id_name,
+                payload,
+                supplier_image
+            )
+
             return jsonify({
                 "success": True,
                 "message": "Supplier updated successfully",
                 "operation": "UPDATE",
-                "supplier": {
-                    "id": supplier_id,
-                    "supplierCode": supplier_code,
-                    "supplierName": supplier_name
-                }
+                "supplier": supplier_response
             }), 200
 
         supplier_id = str(uuid.uuid4())
@@ -301,6 +360,7 @@ def save_or_update_supplier():
                 id,
                 supplierCode,
                 supplierName,
+                supplierIDName,
                 supplierType,
                 contactPerson,
                 email,
@@ -314,14 +374,16 @@ def save_or_update_supplier():
                 supplierImage
             )
             VALUES (
-                %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s
             )
             """,
             (
                 supplier_id,
                 supplier_code,
                 supplier_name,
+                supplier_id_name,
                 payload.get("supplierType"),
                 payload.get("contactPerson"),
                 payload.get("email"),
@@ -338,15 +400,20 @@ def save_or_update_supplier():
 
         conn.commit()
 
+        supplier_response = build_supplier_response(
+            supplier_id,
+            supplier_code,
+            supplier_name,
+            supplier_id_name,
+            payload,
+            supplier_image
+        )
+
         return jsonify({
             "success": True,
             "message": "Supplier created successfully",
             "operation": "CREATE",
-            "supplier": {
-                "id": supplier_id,
-                "supplierCode": supplier_code,
-                "supplierName": supplier_name
-            }
+            "supplier": supplier_response
         }), 201
 
     except mysql.connector.Error as exc:
@@ -370,7 +437,6 @@ def save_or_update_supplier():
         }), 500
 
     finally:
-
         if cursor:
             cursor.close()
 
@@ -401,9 +467,7 @@ def fetch_all_suppliers():
     cursor = None
 
     try:
-
         conn = get_connection()
-
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute("""
@@ -411,6 +475,7 @@ def fetch_all_suppliers():
                 id,
                 supplierCode,
                 supplierName,
+                supplierIDName,
                 supplierType,
                 contactPerson,
                 email,
@@ -453,148 +518,6 @@ def fetch_all_suppliers():
         }), 500
 
     finally:
-
-        if cursor:
-            cursor.close()
-
-        if conn:
-            conn.close()
-
-    if request.method == "OPTIONS":
-        return "", 200
-
-    try:
-        get_current_user()
-
-    except ValueError as exc:
-        return jsonify({
-            "success": False,
-            "detail": str(exc)
-        }), 401
-
-    conn = None
-    cursor = None
-
-    try:
-
-        conn = get_connection()
-
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("""
-            SELECT
-                id,
-                supplierCode,
-                supplierName,
-                supplierType,
-                contactPerson,
-                email,
-                phone,
-                mobile,
-                gstNumber,
-                panNumber,
-                address,
-                city,
-                pinCode,
-                createdAt,
-                updatedAt
-            FROM suppliers
-            ORDER BY createdAt DESC
-        """)
-
-        suppliers = cursor.fetchall()
-
-        return jsonify({
-            "success": True,
-            "data": suppliers
-        }), 200
-
-    except mysql.connector.Error as exc:
-
-        return jsonify({
-            "success": False,
-            "detail": str(exc)
-        }), 500
-
-    except Exception as exc:
-
-        return jsonify({
-            "success": False,
-            "detail": str(exc)
-        }), 500
-
-    finally:
-
-        if cursor:
-            cursor.close()
-
-        if conn:
-            conn.close()
-
-    if request.method == "OPTIONS":
-        return "", 200
-
-    try:
-        get_current_user()
-    except ValueError as exc:
-        return jsonify({
-            "success": False,
-            "detail": str(exc)
-        }), 401
-
-    conn = None
-    cursor = None
-
-    try:
-
-        conn = get_connection()
-
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("""
-            SELECT
-                id,
-                supplierCode,
-                supplierName,
-                supplierType,
-                contactPerson,
-                email,
-                phone,
-                mobile,
-                gstNumber,
-                panNumber,
-                address,
-                city,
-                pinCode,
-                createdAt,
-                updatedAt
-            FROM suppliers
-            ORDER BY createdAt DESC
-        """)
-
-        suppliers = cursor.fetchall()
-
-        return jsonify({
-            "success": True,
-            "data": suppliers
-        }), 200
-
-    except mysql.connector.Error as exc:
-
-        return jsonify({
-            "success": False,
-            "detail": str(exc)
-        }), 500
-
-    except Exception as exc:
-
-        return jsonify({
-            "success": False,
-            "detail": str(exc)
-        }), 500
-
-    finally:
-
         if cursor:
             cursor.close()
 

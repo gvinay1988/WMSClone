@@ -143,7 +143,11 @@ def fetch_supplier_products():
             "SELECT productId FROM supplier_products WHERE supplierId = %s ORDER BY productId",
             (supplier_id,),
         )
-        return respond(200, "Supplier products fetched successfully", productIds=[row[0] for row in cursor.fetchall()])
+        return respond(
+            200,
+            "Supplier products fetched successfully",
+            productIds=[row[0] for row in cursor.fetchall()],
+        )
     except mysql.connector.Error:
         current_app.logger.exception("Database error while fetching supplier products")
         return respond(500, "Database error while fetching supplier products", productIds=[])
@@ -161,14 +165,23 @@ def save_supplier_products():
 
     payload = request.get_json(silent=True) or {}
     supplier_id = payload.get("supplierId")
-    product_ids = payload.get("productIds")
+    products = payload.get("products")
+
     if not isinstance(supplier_id, str) or not supplier_id.strip():
         return respond(400, "supplierId is required")
-    if not isinstance(product_ids, list) or not all(isinstance(value, str) and value.strip() for value in product_ids):
-        return respond(400, "productIds must be an array of product IDs")
+    if not isinstance(products, list) or not products:
+        return respond(400, "products must be a non-empty array")
+
+    product_ids = []
+    for item in products:
+        product_id = item.get("productId") if isinstance(item, dict) else None
+        if product_id is None or not str(product_id).strip():
+            return respond(400, "Each product must have a productId")
+        product_ids.append(str(product_id).strip())
 
     supplier_id = supplier_id.strip()
-    product_ids = list(dict.fromkeys(value.strip() for value in product_ids))
+    product_ids = list(dict.fromkeys(product_ids))  # remove duplicates
+
     conn = None
     cursor = None
     try:
@@ -178,13 +191,15 @@ def save_supplier_products():
         if cursor.fetchone() is None:
             return respond(404, "Supplier not found")
 
-        if product_ids:
-            placeholders = ", ".join(["%s"] * len(product_ids))
-            cursor.execute(f"SELECT id FROM product_master WHERE id IN ({placeholders})", tuple(product_ids))
-            valid_ids = {row[0] for row in cursor.fetchall()}
-            invalid_ids = set(product_ids) - valid_ids
-            if invalid_ids:
-                return respond(400, f"Invalid product IDs: {', '.join(sorted(invalid_ids))}")
+        placeholders = ", ".join(["%s"] * len(product_ids))
+        cursor.execute(
+            f"SELECT id FROM product_master WHERE id IN ({placeholders})",
+            tuple(product_ids),
+        )
+        valid_ids = {row[0] for row in cursor.fetchall()}
+        invalid_ids = set(product_ids) - valid_ids
+        if invalid_ids:
+            return respond(400, f"Invalid product IDs: {', '.join(sorted(invalid_ids))}")
 
         cursor.execute("DELETE FROM supplier_products WHERE supplierId = %s", (supplier_id,))
         cursor.executemany(

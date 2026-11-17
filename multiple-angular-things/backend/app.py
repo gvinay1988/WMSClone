@@ -16,10 +16,17 @@ from product import product_master_bp, initialize_product_master
 from productBySupplier import product_by_supplier_bp, initialize_product_by_supplier
 from vehicle import vehicle_master_bp, initialize_vehicle_master
 from transporter import transporter_master_bp, initialize_transporter_master
+from vehicleByTransporter import (
+    vehicle_by_transporter_bp,
+    initialize_vehicle_by_transporter,
+)
 from productCategoryGroup import (
     product_category_group_bp,
     initialize_product_category_group,
 )
+from customerMaster import customer_master_bp, initialize_customer_master
+from warehouse import warehouse_master_bp, initialize_warehouse_master
+from organization import organization_master_bp, initialize_organization_master
 
 app = Flask(__name__)
 
@@ -72,7 +79,11 @@ initialize_product_master()
 initialize_product_by_supplier()
 initialize_vehicle_master()
 initialize_transporter_master()
+initialize_vehicle_by_transporter()
 initialize_product_category_group()
+initialize_customer_master()
+initialize_warehouse_master()
+initialize_organization_master()
 
 app.register_blueprint(supplier_bp)
 app.register_blueprint(user_configuration_bp)
@@ -83,7 +94,11 @@ app.register_blueprint(product_master_bp)
 app.register_blueprint(product_by_supplier_bp)
 app.register_blueprint(vehicle_master_bp)
 app.register_blueprint(transporter_master_bp)
+app.register_blueprint(vehicle_by_transporter_bp)
 app.register_blueprint(product_category_group_bp)
+app.register_blueprint(customer_master_bp)
+app.register_blueprint(warehouse_master_bp)
+app.register_blueprint(organization_master_bp)
 
 
 def create_access_token(subject: str, role: str) -> str:

@@ -1,0 +1,176 @@
+:host {
+  display: block;
+}
+
+.master-crud-page {
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+  color: #344054;
+}
+
+.master-panel {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #dcdfe3;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.list-panel {
+  min-width: 0;
+}
+
+.section-title {
+  margin: 0 0 18px;
+  color: #344054;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  min-width: 0;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .form-control {
+    min-height: 38px;
+    font-size: 14px;
+  }
+}
+
+.required {
+  color: #dc3545;
+}
+
+.field-error {
+  display: block;
+  margin-top: 4px;
+  color: #dc3545;
+  font-size: 12px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.table-toolbar,
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-toolbar {
+  margin-bottom: 12px;
+}
+
+.toolbar-group {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.toolbar-group select {
+  width: auto;
+  min-width: 76px;
+}
+
+.search-group {
+  margin-left: auto;
+}
+
+.search-group input {
+  width: 220px;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+:host ::ng-deep .table-scroll .p-datatable-thead > tr > th {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+:host ::ng-deep .master-paginator {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+:host ::ng-deep .master-paginator .master-entries-slot {
+  margin-right: auto;
+}
+
+.organization-code-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #111;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.organization-code-link:focus-visible {
+  outline: 2px solid #23b8b8;
+  outline-offset: 2px;
+}
+
+:host ::ng-deep .organization-delete-button {
+  color: #e6a0b5 !important;
+}
+
+:host ::ng-deep .organization-delete-button:hover {
+  background: #fff0f5 !important;
+  color: #d87998 !important;
+}
+
+@media (max-width: 800px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .master-crud-page {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .master-panel {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .search-group {
+    margin-left: 0;
+  }
+
+  .search-group input {
+    width: 180px;
+  }
+}

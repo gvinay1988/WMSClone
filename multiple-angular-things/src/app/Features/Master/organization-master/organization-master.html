@@ -1,0 +1,112 @@
+<div class="master-crud-page">
+  <p-confirmDialog></p-confirmDialog>
+
+  <section class="master-panel">
+    <h1 class="section-title">{{ editing ? 'Edit Organization' : 'Organization Master' }}</h1>
+    <form [formGroup]="organizationForm" (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="field" *ngFor="let field of fields">
+          <label [for]="field.key">
+            {{ field.label }}<span *ngIf="field.required" class="required"> *</span>
+          </label>
+          <input [id]="field.key" [type]="field.key === 'email' ? 'email' : 'text'"
+            class="form-control" [formControlName]="field.key" [attr.maxlength]="field.maxLength"
+            [placeholder]="field.label"
+            [class.is-invalid]="organizationForm.get(field.key)?.invalid && organizationForm.get(field.key)?.touched">
+          <small class="field-error"
+            *ngIf="organizationForm.get(field.key)?.invalid && organizationForm.get(field.key)?.touched">
+            <ng-container *ngIf="organizationForm.get(field.key)?.hasError('required')">
+              This field is required.
+            </ng-container>
+            <ng-container *ngIf="!field.required && field.key === 'email'">Enter a valid email address.</ng-container>
+            <ng-container *ngIf="organizationForm.get(field.key)?.hasError('maxlength')">
+              Maximum {{ field.maxLength }} characters.
+            </ng-container>
+          </small>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-sm btn-primary" [disabled]="submitting">
+          {{ submitting ? 'Saving...' : editing ? 'Update Organization' : 'Save Organization' }}
+        </button>
+        <button type="button" class="btn btn-sm btn-secondary" (click)="clear()" [disabled]="submitting">
+          Clear
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="master-panel list-panel">
+    <h2 class="section-title">Organizations List</h2>
+    <div class="table-toolbar">
+      <div class="toolbar-group">
+        <label for="organizationRows">Show entries</label>
+        <select id="organizationRows" class="form-select form-select-sm" [(ngModel)]="rows"
+          [ngModelOptions]="{ standalone: true }" (ngModelChange)="organizationTable.first = 0">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </div>
+      <div class="toolbar-group search-group">
+        <label for="organizationSearch">Search</label>
+        <input id="organizationSearch" type="search" class="form-control form-control-sm"
+          [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="organizationTable.first = 0" placeholder="Search organizations">
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <p-table #organizationTable [value]="filteredOrganizations" [paginator]="true" [rows]="rows"
+        [loading]="loading" paginatorPosition="bottom" paginatorStyleClass="master-paginator"
+        responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>S.No</th>
+            <th *ngFor="let field of fields" [pSortableColumn]="field.key">
+              {{ field.label }}<p-sortIcon [field]="field.key"></p-sortIcon>
+            </th>
+            <th aria-label="Organization actions">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-organization let-rowIndex="rowIndex">
+          <tr>
+            <td>{{ rowIndex + 1 }}</td>
+            <td *ngFor="let field of fields">
+              <button *ngIf="field.key === 'organizationCode'" type="button" class="organization-code-link"
+                (click)="edit(organization)" [attr.aria-label]="'Edit ' + organization.organizationCode">
+                {{ organization[field.key] || '-' }}
+              </button>
+              <span *ngIf="field.key !== 'organizationCode'">{{ organization[field.key] || '-' }}</span>
+            </td>
+            <td class="text-nowrap text-center">
+              <p-button class="organization-delete-button" icon="pi pi-trash" severity="danger"
+                [rounded]="true" [text]="true"
+                (onClick)="confirmDelete(organization)" [ariaLabel]="'Delete ' + organization.organizationName">
+              </p-button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td [attr.colspan]="fields.length + 2" class="text-center">
+              {{ loading ? 'Loading organizations...' : 'No organizations found' }}
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="master-entries-slot">
+            Showing {{ organizationTable.totalRecords ? (organizationTable.first ?? 0) + 1 : 0 }}
+            to {{ organizationTable.totalRecords
+              ? ((organizationTable.first ?? 0) + (organizationTable.rows ?? rows) < organizationTable.totalRecords
+                ? (organizationTable.first ?? 0) + (organizationTable.rows ?? rows)
+                : organizationTable.totalRecords)
+              : 0 }}
+            of {{ organizationTable.totalRecords }} records
+          </span>
+        </ng-template>
+      </p-table>
+    </div>
+  </section>
+</div>

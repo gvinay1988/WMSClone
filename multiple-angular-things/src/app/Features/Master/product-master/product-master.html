@@ -2,19 +2,18 @@
   <p-confirmDialog styleClass="product-delete-confirm-dialog"></p-confirmDialog>
 
   <div class="panel">
-    <form [formGroup]="productForm" (ngSubmit)="save()">
+    <form [formGroup]="productForm">
       <section aria-labelledby="product-attributes-heading">
         <div class="form-panel-heading">
           <h2 id="product-attributes-heading" class="section-title">Product Attributes</h2>
           <div class="form-panel-actions">
-            <input #productImport type="file" accept=".xlsx" class="d-none"
-              (change)="importProducts($event)">
-            <button type="button" class="excel-icon-button" (click)="productImport.click()"
+            <input #productImport type="file" accept=".xlsx" class="d-none">
+            <button type="button" class="excel-icon-button"
               [disabled]="importing" aria-label="Import products from Excel"
               title="Import Excel">
               <i class="pi pi-upload" aria-hidden="true"></i>
             </button>
-            <button type="button" class="excel-icon-button" (click)="exportAsXLSX()"
+            <button type="button" class="excel-icon-button" 
               [disabled]="!products.length" aria-label="Export products to Excel"
               title="Export Excel">
               <i class="pi pi-download" aria-hidden="true"></i>
@@ -47,7 +46,7 @@
                     <ng-container *ngSwitchCase="'text'">
                       <input [id]="field.id" type="text" class="pf-input"
                         [formControlName]="field.key" [placeholder]="field.placeholder || ''"
-                        [attr.maxlength]="field.maxLength"
+                        [attr.maxlength]="field.maxLength" (focusout)="onInputChange(field.key, $event.target.value)"
                         [class.is-invalid]="productForm.controls[field.key].invalid
                           && productForm.controls[field.key].touched">
                       <small class="err" *ngIf="field.required
@@ -101,7 +100,7 @@
         </p-tabs>
         <div class="actions">
           <button type="submit" class="btn btn-sm btn-primary"
-            [disabled]="submitting || !canSaveProduct">
+            (click)="save()" [disabled]="submitting || productForm.invalid">
             {{ submitting ? 'Saving...' : editing ? 'Update Product' : 'Save Product' }}
           </button>
           <button type="button" class="btn btn-sm btn-secondary" (click)="clear()"

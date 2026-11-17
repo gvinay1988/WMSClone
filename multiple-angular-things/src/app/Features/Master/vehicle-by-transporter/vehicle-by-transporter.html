@@ -1,7 +1,141 @@
 <div class="vehicle-by-transporter-page">
-  <section class="vehicle-by-transporter-panel">
-    <div class="panel-heading">
-      <h2>Vehicle by Transporter</h2>
-    </div>
-  </section>
+  <div class="page-heading">
+    <h1>Vehicle by Transporter</h1>
+    <p>Select a transporter to view its details alongside the vehicle list.</p>
+  </div>
+
+  <div class="workspace">
+    <section class="panel transporter-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Transporter Details</h2>
+          <span>Select a transporter and view its information</span>
+        </div>
+        <i class="pi pi-building" aria-hidden="true"></i>
+      </div>
+
+      <form [formGroup]="transporterForm" class="form-grid">
+        <div class="field field-full">
+          <label for="transporterId">Transporter (ID - Name) <span class="required">*</span></label>
+          <select
+            id="transporterId"
+            formControlName="transporterId"
+            (change)="onTransporterChange()"
+          >
+            <option value="">-- Select Transporter --</option>
+            <option *ngFor="let transporter of transportersList" [value]="transporter.id">
+              {{ transporter.transporterCode }} - {{ transporter.transporterName }}
+            </option>
+          </select>
+          <span *ngIf="loadingTransporters" class="field-hint">Loading transporters...</span>
+        </div>
+
+        <div class="field field-full">
+          <label for="transporterCode">Transporter ID</label>
+          <input id="transporterCode" formControlName="transporterCode" readonly>
+        </div>
+
+        <div class="field field-full">
+          <label for="transporterName">Transporter Name</label>
+          <input id="transporterName" formControlName="transporterName" readonly>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel vehicle-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Vehicle List</h2>
+          <span>All vehicles from Vehicle Master</span>
+        </div>
+        <i class="pi pi-truck" aria-hidden="true"></i>
+      </div>
+
+      <div class="table-toolbar">
+        <div class="entries-section">
+          <label for="vehicleEntries">Show entries</label>
+          <select
+            id="vehicleEntries"
+            class="form-select"
+            [(ngModel)]="rows"
+            [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="vehicleTable.first = 0"
+          >
+            <option [ngValue]="2">2</option>
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="vehicle-table-scroll">
+        <p-table
+          #vehicleTable
+          class="vehicle-table"
+          [value]="vehicleList"
+          [paginator]="true"
+          [rows]="rows"
+          [loading]="loadingVehicles"
+          paginatorPosition="bottom"
+          paginatorStyleClass="vehicle-paginator"
+          responsiveLayout="scroll"
+        >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>S.No.</th>
+            <th>Include</th>
+            <th>Vehicle ID</th>
+            <th>Vehicle Name</th>
+            <th>Vehicle Type</th>
+            <th>Registration Number</th>
+            <th>Capacity</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-vehicle let-rowIndex="rowIndex">
+          <tr>
+            <td>{{ rowIndex + 1 }}</td>
+            <td><input type="checkbox" name="" id="" [(ngModel)]="vehicle.selected"></td>
+            <td>{{ vehicle.vehicleCode }}</td>
+            <td>{{ vehicle.vehicleName }}</td>
+            <td>{{ vehicle.vehicleType }}</td>
+            <td>{{ vehicle.registrationNumber }}</td>
+            <td>{{ vehicle.capacity ?? '—' }}</td>
+            <td>
+              <span class="status" [class.inactive]="vehicle.status === 'Inactive'">
+                {{ vehicle.status }}
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="empty-message">No vehicles found.</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="paginatorleft">
+          <span class="vehicle-record-count">
+            Showing {{ vehicleTable.totalRecords ? (vehicleTable.first ?? 0) + 1 : 0 }}
+            to {{ vehicleTable.totalRecords
+              ? ((vehicleTable.first ?? 0) + (vehicleTable.rows ?? rows) < vehicleTable.totalRecords
+                ? (vehicleTable.first ?? 0) + (vehicleTable.rows ?? rows)
+                : vehicleTable.totalRecords)
+              : 0 }} of {{ vehicleTable.totalRecords }} records
+          </span>
+        </ng-template>
+        </p-table>
+      </div>
+    </section>
+  </div>
+  <div class="form-actions">
+  <button
+    type="button"
+    class="btn-save"
+    [disabled]="saving"
+    (click)="onSave()">
+    {{ saving ? 'Saving...' : 'Save' }}
+  </button>
+</div>
 </div>

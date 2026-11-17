@@ -4,11 +4,11 @@ import { ProductRecord } from '../../../services/MasterDataService/product-maste
 export interface ProductFormControls {
   id: FormControl<string>;
   name: FormControl<string>;
-  product: FormControl<string>;
+  productIDName: FormControl<string>;
   description: FormControl<string>;
   category: FormControl<string>;
   hsnCode: FormControl<string>;
-  category1: FormControl<string>;
+  category1: FormControl<string>; 
   category2: FormControl<string>;
   category3: FormControl<string>;
   productImage: FormControl<string>;
@@ -74,11 +74,11 @@ export const PRODUCT_DETAIL_FIELDS: ProductFormFieldConfig[] = [
     errorText: 'Product name is required.',
   },
   {
-    key: 'product',
-    id: 'product',
-    label: 'Product',
+    key: 'productIDName',
+    id: 'productIDName',
+    label: 'Product ID Name',
     type: 'text',
-    placeholder: 'Product',
+    placeholder: 'Product ID Name',
   },
   {
     key: 'description',
@@ -152,8 +152,15 @@ export const PRODUCT_TABLE_COLUMNS: ProductTableColumnConfig[] = [
     sortable: true,
     headerClass: 'product-name-header',
   },
+  {
+    field: 'productIDName',
+    label: 'Product ID Name',
+    type: 'text',
+    sortable: true,
+    headerClass: 'product-id-name-header',
+  },
   { field: 'productImage', label: 'Image', type: 'image', sortable: true },
-  { field: 'product', label: 'Product', type: 'text', sortable: true },
+  { field: 'productIDName', label: 'Product ID Name', type: 'text', sortable: true },
   { field: 'description', label: 'Description', type: 'text', sortable: true },
   { field: 'category', label: 'Category', type: 'text', sortable: true },
   { field: 'hsnCode', label: 'HSN Code', type: 'text', sortable: true },

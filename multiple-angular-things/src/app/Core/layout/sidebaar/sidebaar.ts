@@ -25,6 +25,8 @@ export class Sidebaar {
     { label: 'Employees', icon: 'pi pi-users', path: '/employees' },
     { label: 'Supplier Master', icon: 'pi pi-building', path: '/master/supplier' },
     { label: 'State Master', icon: 'pi pi-map', path: '/master/statemaster' },
+    { label: 'Warehouse Master', icon: 'pi pi-warehouse', path: '/master/warehouse' },
+    { label: 'Organization Master', icon: 'pi pi-sitemap', path: '/master/organization' },
     { label: 'Vehicle Master', icon: 'pi pi-car', path: '/master/vehicle' },
     { label: 'Transporter Master', icon: 'pi pi-send', path: '/master/transporter' },
     { label: 'Product by Supplier', icon: 'pi pi-sitemap', path: '/master/productBySupplier' },

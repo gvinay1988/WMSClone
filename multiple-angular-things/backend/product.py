@@ -5,15 +5,13 @@ from typing import Any
 import jwt
 import mysql.connector
 from flask import Blueprint, current_app, jsonify, request
-
-
 product_master_bp = Blueprint("product_master", __name__)
 
 SECRET_KEY = os.getenv("JWT_SECRET", "dev-secret-key")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 TEXT_FIELDS = {
-    "product": 255,
+    "productIDName": 255,
     "description": 2000,
     "hsnType": 20,
     "hsnCode": 50,
@@ -34,7 +32,7 @@ NUMERIC_FIELDS = (
     "minStock", "maxStock", "leadTime",
 )
 PRODUCT_COLUMNS = (
-    "id", "name", "product", "description", "category", "hsnType", "hsnCode",
+    "id", "name", "productIDName", "description", "category", "hsnType", "hsnCode",
     "category1", "category2", "category3", "configuration", "dfsCode", "type",
     "productClass", "productType", "upcEan", "warehouse", "productImage", "length",
     "width", "height", "weight", "mrp", "sellingPrice", "tax", "baseUnit",
@@ -176,7 +174,7 @@ def initialize_product_master():
             CREATE TABLE IF NOT EXISTS product_master (
                 id VARCHAR(100) PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                product VARCHAR(255) NOT NULL DEFAULT '',
+                productIDName VARCHAR(255) NOT NULL DEFAULT '',
                 description VARCHAR(2000) NOT NULL DEFAULT '',
                 category VARCHAR(100) NULL,
                 hsnType VARCHAR(20) NOT NULL DEFAULT '',
@@ -212,6 +210,13 @@ def initialize_product_master():
             )
             """
         )
+        cursor.execute("SHOW COLUMNS FROM product_master LIKE 'productIDName'")
+        if cursor.fetchone() is None:
+            cursor.execute("""
+                ALTER TABLE product_master
+                ADD COLUMN productIDName VARCHAR(255) NOT NULL DEFAULT ''
+            """)
+
         cursor.execute(
             """
             ALTER TABLE product_master
@@ -254,9 +259,9 @@ def _product_json_row(payload):
         return None, "Product row must be an object"
 
     aliases = {
-        "product": "product",
         "productid": "id",
         "productname": "name",
+        "productidname": "productIDName",
     }
     column_by_header = {
         "".join(character.lower() for character in column if character.isalnum()): column

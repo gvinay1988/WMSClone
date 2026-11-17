@@ -25,12 +25,12 @@
               <div class="col-md-4">
                 <div class="row align-items-center mb-3">
                   <label class="col-5 col-form-label" for="supplierCode">
-                    Supplier Code <span class="text-danger">*</span>
+                    Supplier ID <span class="text-danger">*</span>
                   </label>
                   <div class="col-7">
-                    <input id="supplierCode" type="text" class="form-control form-control-sm"
+                    <input id="supplierCode" type="text" class="form-control form-control-sm" (keyup)="mergeSupplieIDName()"
                       [class.is-invalid]="supplierForm.get('supplierCode')?.invalid && supplierForm.get('supplierCode')?.touched"
-                      formControlName="supplierCode" placeholder="Supplier Code" [readonly]="isEditingSupplier">
+                    formControlName="supplierCode" placeholder="Supplier ID" [readonly]="isEditingSupplier">
                   </div>
                 </div>
                 <div class="row align-items-center">
@@ -38,7 +38,7 @@
                     Supplier Name <span class="text-danger">*</span>
                   </label>
                   <div class="col-7">
-                    <input id="supplierName" type="text" class="form-control form-control-sm"
+                    <input id="supplierName" type="text" class="form-control form-control-sm" (keyup)="mergeSupplieIDName()"
                       [class.is-invalid]="supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched"
                       formControlName="supplierName" placeholder="Supplier Name">
                   </div>
@@ -65,28 +65,30 @@
               </div>
 
               <div class="col-md-4">
-                <div class="row align-items-center mb-3">
-                  <label class="col-5 col-form-label" for="supplierEmail">Email</label>
-                  <div class="col-7">
-                    <input id="supplierEmail" type="email" class="form-control form-control-sm"
-                      formControlName="email" placeholder="Email">
-                  </div>
-                </div>
                 <div class="row align-items-center">
-                  <label class="col-5 col-form-label" for="supplierPhone">Phone</label>
+                  <label class="col-5 col-form-label" for="supplierIDName">Supplier ID Name</label>
                   <div class="col-7">
-                    <input id="supplierPhone" type="text" class="form-control form-control-sm"
-                      formControlName="phone" placeholder="Phone Number">
+                    <input id="supplierIDName" type="text" class="form-control form-control-sm" formControlName="supplierIDName"
+                      placeholder="Supplier ID Name">
                   </div>
                 </div>
+                <div class="row align-items-center mb-3">
+                  <label class="col-5 col-form-label" for="supplierType">Supplier Type</label>
+                  <div class="col-7">
+                    <input id="supplierType" type="text" class="form-control form-control-sm"
+                      formControlName="supplierType" placeholder="Supplier Type">
+                  </div>
+                </div>
+
+                
               </div>
 
               <div class="col-md-4">
                 <div class="row align-items-center mb-3">
                   <label class="col-5 col-form-label" for="supplierPan">PAN Number</label>
                   <div class="col-7">
-                    <input id="supplierPan" type="text" class="form-control form-control-sm"
-                      formControlName="panNumber" placeholder="PAN Number">
+                    <input id="supplierPan" type="text" class="form-control form-control-sm" formControlName="panNumber"
+                      placeholder="PAN Number">
                   </div>
                 </div>
                 <div class="row align-items-center">
@@ -104,10 +106,10 @@
             <div class="row g-3">
               <div class="col-md-4">
                 <div class="row align-items-center mb-3">
-                  <label class="col-5 col-form-label" for="supplierType">Supplier Type</label>
+                  <label class="col-5 col-form-label" for="supplierEmail">Email</label>
                   <div class="col-7">
-                    <input id="supplierType" type="text" class="form-control form-control-sm"
-                      formControlName="supplierType" placeholder="Supplier Type">
+                    <input id="supplierEmail" type="email" class="form-control form-control-sm" formControlName="email"
+                      placeholder="Email">
                   </div>
                 </div>
                 <div class="row align-items-center">
@@ -123,15 +125,15 @@
                 <div class="row align-items-center mb-3">
                   <label class="col-5 col-form-label" for="supplierMobile">Mobile</label>
                   <div class="col-7">
-                    <input id="supplierMobile" type="text" class="form-control form-control-sm"
-                      formControlName="mobile" placeholder="Mobile Number">
+                    <input id="supplierMobile" type="text" class="form-control form-control-sm" formControlName="mobile"
+                      placeholder="Mobile Number">
                   </div>
                 </div>
                 <div class="row align-items-center">
                   <label class="col-5 col-form-label" for="supplierGst">GST Number</label>
                   <div class="col-7">
-                    <input id="supplierGst" type="text" class="form-control form-control-sm"
-                      formControlName="gstNumber" placeholder="GST Number">
+                    <input id="supplierGst" type="text" class="form-control form-control-sm" formControlName="gstNumber"
+                      placeholder="GST Number">
                   </div>
                 </div>
               </div>
@@ -140,8 +142,8 @@
                 <div class="row align-items-center mb-3">
                   <label class="col-5 col-form-label" for="supplierCity">City</label>
                   <div class="col-7">
-                    <input id="supplierCity" type="text" class="form-control form-control-sm"
-                      formControlName="city" placeholder="City">
+                    <input id="supplierCity" type="text" class="form-control form-control-sm" formControlName="city"
+                      placeholder="City">
                   </div>
                 </div>
                 <div class="row align-items-center">
@@ -170,31 +172,31 @@
   </section>
 
   <section class="supplier-list-panel">
-      <h2 class="supplier-list-title">Suppliers List</h2>
-      <div class="table-toolbar d-flex align-items-center mb-2 gap-2">
-        <div class="entries-section d-flex align-items-center gap-2">
-          <label for="entries">Show entries</label>
-          <select id="entries" class="form-select" [(ngModel)]="rows"
-            [ngModelOptions]="{ standalone: true }" (ngModelChange)="supplierTable.first = 0">
-            <option [ngValue]="2">2</option>
-            <option [ngValue]="5">5</option>
-            <option [ngValue]="10">10</option>
-            <option [ngValue]="25">25</option>
-            <option [ngValue]="50">50</option>
-          </select>
-        </div>
-        <div class="search-section d-flex align-items-center gap-2">
-          <label for="search">Search</label>
-          <input id="search" type="text" class="supplier-search-input" pInputText placeholder="Search suppliers..."
-            [(ngModel)]="searchValue" [ngModelOptions]="{ standalone: true }"
-            (input)="supplierTable.filterGlobal(searchValue, 'contains')">
-        </div>
+    <h2 class="supplier-list-title">Suppliers List</h2>
+    <div class="table-toolbar d-flex align-items-center mb-2 gap-2">
+      <div class="entries-section d-flex align-items-center gap-2">
+        <label for="entries">Show entries</label>
+        <select id="entries" class="form-select" [(ngModel)]="rows" [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="supplierTable.first = 0">
+          <option [ngValue]="2">2</option>
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+        </select>
       </div>
+      <div class="search-section d-flex align-items-center gap-2">
+        <label for="search">Search</label>
+        <input id="search" type="text" class="supplier-search-input" pInputText placeholder="Search suppliers..."
+          [(ngModel)]="searchValue" [ngModelOptions]="{ standalone: true }"
+          (input)="supplierTable.filterGlobal(searchValue, 'contains')">
+      </div>
+    </div>
 
-      <div class="supplier-table-scroll">
-      <p-table #supplierTable class="supplier-table" [value]="suppliers" [paginator]="true"
-        [rows]="rows" [loading]="loading()" paginatorPosition="bottom"
-        paginatorStyleClass="supplier-paginator" responsiveLayout="scroll">
+    <div class="supplier-table-scroll">
+      <p-table #supplierTable class="supplier-table" [value]="suppliers" [paginator]="true" [rows]="rows"
+        [loading]="loading()" paginatorPosition="bottom" paginatorStyleClass="supplier-paginator"
+        responsiveLayout="scroll">
         <ng-template pTemplate="header">
           <tr class="list table-header">
             <th class="serial-column">S.No</th>
@@ -220,15 +222,13 @@
           <tr>
             <td class="serial-column">{{ supplierTable.first + rowIndex + 1 }}</td>
             <td class="supplier-image-cell">
-              <img *ngIf="supplier.supplierImage" class="supplier-table-image"
-                [src]="supplier.supplierImage" [alt]="supplier.supplierName + ' image'">
+              <img *ngIf="supplier.supplierImage" class="supplier-table-image" [src]="supplier.supplierImage"
+                [alt]="supplier.supplierName + ' image'">
               <img *ngIf="!supplier.supplierImage" class="supplier-table-image supplier-demo-image"
-              [src]="getSupplierDemoImage(supplier.supplierCode)"
-              [alt]="supplier.supplierName + ' demo image'">
+                [src]="getSupplierDemoImage(supplier.supplierCode)" [alt]="supplier.supplierName + ' demo image'">
             </td>
             <td>
-              <button type="button" class="supplier-code-edit"
-                (click)="editSupplier(supplier)"
+              <button type="button" class="supplier-code-edit" (click)="editSupplier(supplier)"
                 [attr.aria-label]="'Edit supplier ' + supplier.supplierCode">
                 {{ supplier.supplierCode }}
               </button>
@@ -240,8 +240,8 @@
             <td>{{ supplier.mobile || '-' }}</td>
             <td>{{ supplier.city || '-' }}</td>
             <td class="text-nowrap text-center">
-              <p-button class="supplier-delete-button" icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true"
-                (onClick)="confirmDelete(supplier)" [ariaLabel]="'Delete ' + supplier.supplierName">
+              <p-button class="supplier-delete-button" icon="pi pi-trash" severity="danger" [rounded]="true"
+                [text]="true" (onClick)="confirmDelete(supplier)" [ariaLabel]="'Delete ' + supplier.supplierName">
               </p-button>
             </td>
           </tr>
@@ -259,14 +259,11 @@
           <span class="supplier-record-count">
             Showing {{ supplierTable.totalRecords ? (supplierTable.first ?? 0) + 1 : 0 }}
             to {{ supplierTable.totalRecords
-              ? ((supplierTable.first ?? 0) + (supplierTable.rows ?? rows) < supplierTable.totalRecords
-                ? (supplierTable.first ?? 0) + (supplierTable.rows ?? rows)
-                : supplierTable.totalRecords)
-              : 0 }}
-            of {{ supplierTable.totalRecords }} records
-          </span>
+            ? ((supplierTable.first ?? 0) + (supplierTable.rows ?? rows) < supplierTable.totalRecords ?
+              (supplierTable.first ?? 0) + (supplierTable.rows ?? rows) : supplierTable.totalRecords) : 0 }} of {{
+              supplierTable.totalRecords }} records </span>
         </ng-template>
       </p-table>
-      </div>
+    </div>
   </section>
 </div>
