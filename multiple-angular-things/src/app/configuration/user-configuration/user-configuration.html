@@ -390,14 +390,14 @@
             <div class="form-group row">
               <div class="col-sm-12 text-right mb-3">
                 <button
-                  class="btn btn-green m-1"
+                  class="btn btn-sm btn-primary btn-green m-1"
                   type="button"
                   (click)="save()"
                   [disabled]="role !== 'ROLE_SUPER_ADMIN' && userConfigForm.invalid">
                   {{'SAVE' | translate}}
                 </button>
                 <button
-                  class="btn btn-white"
+                  class="btn btn-sm btn-secondary btn-white"
                   type="button"
                   (click)="clear()">
                   {{'CLEAR' | translate}}
@@ -422,14 +422,14 @@
         <div class="col-6 col-md">
           <div class="d-flex justify-content-end flex-nowrap gap-2">
             <button
-              class="btn btn-green"
+              class="btn btn-sm btn-primary btn-green"
               type="button"
               (click)="save()"
               [disabled]="role !== 'ROLE_SUPER_ADMIN' && userConfigForm.invalid">
               {{'SAVE' | translate}}
             </button>
             <button
-              class="btn btn-white"
+              class="btn btn-sm btn-secondary btn-white"
               type="button"
               (click)="clear()">
               {{'CLEAR' | translate}}

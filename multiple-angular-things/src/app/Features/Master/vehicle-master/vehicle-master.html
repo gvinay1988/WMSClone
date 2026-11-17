@@ -39,8 +39,8 @@
         </select>
       </div>
       <div class="form-actions">
-        <button type="button" class="clear-button" (click)="clear()">Clear</button>
-        <button type="submit" class="save-button" [disabled]="saving">
+        <button type="button" class="btn btn-sm btn-secondary clear-button" (click)="clear()">Clear</button>
+        <button type="submit" class="btn btn-sm btn-primary save-button" [disabled]="saving">
           {{ saving ? 'Saving...' : editing ? 'Update Vehicle' : 'Save Vehicle' }}
         </button>
       </div>
